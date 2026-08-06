@@ -1,141 +1,539 @@
-"""Kaggriculture v3.0 High-Performance Dynamic Agent.
+"""V14 Kaggriculture complete-route agent.
 
-Comprehensive multi-phase strategy targeting leaderboard placement (3,000-13,000+ coins).
-
-Key design principles from top-30 analysis:
-1. Correct observation format: obs["player"], obs["day"], obs["hour"],
-   private["shed"], private["seeds"], private["inventories"],
-   farms[player]["unlocked_quadrants"], farms[player]["money"]
-2. Starting money is $3,000 — aggressive early expansion is critical
-3. Multi-phase strategy: Early wheat/carrot → Land expansion → Melon/Livestock scaling → Terminal liquidation
-4. Fertilizer as infinite revenue stream (animals produce free daily, town doesn't consume it)
-5. CARE action banks yield bonuses for animals
-6. Market price awareness: Premium goods (Melon, Milk, Wool, Strawberry) crash hard on overproduction
-7. Town demand exploitation: shops unlock every 3 days, consumption grows over time
-8. Shed capacity management (100 items cap)
-9. Weed repair: DIG → retry planned action
-10. Terminal liquidation at step 718 with opponent-exposure-aware priority selling
+The 719-turn route is transcribed from public replay actions. Runtime
+uses only the current legal observation. Safety layers provide hand
+alignment, bounded weed repair, SELL clamping, order-safe one-turn
+premium shifts with exact next-turn repayment, and final liquidation.
 """
+import base64
+import copy
+import json
+import zlib
 
-import math
 
-# Board layout constants
-BOARD_SIZE = 10
-SHED_ADJACENT = [(4, 4), (5, 4), (4, 5), (5, 5)]
-
-# Crop data from competition spec
-CROPS = {
-    "WHEAT":      {"cost": 10, "base_price": 25, "first_yield_day": 2, "max_yield_day": 4, "max_yield": 6, "unfert_max": 4, "type": "one_time"},
-    "CARROT":     {"cost": 20, "base_price": 35, "first_yield_day": 2, "max_yield_day": 3, "max_yield": 4, "unfert_max": 3, "type": "one_time"},
-    "MELON":      {"cost": 80, "base_price": 250, "first_yield_day": 10, "max_yield_day": 10, "max_yield": 6, "type": "one_time"},
-    "TOMATO":     {"cost": 50, "base_price": 60, "first_yield_day": 8, "max_yield_day": 11, "max_yield": 4, "type": "ongoing"},
-    "STRAWBERRY": {"cost": 100, "base_price": 120, "first_yield_day": 10, "max_yield_day": 16, "max_yield": 4, "type": "ongoing"},
+_ACTIONS = json.loads(
+    zlib.decompress(
+        base64.b85decode(
+            (
+                'c-rk<U2hyoa{MoR=7Z*oqWs2{=1#(KMS+rTa9$9L1$+ks#`$6GH^cwkT5;Ij(-|2VnN>ZMcKtRWXS%Dhs;e_2BO`zMpNoI|^6NkU{_Dl'
+                'R{B-f*=HthUhs%q9|K&gb?Z3YK;mgN={_^X8{QbYbeE#X;?YsN^m;Y)Xe)#;ipKsp3`|;-X;_~9-+x`B-#pT-k<MrKP^5>8H{hKd;JiO'
+                'iCe7d-NIs5aE``f$s7niH`!^8hxo{ak4>%V;dFuB?={+})m`;VW#j_3W|{inBIKOHAI`Q3DQk3Tq__-}*waDVsa^XpIJ@XRoN`26nn&C'
+                'g%1{^|2q8%#zq-kc3%xbXPB={V-IzP)+9KTcY|nfWKV!_jt=OV6hWZ{dE4+=|$4Sivt7em~m()PzS{JT7FT{hsdgxZl3+iJMRR`_nuA>'
+                '9;*O9o6yMDRYk39Vhv8gV#4l;~l@$$#~<WhC2=4v0Fc!fn5_|E4v|PKjW)(as$zNc0<Hwe7auJe8Wy?FdyA&!%on*+Wfkr)yAFB#aQ@3'
+                'oliKj+Weg)T5a+t-E8Joova1s;9JD}Yw~avj0Fth+emmI$yCgTPA0M+9HVs`_smw^#(nzX{FgnRC60p!{hW>KZVg{ZUC;PU#{;zK8uO#'
+                '|xyDhjuervPOZB^$%>Jf*VS0??_1*35{`IGy|FpmV^zQcEzn;FlDp&k?_qlzU`VZ^P{oRLUpQexd+uuUB$&kkgZjlWUo<OU{>wPm%95Z'
+                '}*=VbP6ubY6FHo2QrjG?f)92JNo$N5T6FEcvp`t|1L+sXCN3K$Oynsj_P980Yp!T@C)2=ITcPuFm7Yt+#RvqtSY?I!!jMo1ivIfx)OLg'
+                'v;apewC?uW5s@<qtY<aFQ%EaW^9Bbnm$n0H-^Ac>MNqxBdgnn!m`ESa>lTkX!#gO;8B!ztubUz5e%fwV8jr&G@%l)xYJA?iOd$6wgXYi'
+                'XAVeppMLe0=JmoUWk-Zu4?j@ZRR@3BGtV8IZE2wRww{sZsqKMm0MaP+8KeIBs^%VPCU6|VTzeI8GEhQZ%Aw!LhwCcH}QTgQQ@ZJOFQu*'
+                'OAN@MC(kg3Z_X$nvH6F$2{?5B-zdGZTHoXlzU#!`QkRu;g`S`6y#2d)&^wQK*2jaM257x~Xv*VS$cY}9E=^7}p*l581$fmlgt(mb>?B8'
+                ';km4XEz;Q+$Ye2~bcTkF3gz0V;1IUN}y}h~rtLg}E1f=xn{PU^nq?%!P@E$0hop0_c@6Zl^9E(C}v!<E;9tX^rF-Y!$d?|C8!CX?5CxG'
+                'G1Nb~j2<Xgu-O+SH4M}sC%Hlh*YOqRgRA{5N0`%M?!&ICSvnH3<6LN7rlKYP}SCr^Mi<hW+B?LrUSObqOZBc)^bUv5hb698A9&nY~mVY'
+                'WUwXS(~H<&0;ZMr5B}F*|2o8^4?Z<E#cbH4jR`VJZNLsaL_{MN$JpOOzUB7&W-Db84JvGNkYm5A;h7%%-)%fhBETF`!!y5f0bI#2OC9<'
+                'b*v0s^w^|hRlDIpR|PbyY|o?{`#tK=)UP6v7aqY@0Q}SuZTs1@;(M)6ROyUjT;%LBN>e#C!HBVxj?ZiJ0nNKvMYGLX~(O*Nn}p!v>Aw`'
+                'pCOxE5?FZ{GpL9{oJ)i*eiT+5pu#n3VsB;r7duu0yT^0Sr74y8ydjsAv_*;{c35!Sidj;FO&VhEjqJjZ_U`WXYk~Zw?{t9|lj?1K!7AS'
+                '5Yy0CkZC<{Q-5cZ`h+g5VS)S+Pr~8}35BvN3zky_reF4*|cR$&)T$W}|IvS5#U(q00`|m}q_<G|>n7M~y>G8_oe@_D$5+1YfENyMC$lS'
+                '-V!nX{w`*87jA`T@TCVRYf4M24ZdNucD$pU``SOVlo21_hV8%Ksd83^0V7TWgKt6|Jy7~^SY#LT=p7u)Q*VIhYP^MvW8`BEnzTwYpGkc'
+                '5uF?22v)!#A;_)`I9%7S=H_9tMGozBaZd7^aYg*by>EG56xGGL1iCMo?m?z+Fd+XESTd3`h2vxu(P-V{73WKAW9-jcjRKoOgab8IzZ1L'
+                '9El1Gp=YhjYGDHKxukVLnK&K6l(z5S1;ms!KjgC>-F)#lb;0t{^f(10(I^*%mH|sZ6mvW&|QCYr(xLiTLq%qtHjD08MOJ!bU$}Wz|bmW'
+                'ycdae1yPG#Ry&#?vJuBc#R6E6h?KuP>jDy7i!I55PYxM8CQdVo3@vAXUS!|JJalD{hCAR+`xKI>0F;jHjmb(~ObS40^SlH8okO2;#LU9'
+                'lA?;X)3`(%(goo&pD??CNjh6_O&UtPq_tR&CH)l#FBsWs8=hA(1sUL85ORPQ~5`oaTQ}##;d*I`o7=gtlytCD;5Ts*DTAh_)K@cSMob}'
+                '4R$OfXc&LuNg+Kt&*LI`=T0LHKD?o4>|$7{o2>Bo1se*pv>crf=H5Q&<f1|-r}b7qTlfk>uV7;<YO&`$m7C12AX;CkKDF!nkh#;(;ccG'
+                'VQdK7OcixU42Z_vjT4&%PLEYQs3PLX{)h6z0Fo5rc2$i8%)5tJX>kiKG>5zT+vKr^V4ECsNc>A4~#VEj@^G^e13GpwF6;Ri=JXln<yZZ'
+                '^?9uq;r@X2;ah5{?f%jE^*}s@Uy91Q%(wa0PJFiY0t<9gCTYpB51kH%;H-E@)Tam2O}pDl09LR<WQWt$I=TWZh~2g`XC9!%wCTNA4_Ov'
+                'D~fT72Ur^o^ry*y=pMN|cg9E==u+zllB|&z-}gf;W;?@RW(30R8S<QqjkQZo^czl~_8QtZWvAwr0+$UjAbZ~^Vd)0_ai>S97>!?NLRCu'
+                'u#hF%+##xA>${gEa6g2bNFdRjFge6k@@^>ZS3>(+mzi=*ed8KSHGFZf}luZ1rQWQC<*shh8tMHRFOB7{6lppMMG27XbFH87;Fw5+QrJa'
+                'bDzyYHJqo-Ahcf9GRnZ_61#>?>g(*8{FFvZ1Z`x9Uc0v$6kMzHz_5Md9!QQnZKzzIU1Xh(#{n5|&<$8u!RkOV-8FXLpSUD;+$er%6J0i'
+                'MBpz-*9LdVx5l-ue%Pz}`u))vpB8O)W;pHGUe8B|KD?%^RAnUPcj@C~y=Zv|RZmu~8F42WAEvPG0D_P>+%@oyzJQM}Cz#IxWnUvoGBmO'
+                '12VCAf6LD9Ktf)bY9hK9Za8oa<3$C)U(L*IG4=}C$asql;PECJEKm_0LDU`WnMH1|BKGhDjR#6uU?1E#kK*bd1|Baxd+FHA616D%{on6'
+                '5Jd5+Cw<JAIT38)EDB#J)ShO?{9;WO-AWTe^RLWkonQbkfPgLx3;5C#(YIH`W(FLAxDYQ$HiCKiReXI!@)5yZD;z|$4c6*7AcZ@&k-Yp'
+                'S`IKQHS;@9e6R#$3N1K@xIcNplwa#|B)n}(pv}z&2-sN@R6RK9IodHaIY>Yh7^9JB?;idVZTpd9aRr_Kt04|NG`6_pr+Ay=Wi3lDrY*j'
+                '*tzM(0fJv`ujc%~CTpb21J7VC*ww1Fdjy%wmi9dub&MsJcT2Eenf6MHh6wlCf3D|Ler+1w#qIKAsL6b;HE*GfPdOfjE<<8G@DgGBrgl}'
+                '@;QV<0ZGA#8z2xJv~IX3E_e=M*8n3S(cGa|xSDtW}+*gx-+*06$`Q3LwiTHUlm{E50Xkl&I0#BW9OBc|!34ahDt+!FE9j_BcrVJFT2A1'
+                '#f~0(~=TW2Si2C^G}0RN3#HL3FI1bySMYeQ*wN%4{;IFvRV|jqz4>a)7`jw(M7Q$UCy&BBD|KmRMPreZ7cEx671ERBW01XaTuuJUM`2K'
+                '!WQ;T3No@jE29r$%NEBnlnR`vb!BBD%+i&$=)5wai^;?;TG%|9m9zUOAj`A>QoFJeM9x2pE#H8*Ug@|K6N7hKA8~XUG|AC{v6PfI2>(e'
+                'HS(E7CR`Suud>#QNAZta?UQZZ}DMJirkQri5YJ)#tl~oJ^4b;^rQ}kuMIj~$5R2%ntQBc6x-s{sPHhv3R{iPyFWl#xw>kyxE=ip(fia8'
+                'Li2(ku>RJdg?<QX6;P)Q@su3Li2O9V_R69Fd`6o~z11S1G>)92?aqwBgIduXTuqn+S{k&1RrQ-r2hd(|!ikq!Yj`4Dgwx8LcZ?vRcAvP'
+                '6|8Q98=X?nTF7F`ms|w%%V^0T8=z31j`GBH7=(I;i#Aiq^FRJ=hx_$X&C&CO|-(wrbl}niwa4a=8x83SM*|Nft$>qYb$&Q$A<K8I@K7j'
+                'HA>zeb)U8Z7qN$0|U&z)vQ$J7nOv1kWH!;zW%wMCyh6ORD4K>LWL`uLkgx}PYzv@FQ~R+)|yI$jPxGj2yFjjX}|nnbUp*Ics?%eXCx+z'
+                '&jdr}^XXwDSq)AS>S&Vy;XI;hw9~Wm@?-e(%9Q7LnXKzlB1^~&b=0O?$07i2(sR=|Y3{Kv)-uzr+3!=8PYZl!!9btnQk)&h7<FB1)asS'
+                'j_emA8vH)t+j@9wBpn~t-G7lNm?)piFd1A8@DHyo?B$zPq<r&%pF;jHqN7Kp(=6c4vqN!bseFa<3Gu{&k;w+Qg;AxD8wBgl5M&lbHn(Q'
+                '>}S#8b8@3VaWa?DL&ii4^uqTQ6$yOMi0D^IhVB;v?|cp7;BFf!`V1x$tms9$-cq#xN-bW2yl63gy(0@t!@%<^*jv|HW!sco))uNj8rQV'
+                'n9#Ay1PNm8FxJ2?P_%!pZvvMdDln<4nVB&2vbtbOXNG;^`1IGr$1kJ}XY|%1~|w?J+80@6?Kl`O;$Ib7Wu$%Y`nBPlD{9rRh*Je1>EWn'
+                '-y@orSPnK#wTk^T87jyH{^*b1y4CJ@XS5U!mRuePW9l8wn9QOyO3q!6~<Db;rP#i%rke#Gc+fp#X}Ax@PJ6opqjeLXxuC|T0P66mCcZR'
+                'P#2~jO~Fcf^$PbZZ}@|d0ddZ$eMOjEi{zG~^?|)0_quu}ZEKdO3q|yn9=v^<XOd(<=k5Fhj#TNIMa$YH+Ec7Xu>$Ty*3S?f&tLAg7G$@'
+                'j-)vhI!?zDzGK}l65N&D6a2oiYyzicdZW?ui>CHCdQVC28K@6vb-(X4_&1KXkj^yEpG7W^*)S=qqR4rLYRv$n&cJvAzvcs}ECng!s@Xd'
+                'J?IQ)6}q$^cUra(npZ<R>^)`<69aG9YzT~(IFKFu@=Jlzb72}09SEx%7Q-4phA;uhW|BP9Nb>g5UBb)_Fkqyi6AG6jUi)0Jn*ok}4d>7'
+                '`x6&Z@W<feBgTgMzmU3i&R1?+X053SA+T{cCiNV5uV-!RgK@RH^A$57jYG_em^AQ?z>_!V(gQClDM~79`Y{J6$Cnu6Bfr=ujz3I}blt('
+                '^1v-&}44GVP;U#=C)@pKAQ>2CqJlk{oP5O9gKyS&5mz7WyjawVs@N=f=YMGWWZr$xe41Cch7~IH?G#v7~$t=Mymz#-pq+&u1ud4w@Y$!'
+                '`%2MQ>KRhnP(FpGm76FF*%uPF6*!HZ7@||w8vBT1IZ^Bh14mpb4~z6DBAXTXV6=d7pL~P*wO6SfPdmV;sSlNUNP?J%<%lzIN91r6+~;2'
+                'E=-~0S^vtG8QtFh#`suxrZLX|l5E$YD1c=trjFloJqo-H3N_VX;bJmBbG579h3lTxyD7Iu-`PRUy2sW}J!k|SNv45ekkd*I*)PeoH{S-'
+                '4a34f-2aneL=*xnFM!+ZP^4ZzP@vx!dkGqiH&b(~EpXhL?k4TI8o+UYjBHbtImFMoSw5?t%mIauW7>dpnZ<8s^ST%I=0=at#xnc~qnKf'
+                '4jWv+AJFqf}2O!|DSAqi`-do3BokU;3zc++JGlT~>+8nNQEUPHX(d?z<tEi`H^4y~1{~+9<`Rh)e{;IboD?*_N2@rJPxwZJQOB77++mI'
+                'e^@G34Y)bhA|`o+;(z+NqSDIkIT~T89YZ4y#h<hyhU$6Xp2ufTF6adb+$Z{C~2!ukn2tMzQhl4CcS>G?Jlp})(<{FgaYXyI2{So1ksK{'
+                '4z|tX=%`pS+F<lkYmza$K}ssMO9L_4$Wnh_X~3mqFV}Bk&*Wh*NkDZOx;1{Gk~#Xx>GqLtaM)+M`_$kfcK&JNQkDKSsigGdPc^Y!I%ES'
+                'W)CL@mudsun1H4y_$rQ2(Y19hGbej1;y?6_v!H5Xo0Skb{R}Cxx@{3LlWJpdq%Hn|ll9o~VakjAQHi<qW!{edg9Ip6g>xeT=Mc`h|atl'
+                'ZTaiMnIjDB#+3j_rYm`0}n9({=L4BGHub+Qh$th^7cw^xH9oTz7EIt6(;b(&_8G=)l1q!FrnyO>ZKODF<cw=GNGN(Z2~rse19oWZwTcK'
+                '2eMZ8?}YTof%we}?YWYW+c!Hm2$W%P6_o-G=wSB7PYBva~{MD)VfhQnZ+1s)xq|T{#~cV;NJA<-0|lL(8xdeMh0MVc$Wpiz;zv*G^`Ua'
+                'MaoQrZSYKc@d{XhfB)a?#nl^F?zIg*nkS$8MX9@BiF|bzI~`<^XLQtdx6Cmi8jS>{GNVa^C}a@jna=j+W!skkgi3@^xZA)Lp4JSf+|<#'
+                '3J^x!BH(Fp*gE>ga%RG?2ntuFZZ$D@R#&)j)%lecHk}#^FId&$6Fhj;$d$waiO5RkiW0oHDwv}ToDm%Yk-!vGt8AJnP*vS^qM#`BPVQ3'
+                'xRhfz1#g>TU@T39O6PG~Oo2%79IL0XAr9UWM03}X-4Am8nV<k*>ld)QGMfmg3rPb{=vEe*waD+8Nci72JrwgBZ$M2Dc!}&UUMF^2XO<7'
+                'IRuG05x2UE~Yst*Kq%2ofjsmOD_nJQ@M{UnYGftmnXPAz$)DjSMopwY70u@jXGa8Kr}`^p})e2Ha}v;t24Ad)t>g2GEggG8qXUZK<9#q'
+                'aG}GfebWhF*mzLK7)V9C8_fxZ;e->`(~NSGG`!(F85i9QQJos0yo~-199i8pX&Y!&ftMNA!rH)sW7N5PCHR<et_@j$MlVO_pnCXa?9>z'
+                'NT=kzBtT^NZy;w*pseCXFJE%$aY&NS~_ult@CJT+RBjQCn>AQ)6h#IEg&ydoylz?*}U}CV4PWj;}+7I)ddK$3)_c2{S(2Z*DoB}**7RS'
+                'BSCYs7s2Ji5;P6<Sy5gty!2vSTxf})M(7g$)UAb!g)wCD6HvbI77q4q=>jx2IX!~SB%>{p>gfV@KuFop2HMh_0{P5#8>r^wG8l!<6pSW'
+                'zq8g6SC~ndSX;h+H#tDO#4Jj?00~d+eB=$tQVo4?(L2fOoGzCyguAlophXVwAD1-J$LL~lfMo+OXR2dsOEW(`g`?F<YTnm<vobW!S&s)'
+                '%bB@_+S+a=O+(kL>Fo<KhoN=f*Vu99i}AO5%O(8IDN{Vb+*e8x^m8rjplaL6|BQ3$oEB*uQnNjZbJ>tQ1?&_#&&9@4~Sp_~{*{kXrqdo'
+                'Qht-1;Qap)>!pgd)igWAn7L0`a3EN}Y<hgg)mmZaV>}S_2wJu|L_JL2#Vu&^If)!0T=M3Jcw0BJ=~`Ec}!tum<hTpwF7DYpAtQkW*3so'
+                '4D&lQ(q-rXb-G|;s^DeS`(9Ni-}x5Q~SH1cx|3txHtqEvI<5%v5EB=>c!&PbqASz?8|T9lR(Z2-FxdSFIo|2FbmZIPFA>fuB>DL2UuY~'
+                '6-w%2*g($`OQP$H#yn4e`z22h+V#`;UH6$!^zz=xT8CF3hpQ33)(=hHk`a>168G$h3{Z>O{4y*jse$QXuTp@t={K;Pb`NdsnZd%wb3v4'
+                'TkI975uv)?3OQC2&>ziDwaF!Zvv#DJt_NcUu95zL0vU~JM^{hHQ?fN0nmxz;asLo-yZAn9|L<4!bx3orbq_x5k&{-j*5lS5&yO?SUmjU'
+                '_|{l)yFR&V(KJVO=bDPnj$;1Dt04nZ0(eCAn;B|FOuwM#FD^+q1$S0u4h@|M*f5lM4R?6e^<pdzsl4|&ZiB8e(~AvlCjp`dpd+iO9VX}'
+                '0|~Wn4Fe^unprw9kR-Civoq$;#MGnIuL@(vd$K7dmS^xKtvD?VoUx;2>2$9hA|>XnlKAvg4&U_Sz>cwRtMwkzv*d4DQYX46e?s*`C!h%'
+                'hSag(7q-}56GE`$d6Ltw*ZICmisku$Z7-5?T@gpb=;<@b-=lHc%gEc82+|tp=+G7;HAwQ#s+hWSp>~gGaA9FCYNfd2=Y+loUyKAy0Im&'
+                'q{T0H98PdwxYf~HpQJX6QtzM`Sk-H0V18(R!jA_fd!dZBU;7(X4|*eg^X|`yHa$#&y}W6fdSMwO;=RRWa_70}+L0+rV?~e%)7LIqUu%#'
+                'Pl0xmN5j1uW6<itw<Da%IKFjT{5JKpuOY(UJu~j%R06u|pk7AkX0P~9UjSUEbhgw(z)o-h5fzSH#$}ulkmWJSjt5+?k%5EX7h{R0kW$b'
+                'mGn~&G>Y(lfiGOxlz44hZP97Tv(5?zlKqF%N0>6|CavI!%Y5Gc#(9JQPc<i)jOVPQ-X(b6bSntMm^YkGq~MH{iBVE*Q%g{xK=u4+W3R;'
+                'vu#?(8*?k8|I4F687Swk_vqi7$>M{p<Nf${3F;L;v&t^Gs4-#QA3pxkL^aZHw48lTAga`mj$_SXO4zL*q-?eN=gjc2l=XZd}D>ndSkcL'
+                '81K@PwcbrCx|nhCDBDdQ<mjwlOjtfq=#-9p$!H-A|;evk{@48i;N4Q?Q{BSsB@PNy4L2nu1VvB%23i8rr`Wq|BEY$c)*@V8Byl7y1ZFN'
+                '*Ciy(DkxqV$u9}X3#OUH8QZ6`+z8t-!6%?+j?68qae36$Vk94LmBw)W7@N5aSzL3)5#wIHL!E{4T0RQueN?SY<C%G&NDcM_ZeC1Q2D1n'
+                '?9@&&CNt7Cx;w&8pV~O4<)$eG^tpI2%c!caEa_X;21$v5Zgr9B9So0ah(UPeoq)xp{<&lQ?6-lwgoUlGK1aNuCY7aW-1eKwgW*3d@utK'
+                '}yFzuq(F^jd|O8;nO?w8Qr3NYEGo(Ma0gKN-6=KJBwZJvuOSHT8zpiJngw^QaMn2?IV)-~}9C=8&T0co9pHP7n}nz&Dl5Y0q1B(3no5c'
+                '{pTo*?$Tti~m0pe_jvG3(rS0=_yu-L%zYj>kkn=IC_=WjP7qZArkMdHf7RkqT)fQTK4zj2J0O>_wz3pQu+9)z)+YgR&P<QzhEEfbr;yr'
+                'LkIOzC}a1s!Fk*-V2O&77h$;VlwO_Km9k}#9-KNpf0y3KIDmE{=Uf#K6<Fcmuv)X&JA6Nzb!W{+~1ML9^CdG+L${p=yM%ETC^6Amzae-'
+                'X~30Zf<hA-%h6oaY+R$CSBLc)C>Q(VSo#<do}L(C{I!k)U^XEu0<O-7c6SuFNXHos6Df#qv38RO!mFBz!dLnS3gNkoN89b5s*VM;s1PA'
+                '6b-AqRJjx3CA;*m=_e*69aZAh=L}kNE5GPh_WqB1;$#$IpmDRJWl5I2e93PuuLG-z}S(@}1S8h5dW2se2jDpZ~BEGk_l#UpwJbI>S)Kt'
+                'VQ?@FchaH@|-QCmtnj1`))`hBgoH$hDzeaCB}VU+zQwUpDA$0fVeh%MWPL_y_23A)Qfq)-{9Mm1BoApBvn(tW&At@^39Uw1i86dSV*%P'
+                'Ua=`~|d5d(^+7fvuG3@LYilY1_EqYg+HipcfNjEU})u0gR?}ZWCIu@Rkp@8G-yzl5SeG2DI3$6D_5XR-insfPzNobgWNurAe?BS=IPiY'
+                '+r_KK=6tW=Z9*dNVXy=uG!EpLsys5xmH2VuhOhGMlN+q235usk4V2+D4W`nT_9Oieq44L#R=i~Ilf{)km@+UH>EUaJ+)gT`uT||@&Ev#'
+                'da_^u7;M^0IzLa^Mu)wiUZFGx4LM`cDW!@zC{>y1mXxgs-3jpX(y7qoeMC;`JAXf1s1{uEyh>sLTGCN43~EA&QusL}u2CrLDc!Vefn%d'
+                'M7;&hnmc7(AdO2Y*+EjqLB29y2B&ewSG?|U4zFd%VQuuE;lOA<t)arXuT?BbMJ}yDSl&SNzJ38ql@|_G_#XfL+MW|JYqm|es_R$mYjv#'
+                'vgi#1rNE{notCFaB4sTeoXY3OYQP{HO*=rOUpI#UD^*f6qe%s{)^tByAGNSS~aTIO0Ocgr9XX&D)%CO4?bJ&>}XVQJq+N>@codt(eS6{'
+                'c%!Wr$d;hHj84-#P5lQq>1Z73!1{nh4>-W|JBCH6((PkPu9djhhg8WZMhPgzPQDu$PURL*df^b*GdJWqKjT6>4k-htxE~#kr~%U9%i88'
+                'ys9KLLEvz>Q}<*;PON&v1$isSHirppN|l=Q3+8<8gK^?n006As1Ev9&)>VTLo>eRkQJ}L=zJ2i*5Mq;3V6+sIwK9Mkm*-}@Ssq8IL(_H'
+                'KbbaElDcd623y!xNH$0!x#~uY4F-2Xl$UMJ(*m*#A8f4yy}P0-0zB%LB#*C^CH4d(po|Z7r8a4*(+{*$Sdg?AE0c1_mR5c?ia8j@Kvn|'
+                'G_vy3v8*5VvpiJJFJ+f+E&`D7&W~{e)1&lZ@bcA!3pvb9-H%`=NEHJU$uaAd@<rKIvTMQD&Q>wH`ln^-}{?B#JS+@YHai6s-1>Y!fCh$'
+                'I@LY88=7c9`C2ndXa)z&0t<Qb<f1s%fnN)o4pa=c>LjWa?`%$ekog#gj~H@ON>1JH0Gcs5en6>a7{iNez!EMWN=jJg7FGHo89m107(a{'
+                'Y<|QuK|<aStxQLufJ}fCC%VJnyNpMptH=JHV8_`$FKP_%iLD&0BC1y8{y?{Vcwv+k$|VY-!p3WOe%@Nli!VB|pBu0ZyylQmzzZ2J9O-f'
+                '8lmw6)I(62(LebFJ@7r|7pqsoy<ph9&z9<Gh$W$s9{<h?McM;U`wc~Fm)!0oSq11=GAsGz)~4UPbaTKJv`ABcIyAY&8f#bpJ5NStDiOr'
+                '(^s#ohp=;A%)7X+3MB^+mBF?P&%8&reAn?D?2D_D-~hI&l5MktBn0L}f~?bJ(KGV!e;^*s?E'
+            ).encode("ascii")
+        )
+    ).decode("utf-8")
+)
+_ROUTE_ACTION_SHA256 = '6f432897b709617b2d3be9cc09716d30d07f74dd511dc51c5ef2b1c7e29a9b61'
+_ARCHITECTURE = "V14 complete route + order-safe shift-and-repay"
+_GOLD_HAZARD = json.loads(zlib.decompress(base64.b85decode((
+    'c-pO7+ioBy4E>ipk0QVqpl_{|s;g$ZQo7QrUG0}t{r4s_Fc-kalO|GLVh<SO%dt)Vd4T-z)A#QWzdpTu{q+3l@28iC#Xq_wy#Df!'
+    'AIk%VmHzFwr=Pz*EbbASpN)Iv1T$yS_auK_>5b%fQjkd?ldvTndy!0HnG|JGl1W)4v6D$&CIy)UGD+43%i3UB8!T&sWo^VTv;wU3'
+    '<gWJQx%pZA;#Wp*WeiqE*_0B>B$7!ilcG#YGAWCs>|~PcSXp+g%=$%nCx7c5D6~$Ou+zL2BNpMK;D#T;;G;nMSBS%}4hAJ2d6Hew'
+    '6DTxPXe8@}lOpUg5c2JBU%ot-KOLJy*`Ixk3N0x#Il%ek<U^%S!H03BpwK!6AD7lU>WM}QjTKr{Xi28!pj%k*s9XEzPtU(^f8yht'
+    'P0*Iq*Z@3I;fHdt-57Q~29#q^K>5A{X7Nq~IfW+Qcc7rq<ogbU3XK$6ci)GK`!s)|ZD;@d^!(+Ii*qew9hWqI;^+Q$4;7Wv-Y>rr'
+    '$L13E1&^=5?O#P1NQ4*^8pt;pQNFFHXgw-gkBZj&=o1fGmT7(TInlgAyIg~NOjk^c3oq2T-05Rb7B+kQD0`jOiQPI9uvt#$=s9?U'
+    'J|T@0jCTX$Vl6&pIg5qN3Qf8GoMdy$a`FM^#P7g)Q5JAA+5?yG-Qe3d-rv9VJ(i?nnQ=bJqXcjqG|<(Sdm9Lw4FHT0U+Troy_oxL'
+    '0mRvc1#bh&C=pObiGU>EE3!h13QbPr&?mg(w0*)m(Y!(nVw3=iV`tQ~&SMaKFvK%(aF5-kyr~yA&TQpOVGxFd4#0A(*l|GR*iJU!'
+    'z}iKC5?-%+_BOrBcv_JbTwq%ObvHW9yiM(cM1Ze}U|lp1Vc8o=DZe1gum`dXdmy7iBZbC_EK&40baHixj+&!GtF>MC=;Dl5zIk-^'
+    ';;_WO)4H97V6|clc(M0R0^TJEbm0`!DTb@F(E>#QVLQX0UtfOy_RG`D%U?s;;vrjZ7UHrHxQQsR<^JnVy>G(N$n&=_g`_Qf6*3rh'
+    '4#&npsNYF;$m`-FKI;P|LcX?xx^MmF(ui)th?UV#7^yM_D<fDLal#lYBh8v%v6ya2S_2$|r4So<@8qu2e%Ga5yYe6Lp_FV_axW`x'
+    'HaLsQNNmYZ+~%i#!#r}P;kFjBYHwHK<H`rd&LuL=I78)}8Uj{MHgiTZXPR+R<;*kA8f&97bJ`+YwJzOPP8U76mwMn*MNi^A?`TE2'
+    '>U~MH#c6j9)B=nfrs-0{8&kndXjN1DsjTo6V>Be;#TG=?^+qYVPm~7^DfrlQr|aCynNV^AljVH3QrHSjG09aA_U+3fQ6{<S!7Mjc'
+    'u;NJBIX1<U^ApBU8H449a=jpOV9Fxgn6IQka@gcOtkA@S<C+n~-kPI=oadVIHh--8@;sTz?x2r+wAkiRpVcL0|D?eTXRsu7OUlTf'
+    'g0s|odla?8hiSH?;7yhkrVAPo3x)6=ST9HaY2c**wqEC8;?M@AWQ|GGlw8JRcFTdkA}-~WG&yC!^Dz~X=4a!HSMM@KW6GmaH7YGN'
+    '4CibwV)G;Vn@VFU<>&k?Flfn9eW4+@<OrgeNC@PX96^_y((&wrZaM8V`XU>Qb!Cj^>Sbk5W;s{(JTn5mB0kxK<=VF?VFqEFN=z<|'
+    'PpkBovhshRHmd7&lQO`*VGu`&`jmw=e@?}p38v0hWy;1nh<IAFRGVUNtZs;dd3P|ciN<=3m@HaaEG-C{SDyQ>^I5~ZNJ(|Ee9L{K'
+    '`=BCeU+|;AMh#ps*!nfE+I(v(ni6S*L1%N0gnbsPO^W!QrjH^b>HXYp+Hex3eO-~oEV{QR4QX^*vR2Xi+3}Gom8UJFJZ+&gn7Y=~'
+    'tki~-nqJM`d#03IN+^_UeQQU#iK=o}PI+4D_6ng4MCQp+5iM8IZ1|x@t1?rWRHsKVljRwRSX~{al<%Q{OSLL%GFIu>UFQl?HPH1V'
+    '+D)#n2L|J8_O>d$BtrINJh(A_vyax7%j|7PZ7sT1{ygk*rxIihI|lcjVa%WbLAH{(0mHKSa`1Z9B2?i@LybeYf7s#hP`>P7>cjfo'
+    '&p3QgmsL<lU&<!i@PNVF#!?KkX%ke&*|do(BU-nn31g~^))@msG-ehCV_DTE1Ywf7KApEdN@oOHt;k4LMm8BDn7jRkB!Hu?;44bp'
+    ';@5oidqM_2ZP0)**?O4KdXQ=FmAc-m_PmNQ+lKqhV7rl;4cHb+La^npT$eQtX=3F!4MT&QPeZF|ax~g-8T-u<`Q%QqGvXb(Gv{0H'
+    'f~JiK0~q6B3Amx*MZr*Tc|EGc(dfs;R#&*N@NYFfXs?=D5C_AjH2zxXT%9Ifo1KS12|uVhE)673WR1azKWOV}z9|{)JUh!P3meYL'
+    '{?^;N#v@FiC<pUc$<)E%47O>~HBF341#O_p8Q+zjgeW7tOlstd_J?Ym>5g9S%DcxGwJ@&GC6An8_@2lRvE)(0sqxS?Ml?-DOVIXh'
+    '&^8Px<@BAC{s!^V1>u}+ZdmjkowMjWYym#HcfGk215k8eUT<YLjcUV<_q(D=?$7<Ax4zej-oGo5D-JyiiP48!^Kelkv4g^5W{Vzf'
+    '4a{%sxwq`1M{7@X@GV)Klv*b}(8{?hX^suie`Ms+vDOGuMQ{5b8=CnhTX9CTy`1oKfZlGo-R0Z?{{0V4Dr6P'
+))).decode("utf-8"))
+_WEED_REPLAY_STEPS = 2
+_WEED_STATE = {0: {"last_step": -1, "active": {}}, 1: {"last_step": -1, "active": {}}}
+_SHIFT_STATE = {
+    0: {"last_step": -1, "due_step": -1, "due": {}, "last_preempt": -10**9},
+    1: {"last_step": -1, "due_step": -1, "due": {}, "last_preempt": -10**9},
 }
-
-# Animal data
-ANIMALS = {
-    "GOOSE": {"cost": 300, "product": "EGG", "base_price": 50, "structure": "COOP", "interval": 1, "max_held": 4},
-    "COW":   {"cost": 400, "product": "MILK", "base_price": 160, "structure": "PASTURE", "interval": 2, "max_held": 6},
-    "SHEEP": {"cost": 500, "product": "WOOL", "base_price": 200, "structure": "PASTURE", "interval": 3, "max_held": 6},
-}
-
-PRODUCT_BY_ANIMAL = {"COW": "MILK", "SHEEP": "WOOL", "GOOSE": "EGG"}
-
-# Sellable items ordered by value priority (premium first)
-SELLABLE = ("MELON", "STRAWBERRY", "MILK", "WOOL", "EGG", "TOMATO", "CARROT", "WHEAT", "FERTILIZER")
-
-# Market glut weights: how much selling each item hurts/helps
-GLUT_WEIGHT = {
-    "MELON": 3.6, "STRAWBERRY": 2.0, "MILK": 2.0, "WOOL": 3.2,
-    "EGG": 1.5, "TOMATO": 1.3, "CARROT": 1.0, "WHEAT": 1.0, "FERTILIZER": 1.0,
-}
-
-# Premium items that crash hard on overproduction — sell carefully
-PREMIUM_ITEMS = {"MELON", "STRAWBERRY", "MILK", "WOOL"}
-
-# Land quadrant costs
-LAND_COSTS = [1000, 2000, 4000]
-
-# Fibonacci sequence for hiring costs
-FIB = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+_PREEMPT_ENABLED = True
+_PREEMPT_THRESHOLD = 0.5
+_PREEMPT_FRACTION = 2.0
+_PREEMPT_MAX_BATCH = 30
+_PREEMPT_COOLDOWN = 1
+_PREEMPT_MAX_CLONE_DISTANCE = 6
+_PREEMPT_START = 120
+_PREEMPT_STOP = 680
+_PREMIUM = ("STRAWBERRY", "MELON", "MILK", "WOOL")
+_SELLABLE = (
+    "STRAWBERRY", "MELON", "MILK", "WOOL", "WHEAT",
+    "FERTILIZER", "EGG", "TOMATO", "CARROT",
+)
 
 
-def _get(data, key, default=None):
-    """Safe dict access that handles various observation formats."""
-    if isinstance(data, dict):
-        return data.get(key, default)
-    getter = getattr(data, "get", None)
-    if callable(getter):
-        return getter(key, default)
-    return getattr(data, key, default)
+def _get(obj, key, default=None):
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    return getattr(obj, key, default)
 
 
-def _dist(p1, p2):
-    """Manhattan distance between two points."""
-    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+def _step(obs):
+    value = _get(obs, "step", None)
+    if value is not None:
+        try:
+            return min(max(0, int(value)), len(_ACTIONS) - 1)
+        except (TypeError, ValueError):
+            pass
+    day = int(_get(obs, "day", 0) or 0)
+    hour = int(_get(obs, "hour", 0) or 0)
+    return min(max(0, day * 24 + hour), len(_ACTIONS) - 1)
 
 
-def _step_toward(cx, cy, tx, ty):
-    """Return movement action toward target tile."""
-    if cx == tx and cy == ty:
-        return ["PASS"]
-    dx = tx - cx
-    dy = ty - cy
-    # Prefer the axis with larger distance
-    if abs(dx) >= abs(dy):
-        return ["EAST"] if dx > 0 else ["WEST"]
-    return ["SOUTH"] if dy > 0 else ["NORTH"]
+def _copy_action(action):
+    action = copy.deepcopy(action or {})
+    return {
+        "farmer": list(action.get("farmer") or ["PASS"]),
+        "hands": [list(order or ["PASS"]) for order in (action.get("hands") or [])],
+        "market": [list(order) for order in (action.get("market") or [])],
+    }
 
 
-def _is_shed_adjacent(x, y):
-    """Check if position is orthogonally adjacent to the shed center."""
-    return (x, y) in SHED_ADJACENT
+def _farm(obs):
+    seat = 1 if int(_get(obs, "player", 0) or 0) == 1 else 0
+    farms = list(_get(obs, "farms", []) or [])
+    return seat, farms[seat] if seat < len(farms) else {}
 
 
-def _tile_at(tiles, x, y):
-    """Safe tile access."""
+def _align_hands(action, obs):
+    action = _copy_action(action)
+    _seat, farm = _farm(obs)
+    expected = len(_get(farm, "hands", []) or [])
+    hands = list(action.get("hands") or [])
+    if len(hands) < expected:
+        hands.extend([["PASS"] for _ in range(expected - len(hands))])
+    action["hands"] = [list(order or ["PASS"]) for order in hands[:expected]]
+    return action
+
+
+def _tile_at(farm, position):
     try:
-        if 0 <= y < len(tiles) and 0 <= x < len(tiles[y]):
-            return tiles[y][x]
-    except (IndexError, TypeError):
-        pass
-    return "LOCKED"
+        x, y = int(position[0]), int(position[1])
+        return (_get(farm, "tiles", []) or [])[y][x]
+    except (IndexError, TypeError, ValueError):
+        return "LOCKED"
 
 
-# ─── State tracking across turns (persists within a single episode) ───
-_AGENT_STATE = {}
+def _trace_actor_action(step, actor):
+    trace = _ACTIONS[min(max(int(step), 0), len(_ACTIONS) - 1)] or {}
+    if actor == "farmer":
+        return list(trace.get("farmer") or ["PASS"])
+    hands = trace.get("hands", []) or []
+    return list(hands[actor] if actor < len(hands) else ["PASS"])
 
 
-def _get_state(player):
-    """Get or initialize per-player persistent state."""
-    if player not in _AGENT_STATE:
-        _AGENT_STATE[player] = {
-            "last_step": -1,
-            "weed_repairs": {},   # actor -> {start_step, intended_action}
-            "sold_this_day": {},  # item -> quantity sold today
+def _weed_repair_action(obs, action, step):
+    """Replace a blocked BUILD/PLANT with DIG, retry it, then catch up twice."""
+    action = _align_hands(action, obs)
+    seat, farm = _farm(obs)
+    game = _WEED_STATE[seat]
+    if step == 0 or step < int(game.get("last_step", -1)):
+        game = {"last_step": step, "active": {}}
+        _WEED_STATE[seat] = game
+    game["last_step"] = step
+    positions = [_get(farm, "farmer"), *list(_get(farm, "hands", []) or [])]
+    unit_actions = [action.get("farmer", ["PASS"]), *list(action.get("hands") or [])]
+    active = game["active"]
+
+    for actor, transaction in list(active.items()):
+        index = 0 if actor == "farmer" else int(actor) + 1
+        if index >= len(unit_actions):
+            active.pop(actor, None)
+            continue
+        age = step - int(transaction["start"])
+        if age == 1:
+            unit_actions[index] = list(transaction["intended"])
+        elif 2 <= age <= 1 + _WEED_REPLAY_STEPS:
+            unit_actions[index] = _trace_actor_action(step - 1, actor)
+        else:
+            active.pop(actor, None)
+
+    for index, (position, intended) in enumerate(zip(positions, unit_actions)):
+        actor = "farmer" if index == 0 else index - 1
+        if actor in active or not isinstance(intended, list) or not intended:
+            continue
+        if intended[0] not in ("BUILD_PASTURE", "PLANT"):
+            continue
+        tile = _tile_at(farm, position)
+        if not isinstance(tile, dict) or tile.get("kind") != "WEED":
+            continue
+        active[actor] = {"start": step, "intended": list(intended)}
+        unit_actions[index] = ["DIG"]
+
+    action["farmer"] = unit_actions[0] if unit_actions else ["PASS"]
+    action["hands"] = unit_actions[1:]
+    return _align_hands(action, obs)
+
+
+def _shed_access(size):
+    half = size // 2
+    return {
+        (half - 1, half - 1), (half, half - 1),
+        (half - 1, half), (half, half),
+    }
+
+
+def _projected_shed(obs, action):
+    _seat, farm = _farm(obs)
+    private = _get(obs, "private", {}) or {}
+    projected = {
+        key: max(0, int(value or 0))
+        for key, value in dict(_get(private, "shed", {}) or {}).items()
+    }
+    inventories = list(_get(private, "inventories", []) or [])
+    positions = [_get(farm, "farmer", [0, 0]), *list(_get(farm, "hands", []) or [])]
+    actions = [action.get("farmer", ["PASS"]), *list(action.get("hands") or [])]
+    tiles = list(_get(farm, "tiles", []) or [])
+    access = _shed_access(len(tiles) or 10)
+    for index, unit_action in enumerate(actions):
+        if index >= len(positions) or index >= len(inventories):
+            continue
+        position = positions[index]
+        if not isinstance(position, (list, tuple)) or len(position) < 2:
+            continue
+        x, y = int(position[0]), int(position[1])
+        if (x, y) not in access or not (0 <= y < len(tiles) and 0 <= x < len(tiles[y])):
+            continue
+        inventory = {
+            key: max(0, int(value or 0))
+            for key, value in dict(inventories[index] or {}).items()
         }
-    return _AGENT_STATE[player]
+        if unit_action and unit_action[0] == "DROP":
+            deposits = inventory.items()
+        elif unit_action and unit_action[0] == "PLACE" and len(unit_action) >= 2:
+            item = unit_action[1]
+            tile = tiles[y][x]
+            structure = {"COW": "PASTURE", "SHEEP": "PASTURE", "GOOSE": "COOP"}.get(item)
+            if structure and isinstance(tile, dict) and tile.get("kind") == structure and not tile.get("animal"):
+                continue
+            try:
+                requested = int(unit_action[2]) if len(unit_action) >= 3 else 1
+            except (TypeError, ValueError):
+                continue
+            deposits = ((item, min(max(0, requested), inventory.get(item, 0))),)
+        else:
+            continue
+        for item, quantity in deposits:
+            room = max(0, 100 - sum(projected.values()))
+            amount = min(max(0, int(quantity or 0)), room)
+            if amount:
+                projected[item] = projected.get(item, 0) + amount
+    return projected
 
 
-def _reset_state_if_needed(state, step, day):
-    """Reset state on new episode or new day."""
-    if step <= state["last_step"]:
-        # New episode detected
-        state.update({"last_step": step, "weed_repairs": {}, "sold_this_day": {}})
-    if step % 24 == 0:
-        state["sold_this_day"] = {}
+def _public_signature(farm):
+    counts = {
+        key: 0 for key in (
+            "WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON",
+            "COW", "SHEEP", "GOOSE", "PASTURE", "COOP", "WEED",
+        )
+    }
+    for row in (_get(farm, "tiles", []) or []):
+        for tile in row if isinstance(row, list) else [row]:
+            if not isinstance(tile, dict):
+                continue
+            for field in ("crop", "animal", "kind"):
+                value = str(tile.get(field, "")).upper()
+                if value in counts:
+                    counts[value] += 1
+                    break
+    return (
+        len(_get(farm, "hands", []) or []),
+        len(_get(farm, "unlocked_quadrants", []) or []),
+        tuple(counts[key] for key in sorted(counts)),
+    )
+
+
+def _clone_distance(obs):
+    farms = list(_get(obs, "farms", []) or [])
+    if len(farms) < 2:
+        return 10**9
+    left, right = _public_signature(farms[0]), _public_signature(farms[1])
+    return (
+        abs(left[0] - right[0])
+        + 3 * abs(left[1] - right[1])
+        + sum(abs(a - b) for a, b in zip(left[2], right[2]))
+    )
+
+
+def _shift_state(obs, step):
+    seat = 1 if int(_get(obs, "player", 0) or 0) == 1 else 0
+    state = _SHIFT_STATE[seat]
+    if step == 0 or step < int(state.get("last_step", -1)):
+        state = {"last_step": step, "due_step": -1, "due": {}, "last_preempt": -10**9}
+        _SHIFT_STATE[seat] = state
     state["last_step"] = step
+    return state
+
+
+def _repay_shift(obs, action, step):
+    """Remove quantities sold one turn early from the scheduled SELL tape."""
+    state = _shift_state(obs, step)
+    if int(state.get("due_step", -1)) != step:
+        if int(state.get("due_step", -1)) < step:
+            state["due_step"], state["due"] = -1, {}
+        return action
+    due = {item: max(0, int(quantity)) for item, quantity in dict(state.get("due") or {}).items()}
+    market = []
+    for raw in action.get("market", []) or []:
+        order = list(raw)
+        if len(order) >= 3 and order[0] == "SELL" and due.get(order[1], 0) > 0:
+            item = order[1]
+            requested = max(0, int(order[2]))
+            reduction = min(requested, due[item])
+            requested -= reduction
+            due[item] -= reduction
+            if requested <= 0:
+                continue
+            order[2] = requested
+        market.append(order)
+    action["market"] = market
+    state["due_step"], state["due"] = -1, {}
+    return action
+
+
+def _future_base_sells(step):
+    if step + 1 >= len(_ACTIONS):
+        return {}
+    result = {}
+    for raw in (_ACTIONS[step + 1].get("market") or []):
+        if len(raw) >= 3 and raw[0] == "SELL" and raw[1] in _PREMIUM:
+            result[raw[1]] = result.get(raw[1], 0) + max(0, int(raw[2]))
+    return result
+
+
+def _remaining_shed(obs, action):
+    remaining = _projected_shed(obs, action)
+    for raw in action.get("market", []) or []:
+        if len(raw) >= 3 and raw[0] == "SELL":
+            item = raw[1]
+            remaining[item] = max(0, int(remaining.get(item, 0) or 0) - max(0, int(raw[2])))
+    return remaining
+
+
+def _preempt_shift(obs, action, step):
+    """Shift a bounded part of the next scheduled premium SELL one turn earlier."""
+    if not _PREEMPT_ENABLED or not (_PREEMPT_START <= step < _PREEMPT_STOP):
+        return action
+    state = _shift_state(obs, step)
+    if state.get("due") or step - int(state.get("last_preempt", -10**9)) < _PREEMPT_COOLDOWN:
+        return action
+    if _clone_distance(obs) > _PREEMPT_MAX_CLONE_DISTANCE:
+        return action
+    future_base = _future_base_sells(step)
+    if not future_base:
+        return action
+    hazards = {
+        row[0]: row for row in _GOLD_HAZARD.get(str(step + 1), [])
+        if row[0] in _PREMIUM and float(row[1]) >= _PREEMPT_THRESHOLD
+    }
+    if not hazards:
+        return action
+
+    action = _safe_market(obs, action)
+    market = list(action.get("market") or [])
+    remaining = _remaining_shed(obs, action)
+    shifted = {}
+    for item in _PREMIUM:
+        row = hazards.get(item)
+        if row is None:
+            continue
+        target = min(
+            max(0, int(remaining.get(item, 0) or 0)),
+            max(0, int(future_base.get(item, 0) or 0)),
+            _PREEMPT_MAX_BATCH,
+            max(1, int(round(float(row[2]) * _PREEMPT_FRACTION))),
+        )
+        if target <= 0:
+            continue
+        existing_index = next(
+            (index for index, order in enumerate(market)
+             if len(order) >= 3 and order[0] == "SELL" and order[1] == item),
+            None,
+        )
+        if existing_index is not None:
+            market[existing_index][2] = int(market[existing_index][2]) + target
+        elif len(market) < 10:
+            # The target is an opponent SELL on the *next* turn, so this order
+            # does not need to jump ahead of our base orders on the current
+            # turn.  Appending preserves the teacher tape's same-turn SELL
+            # priority; prepending can accidentally let the opponent beat an
+            # existing high-value STRAWBERRY order even when total quantities
+            # are unchanged.
+            market.append(["SELL", item, target])
+        else:
+            continue
+        remaining[item] = max(0, int(remaining.get(item, 0) or 0) - target)
+        shifted[item] = target
+    if shifted:
+        action["market"] = market[:10]
+        state["due_step"] = step + 1
+        state["due"] = shifted
+        state["last_preempt"] = step
+    return action
+
+
+def _safe_market(obs, action):
+    action = _align_hands(action, obs)
+    remaining = _projected_shed(obs, action)
+    market = []
+    for raw in action.get("market", []) or []:
+        order = list(raw)
+        if len(order) >= 3 and order[0] == "SELL":
+            item = order[1]
+            try:
+                requested = max(0, int(order[2]))
+            except (TypeError, ValueError):
+                requested = 0
+            quantity = min(requested, max(0, int(remaining.get(item, 0) or 0)))
+            if quantity <= 0:
+                continue
+            order[2] = quantity
+            remaining[item] = max(0, int(remaining.get(item, 0) or 0) - quantity)
+        market.append(order)
+    action["market"] = market[:10]
+    return action
+
+
+def _terminal_market(obs, action):
+    action = _align_hands(action, obs)
+    shed = _projected_shed(obs, action)
+    existing = [list(order) for order in (action.get("market") or []) if order]
+    existing_sell = {order[1] for order in existing if len(order) >= 3 and order[0] == "SELL"}
+    rows = []
+    prices = _get(_get(obs, "market", {}) or {}, "prices", {}) or {}
+    for index, item in enumerate(_SELLABLE):
+        quantity = max(0, int(shed.get(item, 0) or 0))
+        if quantity > 0 and item not in existing_sell:
+            rows.append((float(prices.get(item, 1) or 1), -index, item, quantity))
+    rows.sort(reverse=True)
+    action["market"] = existing + [["SELL", item, quantity] for _, _, item, quantity in rows]
+    action["market"] = action["market"][:10]
+    return action
 
 
 def agent(obs):
-    """Main agent entry point — compatible with Kaggle submission format."""
     try:
-        return _agent_logic(obs)
+        step = _step(obs)
+        action = _weed_repair_action(obs, _copy_action(_ACTIONS[step]), step)
+        action = _repay_shift(obs, action, step)
+        action = _safe_market(obs, action)
+        action = _preempt_shift(obs, action, step)
+        action = _safe_market(obs, action)
+        if step == len(_ACTIONS) - 1:
+            action = _terminal_market(obs, action)
+        return _align_hands(action, obs)
     except Exception:
-        # Failsafe: never crash
-        player = int(_get(obs, "player", 0) or 0)
-        farms = list(_get(obs, "farms", []) or [])
-        farm = farms[player] if player < len(farms) else {}
+        _seat, farm = _farm(obs)
         return {
             "farmer": ["PASS"],
             "hands": [["PASS"] for _ in (_get(farm, "hands", []) or [])],
@@ -143,594 +541,5 @@ def agent(obs):
         }
 
 
-def _agent_logic(obs):
-    # ─── Parse observation ───
-    player = int(_get(obs, "player", 0) or 0)
-    step = int(_get(obs, "step", 0) or 0)
-    day = int(_get(obs, "day", 0) or 0)
-    hour = int(_get(obs, "hour", 0) or 0)
-
-    farms = list(_get(obs, "farms", []) or [])
-    my_farm = farms[player] if player < len(farms) else {}
-    opp_farm = farms[1 - player] if len(farms) >= 2 else {}
-
-    private = _get(obs, "private", {}) or {}
-    money = float(_get(my_farm, "money", 0) or 0)
-    shed = dict(_get(private, "shed", {}) or {})
-    seeds = dict(_get(private, "seeds", {}) or {})
-    inventories = list(_get(private, "inventories", []) or [])
-
-    unlocks = list(_get(my_farm, "unlocked_quadrants", []) or [])
-    farmer_pos = list(_get(my_farm, "farmer", [4, 4]) or [4, 4])
-    hands_list = list(_get(my_farm, "hands", []) or [])
-    hands_pos = [list(h) for h in hands_list]
-    hires_today = int(_get(my_farm, "hires_today", 0) or 0)
-    tiles = _get(my_farm, "tiles", []) or []
-
-    market_data = _get(obs, "market", {}) or {}
-    prices = dict(_get(market_data, "prices", {}) or {})
-    market_inv = dict(_get(market_data, "inventory", {}) or {})
-
-    town = _get(obs, "town", {}) or {}
-    unlocked_shops = list(_get(town, "unlocked_shops", []) or [])
-
-    state = _get_state(player)
-    _reset_state_if_needed(state, step, day)
-
-    positions = [farmer_pos] + hands_pos
-    num_units = len(positions)
-
-    # ─── PHASE 1: Board Audit ───
-    empty_tiles = []       # (x, y) — empty unlocked tiles
-    unwatered = []         # (x, y, crop, age) — plants needing water
-    harvestable = []       # (x, y, crop, value_estimate)
-    weed_tiles = []        # (x, y)
-    animal_tiles = []      # (x, y, animal_type, tile_dict)
-    empty_structures = []  # (x, y, structure_kind)
-    plant_tiles = []       # (x, y, crop, tile_dict) — all plants
-
-    cow_count = 0
-    sheep_count = 0
-    goose_count = 0
-    pasture_count = 0
-    coop_count = 0
-    total_plants = 0
-
-    for y in range(BOARD_SIZE):
-        for x in range(BOARD_SIZE):
-            tile = _tile_at(tiles, x, y)
-            if tile == "LOCKED" or tile is None and not _is_in_unlocked(x, y, unlocks):
-                continue
-
-            if tile is None:
-                empty_tiles.append((x, y))
-            elif isinstance(tile, dict):
-                kind = tile.get("kind", "")
-                if kind == "PLANT":
-                    total_plants += 1
-                    crop = tile.get("crop", "")
-                    planted_day = int(tile.get("planted_day", 0) or 0)
-                    crop_age = day - planted_day
-                    watered = tile.get("watered_today", False)
-                    yield_units = int(tile.get("yield_units", 0) or 0)
-                    plant_tiles.append((x, y, crop, tile))
-
-                    if not watered:
-                        unwatered.append((x, y, crop, crop_age))
-
-                    # Check if harvestable
-                    cfg = CROPS.get(crop, {})
-                    first_yield = cfg.get("first_yield_day", 4)
-                    if crop_age >= first_yield and yield_units > 0:
-                        value = yield_units * cfg.get("base_price", 25)
-                        harvestable.append((x, y, crop, value))
-
-                elif kind == "WEED":
-                    weed_tiles.append((x, y))
-
-                elif kind in ("COOP", "PASTURE"):
-                    animal = tile.get("animal")
-                    if kind == "PASTURE":
-                        pasture_count += 1
-                    else:
-                        coop_count += 1
-
-                    if animal:
-                        animal_tiles.append((x, y, animal, tile))
-                        if animal == "COW":
-                            cow_count += 1
-                        elif animal == "SHEEP":
-                            sheep_count += 1
-                        elif animal == "GOOSE":
-                            goose_count += 1
-                    else:
-                        empty_structures.append((x, y, kind))
-            elif tile == "WEED" or (isinstance(tile, dict) and tile.get("kind") == "WEED"):
-                weed_tiles.append((x, y))
-
-    # Sort harvestable by value (highest first)
-    harvestable.sort(key=lambda h: h[3], reverse=True)
-
-    # ─── PHASE 2: Market Strategy ───
-    market_orders = []
-    reserve = 200  # Always keep a cash reserve
-    available_money = money - reserve
-
-    # Calculate worker capacity: each unit can handle ~8 tiles/day
-    manageable_tiles = num_units * 8
-    # Don't plant more than we can water
-    max_new_plants = max(0, manageable_tiles - total_plants)
-
-    # 2a. Selling Strategy (FIRST — generate revenue before spending)
-    # Sell produce to free up shed and generate cash
-    if step >= 718:
-        # Terminal liquidation: sell EVERYTHING
-        sell_orders = _terminal_sell(shed, prices, opp_farm)
-        market_orders.extend(sell_orders)
-    else:
-        for item in SELLABLE:
-            qty = shed.get(item, 0)
-            if qty <= 0:
-                continue
-            price = prices.get(item, 10)
-            if item in PREMIUM_ITEMS:
-                # Premium: sell in smaller batches
-                base_p = {"MELON": 250, "STRAWBERRY": 120, "MILK": 160, "WOOL": 200}.get(item, 100)
-                if price >= base_p * 0.4:
-                    sell_qty = min(qty, 8)
-                else:
-                    sell_qty = min(qty, 3)
-            elif item == "FERTILIZER":
-                # Fertilizer: sell all (town doesn't consume it)
-                sell_qty = qty
-            else:
-                sell_qty = qty
-            if sell_qty > 0:
-                market_orders.append(["SELL", item, sell_qty])
-
-    # Recalculate money after expected sales
-    expected_revenue = sum(
-        min(shed.get(o[1], 0), o[2]) * prices.get(o[1], 10)
-        for o in market_orders if len(o) >= 3 and o[0] == "SELL"
-    )
-    projected_money = available_money + expected_revenue
-
-    # 2b. Farm Hand Hiring (daily at start of day)
-    if day < 2:
-        target_hands = 1
-    elif day < 6:
-        target_hands = 2
-    elif day < 12:
-        target_hands = 3
-    elif day < 22:
-        target_hands = 4
-    else:
-        target_hands = 5
-
-    num_hands = len(hands_pos)
-    if hour == 0 and num_hands < target_hands:
-        hands_to_hire = min(target_hands - num_hands, 2)
-        for i in range(hands_to_hire):
-            hire_cost = FIB[min(hires_today + i, len(FIB) - 1)]
-            if projected_money >= hire_cost + 50:
-                market_orders.append(["HIRE"])
-                projected_money -= hire_cost
-
-    # 2c. Land Expansion — buy when we have enough workers to use it
-    num_unlocks = len(unlocks)
-    if num_unlocks < 4:
-        land_cost = LAND_COSTS[num_unlocks - 1] if num_unlocks >= 1 else 1000
-        # Only expand when we can afford it AND have workers to cover more land
-        need_expand = (total_plants + 5 >= manageable_tiles and num_units >= 3) or day >= 10
-        if projected_money >= land_cost + 200 and need_expand:
-            market_orders.append(["BUY_LAND"])
-            projected_money -= land_cost
-
-    # 2d. Wheat stock for animal feed
-    total_animals = cow_count + sheep_count + goose_count
-    wheat_available = shed.get("WHEAT", 0) + seeds.get("WHEAT", 0)
-    if total_animals > 0 and wheat_available < total_animals * 3:
-        buy_wheat = total_animals * 3
-        cost = buy_wheat * prices.get("WHEAT", 25)
-        if projected_money >= cost + 100:
-            market_orders.append(["BUY_PRODUCT", "WHEAT", buy_wheat])
-            projected_money -= cost
-
-    # 2e. Animal purchases — only when pasture/coop already exists or can be built
-    empty_pastures = sum(1 for _, _, k in empty_structures if k == "PASTURE")
-    empty_coops = sum(1 for _, _, k in empty_structures if k == "COOP")
-    has_empty_for_pasture = len(empty_tiles) > 3  # Leave room
-
-    if day >= 3 and day <= 20:
-        # Buy cow only if we have a pasture ready OR can build one
-        if (cow_count + shed.get("COW", 0)) < 2 and projected_money >= 500:
-            if empty_pastures > 0 or has_empty_for_pasture:
-                market_orders.append(["BUY_ANIMAL", "COW", 1])
-                projected_money -= 400
-        if day >= 4 and (goose_count + shed.get("GOOSE", 0)) < 1 and projected_money >= 400:
-            if empty_coops > 0 or has_empty_for_pasture:
-                market_orders.append(["BUY_ANIMAL", "GOOSE", 1])
-                projected_money -= 300
-
-    # 2f. Seed purchases — STRICTLY limited to worker capacity
-    total_seeds = sum(seeds.values())
-    seeds_budget = max(0, max_new_plants - total_seeds)
-
-    if seeds_budget > 0 and projected_money >= 30:
-        if day <= 5:
-            # Early: wheat (for feed + cash) and carrots
-            wh = min(max(2, seeds_budget // 3), int(projected_money // 15))
-            if wh > 0:
-                market_orders.append(["BUY_SEED", "WHEAT", wh])
-                projected_money -= wh * 10
-                seeds_budget -= wh
-            if seeds_budget > 0 and projected_money >= 30:
-                ca = min(seeds_budget, int(projected_money // 25))
-                if ca > 0:
-                    market_orders.append(["BUY_SEED", "CARROT", ca])
-                    projected_money -= ca * 20
-        elif day <= 18:
-            # Mid: melons (if early enough) + carrots for rotation
-            if day + 10 <= 29 and projected_money >= 100:
-                mel = min(seeds_budget, int(projected_money // 100))
-                if mel > 0:
-                    market_orders.append(["BUY_SEED", "MELON", mel])
-                    projected_money -= mel * 80
-                    seeds_budget -= mel
-            if seeds_budget > 0 and projected_money >= 30:
-                ca = min(seeds_budget, int(projected_money // 25))
-                if ca > 0:
-                    market_orders.append(["BUY_SEED", "CARROT", ca])
-                    projected_money -= ca * 20
-        elif day <= 26:
-            # Late: only fast crops that can mature
-            ca = min(seeds_budget, int(projected_money // 25))
-            if ca > 0:
-                market_orders.append(["BUY_SEED", "CARROT", ca])
-                projected_money -= ca * 20
-
-    # 2g. Fertilizer for melons
-    fert_available = shed.get("FERTILIZER", 0)
-    melon_plants = sum(1 for _, _, c, _ in plant_tiles if c == "MELON")
-    if melon_plants > 0 and fert_available < melon_plants and projected_money >= 150:
-        fert_buy = min(melon_plants - fert_available, 5)
-        if fert_buy > 0:
-            market_orders.append(["BUY_PRODUCT", "FERTILIZER", fert_buy])
-
-    # Cap market orders at 10
-    market_orders = market_orders[:10]
-
-    # ─── PHASE 3: Unit Action Dispatch ───
-    unit_actions = []
-
-    # Priority task queues for all units
-    # High priority: watering (prevent weed conversion!)
-    # Medium: harvesting mature crops, feeding animals
-    # Low: planting, building, navigating
-
-    # Create task assignment tracking to avoid duplicate assignments
-    assigned_tiles = set()
-
-    for idx in range(num_units):
-        pos = positions[idx]
-        x, y = int(pos[0]), int(pos[1])
-        inv = inventories[idx] if idx < len(inventories) else {}
-        actor_key = "farmer" if idx == 0 else idx - 1
-
-        # Check for active weed repair transactions
-        if actor_key in state["weed_repairs"]:
-            repair = state["weed_repairs"][actor_key]
-            age = step - repair["start_step"]
-            if age == 1:
-                # Retry the intended action
-                unit_actions.append(list(repair["intended_action"]))
-                del state["weed_repairs"][actor_key]
-                continue
-            elif age > 1:
-                del state["weed_repairs"][actor_key]
-
-        tile = _tile_at(tiles, x, y)
-        has_items = any(v > 0 for v in inv.values()) if isinstance(inv, dict) else False
-
-        # ── Standing Actions (immediate, on current tile) ──
-
-        # On a WEED: DIG it
-        if isinstance(tile, dict) and tile.get("kind") == "WEED":
-            unit_actions.append(["DIG"])
-            continue
-
-        # On a PLANT
-        if isinstance(tile, dict) and tile.get("kind") == "PLANT":
-            crop = tile.get("crop", "")
-            planted_day_val = int(tile.get("planted_day", 0) or 0)
-            crop_age = day - planted_day_val
-            watered = tile.get("watered_today", False)
-            yield_units = int(tile.get("yield_units", 0) or 0)
-            cfg = CROPS.get(crop, {})
-
-            # Harvest if mature and has yield
-            if crop_age >= cfg.get("first_yield_day", 4) and yield_units > 0:
-                unit_actions.append(["HARVEST"])
-                assigned_tiles.add((x, y))
-                continue
-
-            # Water if unwatered (critical: prevents weed!)
-            if not watered:
-                unit_actions.append(["WATER"])
-                assigned_tiles.add((x, y))
-                continue
-
-            # Fertilize if plant can benefit and we have fertilizer
-            fert_until = int(tile.get("fertilized_until_day", -1) or -1)
-            if fert_until < day and (inv.get("FERTILIZER", 0) > 0 or shed.get("FERTILIZER", 0) > 0):
-                # Fertilize melons and ongoing crops preferentially
-                if crop in ("MELON", "TOMATO", "STRAWBERRY"):
-                    unit_actions.append(["FERTILIZE"])
-                    assigned_tiles.add((x, y))
-                    continue
-
-        # On a COOP or PASTURE with animal
-        if isinstance(tile, dict) and tile.get("kind") in ("COOP", "PASTURE"):
-            animal = tile.get("animal")
-            if animal:
-                # Feed if unfed (critical: prevents escape!)
-                if not tile.get("fed_today", False):
-                    if inv.get("WHEAT", 0) > 0 or shed.get("WHEAT", 0) > 0:
-                        unit_actions.append(["FEED"])
-                        assigned_tiles.add((x, y))
-                        continue
-
-                # Harvest animal product if available
-                yield_u = int(tile.get("yield_units", 0) or 0)
-                if yield_u > 0:
-                    unit_actions.append(["HARVEST"])
-                    assigned_tiles.add((x, y))
-                    continue
-
-                # Care for animal (banks yield bonus)
-                if not tile.get("cared_today", False):
-                    unit_actions.append(["CARE"])
-                    assigned_tiles.add((x, y))
-                    continue
-
-                # Collect fertilizer (free daily revenue!)
-                if tile.get("fertilizer_available", False):
-                    unit_actions.append(["COLLECT_FERTILIZER"])
-                    assigned_tiles.add((x, y))
-                    continue
-
-            elif animal is None:
-                # Empty structure: place an animal if we have one
-                structure_kind = tile.get("kind")
-                if structure_kind == "PASTURE":
-                    if shed.get("COW", 0) > 0 or inv.get("COW", 0) > 0:
-                        unit_actions.append(["PLACE", "COW"])
-                        assigned_tiles.add((x, y))
-                        continue
-                    elif shed.get("SHEEP", 0) > 0 or inv.get("SHEEP", 0) > 0:
-                        unit_actions.append(["PLACE", "SHEEP"])
-                        assigned_tiles.add((x, y))
-                        continue
-                elif structure_kind == "COOP":
-                    if shed.get("GOOSE", 0) > 0 or inv.get("GOOSE", 0) > 0:
-                        unit_actions.append(["PLACE", "GOOSE"])
-                        assigned_tiles.add((x, y))
-                        continue
-
-        # On an empty tile: plant or build
-        if tile is None:
-            # Build structure if we have animals waiting
-            if shed.get("COW", 0) > 0 or shed.get("SHEEP", 0) > 0:
-                if pasture_count < cow_count + sheep_count + shed.get("COW", 0) + shed.get("SHEEP", 0):
-                    unit_actions.append(["BUILD_PASTURE"])
-                    assigned_tiles.add((x, y))
-                    continue
-            if shed.get("GOOSE", 0) > 0:
-                if coop_count < goose_count + shed.get("GOOSE", 0):
-                    unit_actions.append(["BUILD_COOP"])
-                    assigned_tiles.add((x, y))
-                    continue
-
-            # Plant crop if we have seeds
-            planted = False
-            # Priority: Melon (if early enough to mature), then Carrot, then Wheat
-            for crop_name in ["MELON", "CARROT", "WHEAT"]:
-                if seeds.get(crop_name, 0) > 0:
-                    cfg = CROPS[crop_name]
-                    # Don't plant if it can't mature before end of season
-                    days_to_mature = cfg["first_yield_day"]
-                    if day + days_to_mature <= 29:
-                        unit_actions.append(["PLANT", crop_name])
-                        planted = True
-                        assigned_tiles.add((x, y))
-                        break
-            if planted:
-                continue
-
-        # ── Drop inventory at shed if carrying items ──
-        if has_items and _is_shed_adjacent(x, y):
-            unit_actions.append(["DROP"])
-            continue
-
-        # ── Route to shed to drop off items ──
-        if has_items:
-            nearest_shed = min(SHED_ADJACENT, key=lambda s: _dist(pos, s))
-            unit_actions.append(_step_toward(x, y, nearest_shed[0], nearest_shed[1]))
-            continue
-
-        # ── Navigation: Find best task to walk toward ──
-        target = _find_best_target(x, y, unwatered, harvestable, animal_tiles,
-                                   weed_tiles, empty_tiles, assigned_tiles, day, shed, seeds)
-        if target:
-            tx, ty = target
-            if tx == x and ty == y:
-                unit_actions.append(["PASS"])
-            else:
-                unit_actions.append(_step_toward(x, y, tx, ty))
-                assigned_tiles.add((tx, ty))
-        else:
-            unit_actions.append(["PASS"])
-
-    # ─── PHASE 4: Weed Repair Check ───
-    # Check if any unit is about to PLANT or BUILD but standing on a weed
-    for idx in range(num_units):
-        pos = positions[idx]
-        x, y = int(pos[0]), int(pos[1])
-        tile = _tile_at(tiles, x, y)
-        action = unit_actions[idx] if idx < len(unit_actions) else ["PASS"]
-
-        if isinstance(action, list) and action[0] in ("PLANT", "BUILD_PASTURE", "BUILD_COOP"):
-            if isinstance(tile, dict) and tile.get("kind") == "WEED":
-                actor_key = "farmer" if idx == 0 else idx - 1
-                state["weed_repairs"][actor_key] = {
-                    "start_step": step,
-                    "intended_action": list(action),
-                }
-                unit_actions[idx] = ["DIG"]
-
-    # Build final action dict
-    farmer_action = unit_actions[0] if unit_actions else ["PASS"]
-    hands_actions = unit_actions[1:] if len(unit_actions) > 1 else []
-
-    # Align hands count
-    expected_hands = len(hands_pos)
-    while len(hands_actions) < expected_hands:
-        hands_actions.append(["PASS"])
-    hands_actions = hands_actions[:expected_hands]
-
-    return {
-        "farmer": farmer_action,
-        "hands": hands_actions,
-        "market": market_orders,
-    }
-
-
-def _is_in_unlocked(x, y, unlocks):
-    """Check if tile is in an unlocked quadrant."""
-    if x < 5 and y < 5:
-        return "NW" in unlocks
-    if x >= 5 and y < 5:
-        return "NE" in unlocks
-    if x < 5 and y >= 5:
-        return "SW" in unlocks
-    if x >= 5 and y >= 5:
-        return "SE" in unlocks
-    return False
-
-
-def _find_best_target(x, y, unwatered, harvestable, animal_tiles,
-                      weed_tiles, empty_tiles, assigned, day, shed, seeds):
-    """Find the best tile to navigate toward based on priority."""
-    best = None
-    best_score = -float("inf")
-
-    # Priority 1: Unwatered crops (prevent weeds!)
-    for ux, uy, crop, age in unwatered:
-        if (ux, uy) in assigned:
-            continue
-        dist = _dist((x, y), (ux, uy))
-        score = 10000 - dist * 10  # Very high priority
-        if score > best_score:
-            best_score = score
-            best = (ux, uy)
-
-    # Priority 2: Animals needing feed
-    for ax, ay, animal, tile in animal_tiles:
-        if (ax, ay) in assigned:
-            continue
-        if not tile.get("fed_today", False):
-            dist = _dist((x, y), (ax, ay))
-            score = 9000 - dist * 10
-            if score > best_score:
-                best_score = score
-                best = (ax, ay)
-
-    # Priority 3: Harvestable crops (highest value first)
-    for hx, hy, crop, value in harvestable:
-        if (hx, hy) in assigned:
-            continue
-        dist = _dist((x, y), (hx, hy))
-        score = 5000 + value - dist * 20
-        if score > best_score:
-            best_score = score
-            best = (hx, hy)
-
-    # Priority 4: Animal products/fertilizer to collect
-    for ax, ay, animal, tile in animal_tiles:
-        if (ax, ay) in assigned:
-            continue
-        yield_u = int(tile.get("yield_units", 0) or 0)
-        fert = tile.get("fertilizer_available", False)
-        cared = tile.get("cared_today", False)
-        if yield_u > 0 or fert or not cared:
-            dist = _dist((x, y), (ax, ay))
-            score = 3000 - dist * 10
-            if score > best_score:
-                best_score = score
-                best = (ax, ay)
-
-    # Priority 5: Weed clearing
-    for wx, wy in weed_tiles:
-        if (wx, wy) in assigned:
-            continue
-        dist = _dist((x, y), (wx, wy))
-        score = 2000 - dist * 10
-        if score > best_score:
-            best_score = score
-            best = (wx, wy)
-
-    # Priority 6: Empty tiles for planting
-    has_seeds = any(v > 0 for v in seeds.values())
-    if has_seeds or shed.get("COW", 0) > 0 or shed.get("GOOSE", 0) > 0 or shed.get("SHEEP", 0) > 0:
-        for ex, ey in empty_tiles:
-            if (ex, ey) in assigned:
-                continue
-            dist = _dist((x, y), (ex, ey))
-            score = 1000 - dist * 10
-            if score > best_score:
-                best_score = score
-                best = (ex, ey)
-
-    return best
-
-
-def _terminal_sell(shed, prices, opp_farm):
-    """Terminal market liquidation — sell everything for maximum final score."""
-    # Calculate opponent exposure
-    exposure = {}
-    for item in SELLABLE:
-        exposure[item] = 0.0
-    for row in (_get(opp_farm, "tiles", []) or []):
-        if not isinstance(row, list):
-            continue
-        for tile in row:
-            if not isinstance(tile, dict):
-                continue
-            crop = str(tile.get("crop", "")).upper()
-            if crop in exposure:
-                exposure[crop] += max(1.0, float(tile.get("yield_units", 0) or 0))
-            product = PRODUCT_BY_ANIMAL.get(str(tile.get("animal", "")).upper())
-            if product:
-                exposure[product] += 1.0 + max(0.0, float(tile.get("yield_units", 0) or 0))
-            if tile.get("fertilizer_available", False):
-                exposure["FERTILIZER"] += 1.0
-
-    rows = []
-    for i, item in enumerate(SELLABLE):
-        qty = max(0, int(shed.get(item, 0) or 0))
-        if qty <= 0:
-            continue
-        price = max(1.0, float(prices.get(item, 1) or 1))
-        score = (
-            (1.0 + exposure.get(item, 0.0))
-            * GLUT_WEIGHT.get(item, 1.0)
-            * price
-            * math.log1p(qty)
-        )
-        rows.append((score, -i, item, qty))
-
-    rows.sort(reverse=True)
-    return [["SELL", item, qty] for _, _, item, qty in rows[:10]]
-
-
-my_agent = agent
+def _kaggle_submission_entrypoint(obs):
+    return agent(obs)

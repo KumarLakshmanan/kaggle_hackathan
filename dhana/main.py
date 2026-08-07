@@ -4878,33 +4878,60 @@ def _safe_market(obs, action):
     farm = _farm(obs, seat)
     money = float(_get(farm, "money", 0) or 0)
     remaining = _projected_shed(obs, action)
+    prices = _get(_get(obs, "market", {}) or {}, "prices", {}) or {}
+    exposure = _opponent_exposure(obs)
+    
     market = []
+    sold_items = set()
     for raw in action.get("market", []) or []:
         order = list(raw)
         if not order:
             continue
         order_type = str(order[0]).upper()
-        if order_type == "SELL" and len(order) >= 3:
+        if order_type == "SELL" and len(order) >= 2:
             item = order[1]
-            try:
-                requested = max(0, int(order[2]))
-            except (TypeError, ValueError):
-                requested = 0
-            quantity = min(requested, max(0, int(remaining.get(item, 0) or 0)))
-            if quantity <= 0:
+            total_available = max(0, int(remaining.get(item, 0) or 0))
+            if total_available <= 0:
                 continue
-            order[2] = quantity
-            remaining[item] = max(0, int(remaining.get(item, 0) or 0) - quantity)
+            quantity = total_available
+            order = ["SELL", item, quantity]
+            remaining[item] = 0
             market.append(order)
+            sold_items.add(item)
         elif order_type == "BUY" and len(order) >= 2:
             item = str(order[1]).upper()
-            if item in ("WHEAT", "MILK", "WOOL", "EGG", "CARROT", "TOMATO") and money < 500:
+            if item == "WHEAT":
+                if money < 50:
+                    continue
+            elif item in ("MILK", "WOOL", "EGG", "CARROT", "TOMATO") and money < 500:
                 continue
             if "HAND" in item and money < 500:
                 continue
             market.append(order)
         else:
             market.append(order)
+
+    # Opportunistic Opponent-aware Shed Selling
+    opportunistic_sales = []
+    for index, item in enumerate(_SELLABLE):
+        if item in sold_items:
+            continue
+        qty = max(0, int(remaining.get(item, 0) or 0))
+        if qty <= 0:
+            continue
+        item_price = max(1.0, float(prices.get(item, 1) or 1))
+        opp_exp = exposure.get(item, 0.0)
+        glut = _GLUT_WEIGHT.get(item, 1.0)
+        score = (1.0 + 3.0 * opp_exp) * glut * item_price * math.log1p(qty)
+        opportunistic_sales.append((score, -index, item, qty))
+    
+    opportunistic_sales.sort(reverse=True)
+    for _score, _index, item, qty in opportunistic_sales:
+        if len(market) >= 10:
+            break
+        market.append(["SELL", item, qty])
+        remaining[item] = 0
+
     action["market"] = market[:10]
     return action
 
@@ -4995,7 +5022,7 @@ def _signature_distance(left, right):
 
 
 def _conditional_reorder(obs, action, step):
-    """Move memory-matched collisions forward without changing SELL inventory."""
+    """Move opponent-collided and high-exposure SELL orders forward."""
     action = _safe_market(obs, action)
     market = list(action.get("market") or [])
     if not any(len(order) >= 3 and order[0] == "SELL" for order in market):
@@ -5004,28 +5031,47 @@ def _conditional_reorder(obs, action, step):
     farms = list(_get(obs, "farms", []) or [])
     opponent = farms[1 - seat] if len(farms) >= 2 else {}
     observed = _public_route_signature(opponent)
+    exposure = _opponent_exposure(obs)
+    prices = _get(_get(obs, "market", {}) or {}, "prices", {}) or {}
+    
     candidates = []
     for index, prototype in enumerate(_PROTOTYPES):
         signatures = prototype.get("signatures", [])
         if step < len(signatures):
             candidates.append((_signature_distance(observed, signatures[step]), index))
-    if not candidates:
-        return action
-    distance, index = min(candidates)
-    # Adaptive threshold: allow dynamic match tuning up to 64.0 for deep meta opponents
-    if distance > 64.0:
-        return action
-    sales = _PROTOTYPES[index].get("sales", [])
-    predicted = sales[step] if step < len(sales) else {}
-    collided = [
-        (-order_index, order)
+    
+    predicted_sales = set()
+    if candidates:
+        distance, index = min(candidates)
+        if distance <= 100.0:
+            sales = _PROTOTYPES[index].get("sales", [])
+            if step < len(sales):
+                predicted_sales = set(sales[step].keys())
+    
+    def order_score(order_tuple):
+        order_index, order = order_tuple
+        if not (isinstance(order, list) and len(order) >= 3 and order[0] == "SELL"):
+            return (-999, -order_index)
+        item = order[1]
+        qty = order[2]
+        is_collision = 1.0 if item in predicted_sales else 0.0
+        opp_exp = exposure.get(item, 0.0)
+        price = float(prices.get(item, 1) or 1)
+        score = (is_collision * 1000.0) + (opp_exp * 100.0) + (price * math.log1p(qty))
+        return (score, -order_index)
+
+    sell_orders = [
+        (order_index, order)
         for order_index, order in enumerate(market)
-        if len(order) >= 3 and order[0] == "SELL" and order[1] in predicted
+        if len(order) >= 3 and order[0] == "SELL"
     ]
-    collided.sort(reverse=True)
-    collided_ids = {id(row[1]) for row in collided}
-    reordered = [row[1] for row in collided]
-    reordered.extend(order for order in market if id(order) not in collided_ids)
+    other_orders = [
+        order for order in market
+        if not (len(order) >= 3 and order[0] == "SELL")
+    ]
+    
+    sell_orders.sort(key=order_score, reverse=True)
+    reordered = [order for _, order in sell_orders] + other_orders
     action["market"] = reordered[:10]
     return action
 
@@ -5041,7 +5087,7 @@ def _terminal_market(obs, action):
         if quantity <= 0:
             continue
         score = (
-            (1.0 + exposure.get(item, 0.0))
+            (1.0 + 2.0 * exposure.get(item, 0.0))
             * _GLUT_WEIGHT.get(item, 1.0)
             * max(1.0, float(prices.get(item, 1) or 1))
             * math.log1p(quantity)
@@ -5061,7 +5107,7 @@ def agent(obs):
         action = _weed_repair_action(obs, _copy_action(_ACTIONS[step]), _ACTIONS, step)
         action = _safe_market(obs, action)
         action = _conditional_reorder(obs, action, step)
-        if step >= 700:
+        if step >= 650:
             action = _terminal_market(obs, action)
         return _align_hands(action, obs)
     except Exception:

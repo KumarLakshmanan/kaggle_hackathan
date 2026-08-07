@@ -8,6 +8,7 @@ premium shifts with exact next-turn repayment, and final liquidation.
 import base64
 import copy
 import json
+import math
 import zlib
 
 
@@ -150,7 +151,7 @@ _GOLD_HAZARD = json.loads(zlib.decompress(base64.b85decode((
     '&^8Px<@BAC{s!^V1>u}+ZdmjkowMjWYym#HcfGk215k8eUT<YLjcUV<_q(D=?$7<Ax4zej-oGo5D-JyiiP48!^Kelkv4g^5W{Vzf'
     '4a{%sxwq`1M{7@X@GV)Klv*b}(8{?hX^suie`Ms+vDOGuMQ{5b8=CnhTX9CTy`1oKfZlGo-R0Z?{{0V4Dr6P'
 ))).decode("utf-8"))
-_WEED_REPLAY_STEPS = 2
+_WEED_REPLAY_STEPS = 8
 _WEED_STATE = {0: {"last_step": -1, "active": {}}, 1: {"last_step": -1, "active": {}}}
 _SHIFT_STATE = {
     0: {"last_step": -1, "due_step": -1, "due": {}, "last_preempt": -10**9},
@@ -171,6 +172,12 @@ _SELLABLE = (
     "STRAWBERRY", "MELON", "MILK", "WOOL", "WHEAT",
     "FERTILIZER", "EGG", "TOMATO", "CARROT",
 )
+_PRODUCT_BY_ANIMAL = {"COW": "MILK", "SHEEP": "WOOL", "GOOSE": "EGG"}
+_GLUT_WEIGHT = {
+    "STRAWBERRY": 2.0, "MELON": 3.6, "MILK": 2.0, "WOOL": 3.2,
+    "EGG": 1.5, "TOMATO": 1.3, "CARROT": 1.0, "WHEAT": 1.0,
+    "FERTILIZER": 1.0,
+}
 
 
 def _get(obj, key, default=None):
@@ -519,20 +526,49 @@ def _safe_market(obs, action):
     return action
 
 
+def _opponent_exposure(obs):
+    """Estimate which products the opponent can dump into the final market."""
+    seat, _own_farm = _farm(obs)
+    farms = list(_get(obs, "farms", []) or [])
+    opponent = farms[1 - seat] if len(farms) >= 2 else {}
+    exposure = {item: 0.0 for item in _SELLABLE}
+    for row in (_get(opponent, "tiles", []) or []):
+        for tile in row if isinstance(row, list) else [row]:
+            if not isinstance(tile, dict):
+                continue
+            crop = str(tile.get("crop", "")).upper()
+            if crop in exposure:
+                exposure[crop] += max(1.0, float(tile.get("yield_units", 0) or 0))
+            product = _PRODUCT_BY_ANIMAL.get(str(tile.get("animal", "")).upper())
+            if product:
+                exposure[product] += 1.0 + max(0.0, float(tile.get("yield_units", 0) or 0))
+            if tile.get("fertilizer_available", False):
+                exposure["FERTILIZER"] += 1.0
+    return exposure
+
+
 def _terminal_market(obs, action):
+    """Liquidate all products, prioritizing the most dangerous price collisions."""
     action = _align_hands(action, obs)
     shed = _projected_shed(obs, action)
-    existing = [list(order) for order in (action.get("market") or []) if order]
-    existing_sell = {order[1] for order in existing if len(order) >= 3 and order[0] == "SELL"}
-    rows = []
     prices = _get(_get(obs, "market", {}) or {}, "prices", {}) or {}
+    exposure = _opponent_exposure(obs)
+    rows = []
     for index, item in enumerate(_SELLABLE):
         quantity = max(0, int(shed.get(item, 0) or 0))
-        if quantity > 0 and item not in existing_sell:
-            rows.append((float(prices.get(item, 1) or 1), -index, item, quantity))
+        if quantity <= 0:
+            continue
+        score = (
+            (1.0 + exposure.get(item, 0.0))
+            * _GLUT_WEIGHT.get(item, 1.0)
+            * max(1.0, float(prices.get(item, 1) or 1))
+            * math.log1p(quantity)
+        )
+        rows.append((score, -index, item, quantity))
     rows.sort(reverse=True)
-    action["market"] = existing + [["SELL", item, quantity] for _, _, item, quantity in rows]
-    action["market"] = action["market"][:10]
+    action["market"] = [
+        ["SELL", item, quantity] for _score, _index, item, quantity in rows[:10]
+    ]
     return action
 
 

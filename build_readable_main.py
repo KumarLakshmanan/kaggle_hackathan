@@ -357,6 +357,7 @@ compressed, encoded, or dynamically evaluated.
 from __future__ import annotations
 
 import copy
+import math
 
 '''
     actions_literal = pprint.pformat(actions, width=120, compact=True, sort_dicts=False)

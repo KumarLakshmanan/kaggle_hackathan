@@ -162,6 +162,8 @@ _PREEMPT_FRACTION = 2.0
 _PREEMPT_MAX_BATCH = 30
 _PREEMPT_COOLDOWN = 1
 _PREEMPT_MAX_CLONE_DISTANCE = 6
+_PREEMPT_LOOKAHEAD = 1
+_PREEMPT_LEAD = 1
 _PREEMPT_START = 120
 _PREEMPT_STOP = 680
 _PREMIUM = ("STRAWBERRY", "MELON", "MILK", "WOOL")
@@ -402,13 +404,16 @@ def _repay_shift(obs, action, step):
 
 
 def _future_base_sells(step):
-    if step + 1 >= len(_ACTIONS):
-        return {}
+    due_step = step + max(1, int(_PREEMPT_LEAD))
+    if due_step >= len(_ACTIONS):
+        return {}, {}
     result = {}
-    for raw in (_ACTIONS[step + 1].get("market") or []):
+    due_steps = {}
+    for raw in (_ACTIONS[due_step].get("market") or []):
         if len(raw) >= 3 and raw[0] == "SELL" and raw[1] in _PREMIUM:
             result[raw[1]] = result.get(raw[1], 0) + max(0, int(raw[2]))
-    return result
+            due_steps[raw[1]] = due_step
+    return result, due_steps
 
 
 def _remaining_shed(obs, action):
@@ -429,15 +434,25 @@ def _preempt_shift(obs, action, step):
         return action
     if _clone_distance(obs) > _PREEMPT_MAX_CLONE_DISTANCE:
         return action
-    future_base = _future_base_sells(step)
+    future_base, future_due_steps = _future_base_sells(step)
     if not future_base:
         return action
     hazards = {
-        row[0]: row for row in _GOLD_HAZARD.get(str(step + 1), [])
+        row[0]: row for row in _GOLD_HAZARD.get(str(step + max(1, int(_PREEMPT_LEAD))), [])
         if row[0] in _PREMIUM and float(row[1]) >= _PREEMPT_THRESHOLD
     }
     if not hazards:
         return action
+    matching_due_steps = [
+        future_due_steps[item] for item in hazards if item in future_due_steps
+    ]
+    if not matching_due_steps:
+        return action
+    future_due_step = min(matching_due_steps)
+    future_base = {
+        item: quantity for item, quantity in future_base.items()
+        if future_due_steps[item] == future_due_step
+    }
 
     action = _safe_market(obs, action)
     market = list(action.get("market") or [])
@@ -476,7 +491,7 @@ def _preempt_shift(obs, action, step):
         shifted[item] = target
     if shifted:
         action["market"] = market[:10]
-        state["due_step"] = step + 1
+        state["due_step"] = future_due_step
         state["due"] = shifted
         state["last_preempt"] = step
     return action

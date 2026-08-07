@@ -1,0 +1,254 @@
+[
+  {
+    "action_count": 719,
+    "action_sha256": "d9508d9169b5722e53d173604eb5e84e377db2d6423aafdf3c399861abe883aa",
+    "compressed_bytes": 10282,
+    "engine_version": "1.32.4",
+    "episode_id": 90412258,
+    "frames": 720,
+    "margin": 11756.0,
+    "opponent_reward": 140601.0,
+    "opponent_team": "musya lyusya team",
+    "own_reward": 152357.0,
+    "own_seat": 1,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90412258.json.gz",
+    "result": "win",
+    "seed": 1411141276,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "764a8e6f0bcd594815f327a21c645796b50f6da0e190a1835b18976bda368ac7",
+    "compressed_bytes": 10288,
+    "engine_version": "1.32.4",
+    "episode_id": 90411502,
+    "frames": 720,
+    "margin": 11795.0,
+    "opponent_reward": 115899.0,
+    "opponent_team": "Jacob Alstrup",
+    "own_reward": 127694.0,
+    "own_seat": 1,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90411502.json.gz",
+    "result": "win",
+    "seed": 544463568,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "22e4b511773f0289d4ba1cf956d0a6c2e751d8d0e4c9e55924d74745ee94485e",
+    "compressed_bytes": 9308,
+    "engine_version": "1.32.4",
+    "episode_id": 90410729,
+    "frames": 720,
+    "margin": 18431.0,
+    "opponent_reward": 114730.0,
+    "opponent_team": "Muthuraman Raman 7",
+    "own_reward": 133161.0,
+    "own_seat": 1,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90410729.json.gz",
+    "result": "win",
+    "seed": 255194461,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "6f432897b709617b2d3be9cc09716d30d07f74dd511dc51c5ef2b1c7e29a9b61",
+    "compressed_bytes": 8774,
+    "engine_version": "1.32.4",
+    "episode_id": 90409924,
+    "frames": 720,
+    "margin": -3863.0,
+    "opponent_reward": 151526.0,
+    "opponent_team": "xubenzheng",
+    "own_reward": 147663.0,
+    "own_seat": 0,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90409924.json.gz",
+    "result": "loss",
+    "seed": 803193662,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "477257599e20583fc1f1b64b8f82b66632efdb78cd395595f9735c9512ea28ca",
+    "compressed_bytes": 9300,
+    "engine_version": "1.32.4",
+    "episode_id": 90409971,
+    "frames": 720,
+    "margin": 8622.0,
+    "opponent_reward": 108369.0,
+    "opponent_team": "Konstantin Alekseev",
+    "own_reward": 116991.0,
+    "own_seat": 0,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90409971.json.gz",
+    "result": "win",
+    "seed": 741752345,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "a6e948e343b8285f6727bad7e295c802eb7149ce475e3a5d2d311c14fe956289",
+    "compressed_bytes": 9319,
+    "engine_version": "1.32.4",
+    "episode_id": 90409215,
+    "frames": 720,
+    "margin": 13481.0,
+    "opponent_reward": 115829.0,
+    "opponent_team": "SUBHASRI  S",
+    "own_reward": 129310.0,
+    "own_seat": 1,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90409215.json.gz",
+    "result": "win",
+    "seed": 420231026,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "2f34bcae6cd7876f8e6f724cb4a236d7b17defa42eec07a28780d8820ac8525f",
+    "compressed_bytes": 9178,
+    "engine_version": "1.32.4",
+    "episode_id": 90408462,
+    "frames": 720,
+    "margin": 5138.0,
+    "opponent_reward": 96208.0,
+    "opponent_team": "Elzandi Irfan Zikra",
+    "own_reward": 101346.0,
+    "own_seat": 1,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90408462.json.gz",
+    "result": "win",
+    "seed": 1816842282,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "f484b81700f3575c70ce46a52eabf85de30b847c82726354de2d88003da6f310",
+    "compressed_bytes": 9870,
+    "engine_version": "1.32.4",
+    "episode_id": 90407699,
+    "frames": 720,
+    "margin": 7013.0,
+    "opponent_reward": 108997.0,
+    "opponent_team": "James Mancillas",
+    "own_reward": 116010.0,
+    "own_seat": 1,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90407699.json.gz",
+    "result": "win",
+    "seed": 1256464039,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "9aed3f401a63fe59ce068d5233514a80c04ebedf6edee69f610351fb6f04a280",
+    "compressed_bytes": 9299,
+    "engine_version": "1.32.4",
+    "episode_id": 90406947,
+    "frames": 720,
+    "margin": 16345.0,
+    "opponent_reward": 116320.0,
+    "opponent_team": "Erman Man",
+    "own_reward": 132665.0,
+    "own_seat": 0,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90406947.json.gz",
+    "result": "win",
+    "seed": 2071015787,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "47d01de5d8e830b94c0832225293a2ae89fd774e7749bf411a378dcbf1ea3b3e",
+    "compressed_bytes": 8719,
+    "engine_version": "1.32.4",
+    "episode_id": 90406190,
+    "frames": 720,
+    "margin": -1233.0,
+    "opponent_reward": 118178.0,
+    "opponent_team": "Pomiro",
+    "own_reward": 116945.0,
+    "own_seat": 1,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90406190.json.gz",
+    "result": "loss",
+    "seed": 904304020,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "27c14b4f2c582d269f647c4ea41c039c6546fc7e636de3ad21f33be5d4d979f3",
+    "compressed_bytes": 9293,
+    "engine_version": "1.32.4",
+    "episode_id": 90405418,
+    "frames": 720,
+    "margin": 15511.0,
+    "opponent_reward": 126600.0,
+    "opponent_team": "Erman Man",
+    "own_reward": 142111.0,
+    "own_seat": 0,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90405418.json.gz",
+    "result": "win",
+    "seed": 124037491,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  },
+  {
+    "action_count": 719,
+    "action_sha256": "5ea48e2113e64dcb1a0b6fa880d75e50776803fda0e9343d64bd53c10f60af56",
+    "compressed_bytes": 8673,
+    "engine_version": "1.32.4",
+    "episode_id": 90404653,
+    "frames": 720,
+    "margin": 337.0,
+    "opponent_reward": 103507.0,
+    "opponent_team": "Marco DG",
+    "own_reward": 103844.0,
+    "own_seat": 0,
+    "own_team": "Lakshmanan R",
+    "path": "H:\\hackathan\\live_routes\\submission_55294461\\episode-90404653.json.gz",
+    "result": "win",
+    "seed": 1696812916,
+    "statuses": [
+      "DONE",
+      "DONE"
+    ]
+  }
+]

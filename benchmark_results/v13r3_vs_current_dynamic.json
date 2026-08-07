@@ -1,0 +1,229 @@
+{
+  "candidate": "H:\\hackathan\\v13r3_notebook_output\\main.py",
+  "engine_version": "1.32.4",
+  "opponent": "H:\\hackathan\\main.py",
+  "rows": [
+    {
+      "candidate_reward": 190756.0,
+      "candidate_seat": 0,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 5.797899997560307,
+        "mean_us": 270.9848397270218,
+        "seconds": 0.19483809976372868
+      },
+      "frames": 720,
+      "margin": 186853.0,
+      "opponent_reward": 3903.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 3.140199987683445,
+        "mean_us": 137.2664818175588,
+        "seconds": 0.09869460042682476
+      },
+      "result": "win",
+      "seed": 104729,
+      "wall_seconds": 5.638433100015391
+    },
+    {
+      "candidate_reward": 198244.0,
+      "candidate_seat": 1,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 34.15740001946688,
+        "mean_us": 299.0959666187516,
+        "seconds": 0.2150499999988824
+      },
+      "frames": 720,
+      "margin": 195989.0,
+      "opponent_reward": 2255.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 0.39670002297498286,
+        "mean_us": 125.1496525914622,
+        "seconds": 0.08998260021326132
+      },
+      "result": "win",
+      "seed": 104729,
+      "wall_seconds": 5.05148699998972
+    },
+    {
+      "candidate_reward": 200057.0,
+      "candidate_seat": 0,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 3.6056999815627933,
+        "mean_us": 255.3474274382995,
+        "seconds": 0.18359480032813735
+      },
+      "frames": 720,
+      "margin": 196437.0,
+      "opponent_reward": 3620.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 0.4838000168092549,
+        "mean_us": 119.68038985421505,
+        "seconds": 0.08605020030518062
+      },
+      "result": "win",
+      "seed": 104743,
+      "wall_seconds": 5.157766999996966
+    },
+    {
+      "candidate_reward": 202212.0,
+      "candidate_seat": 1,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 4.6839000133331865,
+        "mean_us": 330.2133521431039,
+        "seconds": 0.2374234001908917
+      },
+      "frames": 720,
+      "margin": 198612.0,
+      "opponent_reward": 3600.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 2.1638000034727156,
+        "mean_us": 169.30542471112685,
+        "seconds": 0.12173060036730021
+      },
+      "result": "win",
+      "seed": 104743,
+      "wall_seconds": 7.147658000001684
+    },
+    {
+      "candidate_reward": 189388.0,
+      "candidate_seat": 0,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 6.447599997045472,
+        "mean_us": 387.82155793904997,
+        "seconds": 0.27884370015817694
+      },
+      "frames": 720,
+      "margin": 188470.0,
+      "opponent_reward": 918.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 3.420399996684864,
+        "mean_us": 185.6304589132435,
+        "seconds": 0.13346829995862208
+      },
+      "result": "win",
+      "seed": 104759,
+      "wall_seconds": 7.81088129998534
+    },
+    {
+      "candidate_reward": 188951.0,
+      "candidate_seat": 1,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 3.025099984370172,
+        "mean_us": 217.02795548841192,
+        "seconds": 0.15604309999616817
+      },
+      "frames": 720,
+      "margin": 187009.0,
+      "opponent_reward": 1942.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 81.73430000897497,
+        "mean_us": 232.7364401811519,
+        "seconds": 0.1673375004902482
+      },
+      "result": "win",
+      "seed": 104759,
+      "wall_seconds": 4.394157200003974
+    },
+    {
+      "candidate_reward": 186781.0,
+      "candidate_seat": 0,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 0.8348999836016446,
+        "mean_us": 227.540055727353,
+        "seconds": 0.1636013000679668
+      },
+      "frames": 720,
+      "margin": 186771.0,
+      "opponent_reward": 10.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 0.3945999778807163,
+        "mean_us": 88.30806655421988,
+        "seconds": 0.06349349985248409
+      },
+      "result": "win",
+      "seed": 104761,
+      "wall_seconds": 4.451049199997215
+    },
+    {
+      "candidate_reward": 186832.0,
+      "candidate_seat": 1,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 2.340800012461841,
+        "mean_us": 210.01237843047068,
+        "seconds": 0.1509989000915084
+      },
+      "frames": 720,
+      "margin": 186822.0,
+      "opponent_reward": 10.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 1.3812999823130667,
+        "mean_us": 96.14088993858914,
+        "seconds": 0.06912529986584559
+      },
+      "result": "win",
+      "seed": 104761,
+      "wall_seconds": 4.140181800001301
+    }
+  ],
+  "summary": {
+    "agent_calls": 5752,
+    "agent_max_ms": 34.15740001946688,
+    "agent_mean_us": 274.75544168905776,
+    "all_done": true,
+    "game_results": {
+      "draws": 0,
+      "losses": 0,
+      "wins": 8
+    },
+    "games": 8,
+    "max_reward": 202212.0,
+    "mean_margin": 190870.375,
+    "mean_reward": 192902.625,
+    "mean_wall_seconds": 5.473951824998949,
+    "median_margin": 187739.5,
+    "min_reward": 186781.0,
+    "paired_margins": {
+      "104729": 382842.0,
+      "104743": 395049.0,
+      "104759": 375479.0,
+      "104761": 373593.0
+    },
+    "paired_results": {
+      "draws": 0,
+      "losses": 0,
+      "wins": 4
+    },
+    "seeds": 4
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "candidate": "H:\\hackathan\\main.py",
+  "candidate_overrides": {},
+  "engine_version": "1.32.4",
+  "opponent": "H:\\hackathan\\submission.py",
+  "rows": [
+    {
+      "candidate_capture": null,
+      "candidate_reward": 123819.0,
+      "candidate_seat": 0,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 74.55130000016652,
+        "mean_us": 481.44144599160154,
+        "seconds": 0.3461563996679615
+      },
+      "frames": 720,
+      "margin": 0.0,
+      "opponent_reward": 123819.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 1.0830000101123005,
+        "mean_us": 191.08456203594847,
+        "seconds": 0.13738980010384694
+      },
+      "result": "draw",
+      "seed": 424242,
+      "wall_seconds": 5.074450200016145
+    },
+    {
+      "candidate_capture": null,
+      "candidate_reward": 123819.0,
+      "candidate_seat": 1,
+      "candidate_status": "DONE",
+      "candidate_timing": {
+        "calls": 719,
+        "max_ms": 1.1842999956570566,
+        "mean_us": 195.26550813768478,
+        "seconds": 0.14039590035099536
+      },
+      "frames": 720,
+      "margin": 0.0,
+      "opponent_reward": 123819.0,
+      "opponent_status": "DONE",
+      "opponent_timing": {
+        "calls": 719,
+        "max_ms": 56.31740001263097,
+        "mean_us": 385.33588356962775,
+        "seconds": 0.27705650028656237
+      },
+      "result": "draw",
+      "seed": 424242,
+      "wall_seconds": 5.121449199999915
+    }
+  ],
+  "summary": {
+    "agent_calls": 1438,
+    "agent_max_ms": 74.55130000016652,
+    "agent_mean_us": 338.3534770646432,
+    "all_done": true,
+    "game_results": {
+      "draws": 2,
+      "losses": 0,
+      "wins": 0
+    },
+    "games": 2,
+    "max_reward": 123819.0,
+    "mean_margin": 0.0,
+    "mean_reward": 123819.0,
+    "mean_wall_seconds": 5.09794970000803,
+    "median_margin": 0.0,
+    "min_reward": 123819.0,
+    "paired_margins": {
+      "424242": 0.0
+    },
+    "paired_results": {
+      "draws": 1,
+      "losses": 0,
+      "wins": 0
+    },
+    "seeds": 1
+  }
+}

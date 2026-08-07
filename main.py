@@ -15,6 +15,7 @@ compressed, encoded, or dynamically evaluated.
 from __future__ import annotations
 
 import copy
+import math
 
 # Complete legal action book: one entry for each decision turn.
 _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
@@ -452,8 +453,8 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': [['SELL', 'MILK', 6]]},
  {'farmer': ['PICKUP', 'WHEAT', 5],
   'hands': [],
-  'market': [['SELL', 'WHEAT', 13], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_ANIMAL', 'COW', 2],
-             ['BUY_SEED', 'STRAWBERRY', 7], ['SELL', 'FERTILIZER', 1]]},
+  'market': [['SELL', 'WHEAT', 13], ['SELL', 'FERTILIZER', 1], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+             ['BUY_ANIMAL', 'COW', 2], ['BUY_SEED', 'STRAWBERRY', 7]]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 2], ['NORTH'], ['NORTH'], ['PICKUP', 'WHEAT', 1], ['NORTH']],
   'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
@@ -536,7 +537,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': []},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [],
-  'market': [['BUY_PRODUCT', 'WHEAT', 2], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['SELL', 'FERTILIZER', 2]]},
+  'market': [['SELL', 'FERTILIZER', 2], ['BUY_PRODUCT', 'WHEAT', 2], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['FEED'],
   'hands': [['NORTH'], ['NORTH'], ['NORTH'], ['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 5]],
   'market': [['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 12]]},
@@ -597,7 +598,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': []},
  {'farmer': ['NORTH'],
   'hands': [['NORTH'], ['EAST'], ['COLLECT_FERTILIZER'], ['EAST'], ['EAST'], ['DROP'], ['SOUTH'], ['DROP']],
-  'market': [['SELL', 'MILK', 3], ['SELL', 'MELON', 6]]},
+  'market': [['SELL', 'MELON', 6], ['SELL', 'MILK', 3]]},
  {'farmer': ['SOUTH'],
   'hands': [['EAST'], ['EAST'], ['PASS'], ['COLLECT_FERTILIZER'], ['COLLECT_FERTILIZER'], ['COLLECT_FERTILIZER'],
             ['DROP'], ['PASS']],
@@ -691,7 +692,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['PASS'], ['WATER'], ['SOUTH'], ['PASS'], ['PASS'], ['WEST'], ['PASS'], ['PASS'], ['WATER'], ['PASS'],
             ['WATER'], ['WATER'], ['PASS'], ['PASS']],
-  'market': [['SELL', 'FERTILIZER', 2], ['SELL', 'WHEAT', 7]]},
+  'market': [['SELL', 'WHEAT', 7], ['SELL', 'FERTILIZER', 2]]},
  {'farmer': ['EAST'],
   'hands': [['PASS'], ['SOUTH'], ['SOUTH'], ['PASS'], ['PASS'], ['PLANT', 'STRAWBERRY'], ['PASS'], ['PASS'], ['SOUTH'],
             ['PASS'], ['EAST'], ['PASS'], ['PASS'], ['PASS']],
@@ -856,7 +857,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': []},
  {'farmer': ['PICKUP', 'WHEAT', 4],
   'hands': [],
-  'market': [['SELL', 'MILK', 9], ['SELL', 'WOOL', 6], ['SELL', 'FERTILIZER', 12], ['HIRE'], ['HIRE'], ['HIRE'],
+  'market': [['SELL', 'WOOL', 6], ['SELL', 'MILK', 9], ['SELL', 'FERTILIZER', 12], ['HIRE'], ['HIRE'], ['HIRE'],
              ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 14]]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 2], ['NORTH'], ['NORTH'], ['PICKUP', 'WHEAT', 2], ['PICKUP', 'WHEAT', 5]],
@@ -913,7 +914,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['EAST'], 'hands': [['EAST'], ['COLLECT_FERTILIZER'], ['WEST'], ['WATER'], ['SOUTH']], 'market': []},
  {'farmer': ['SOUTH'],
   'hands': [['COLLECT_FERTILIZER'], ['SOUTH'], ['WEST'], ['NORTH'], ['DROP']],
-  'market': [['SELL', 'WOOL', 2]]},
+  'market': [['SELL', 'WOOL', 2], ['SELL', 'WOOL', 2], ['SELL', 'WOOL', 2]]},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['NORTH'], ['COLLECT_FERTILIZER'], ['COLLECT_FERTILIZER'], ['NORTH'], ['COLLECT_FERTILIZER']],
   'market': [['SELL', 'WOOL', 2], ['SELL', 'FERTILIZER', 1]]},
@@ -1162,7 +1163,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['SOUTH'],
   'hands': [['COLLECT_FERTILIZER'], ['WATER'], ['NORTH'], ['NORTH'], ['WEST'], ['WEST'], ['WEST'], ['EAST'], ['WEST'],
             ['WATER'], ['COLLECT_FERTILIZER']],
-  'market': []},
+  'market': [['SELL', 'WOOL', 16]]},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['WEST'], ['NORTH'], ['NORTH'], ['EAST'], ['COLLECT_FERTILIZER'], ['WEST'], ['WEST'], ['EAST'], ['WEST'],
             ['EAST'], ['WEST']],
@@ -1185,8 +1186,8 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 2]]},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [],
-  'market': [['SELL', 'MILK', 6], ['SELL', 'STRAWBERRY', 6], ['SELL', 'FERTILIZER', 7], ['HIRE'], ['HIRE'], ['HIRE'],
-             ['HIRE'], ['HIRE']]},
+  'market': [['SELL', 'MILK', 6], ['SELL', 'STRAWBERRY', 6], ['SELL', 'FERTILIZER', 7], ['SELL', 'WOOL', 6], ['HIRE'],
+             ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 3], ['NORTH'], ['NORTH'], ['PICKUP', 'WHEAT', 2], ['PICKUP', 'WHEAT', 3]],
   'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
@@ -1273,14 +1274,15 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['SOUTH'],
   'hands': [['EAST'], ['PASS'], ['PASS'], ['NORTH'], ['PASS'], ['PASS'], ['DROP'], ['DROP'], ['WEST'], ['PASS'],
             ['PASS'], ['PASS']],
-  'market': [['SELL', 'STRAWBERRY', 4]]},
+  'market': [['SELL', 'STRAWBERRY', 4], ['SELL', 'WOOL', 4]]},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['COLLECT_FERTILIZER'], ['PASS'], ['PASS'], ['NORTH'], ['PASS'], ['PASS'], ['PASS'], ['PASS'],
             ['FERTILIZE'], ['PASS'], ['PASS'], ['PASS']],
   'market': []},
  {'farmer': ['PICKUP', 'WHEAT', 5],
   'hands': [],
-  'market': [['SELL', 'STRAWBERRY', 4], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['SELL', 'FERTILIZER', 2]]},
+  'market': [['SELL', 'STRAWBERRY', 4], ['SELL', 'FERTILIZER', 2], ['SELL', 'WOOL', 4], ['HIRE'], ['HIRE'], ['HIRE'],
+             ['HIRE'], ['HIRE']]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 4], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 1], ['PICKUP', 'WHEAT', 2]],
   'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
@@ -1294,7 +1296,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['FEED'],
   'hands': [['EAST'], ['DROP'], ['WEST'], ['FEED'], ['CARE'], ['EAST'], ['EAST'], ['SOUTH'], ['EAST'], ['WEST'],
             ['NORTH'], ['NORTH']],
-  'market': [['BUY_PRODUCT', 'WHEAT', 1]]},
+  'market': [['SELL', 'WOOL', 6], ['BUY_PRODUCT', 'WHEAT', 1]]},
  {'farmer': ['CARE'],
   'hands': [['FEED'], ['PICKUP', 'WHEAT', 1], ['WATER'], ['CARE'], ['NORTH'], ['EAST'], ['EAST'], ['WATER'], ['EAST'],
             ['WEST'], ['NORTH'], ['NORTH']],
@@ -1346,7 +1348,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['SOUTH'],
   'hands': [['HARVEST'], ['WATER'], ['WATER'], ['WATER'], ['SOUTH'], ['DROP'], ['WEST'], ['EAST'], ['WEST'],
             ['COLLECT_FERTILIZER'], ['WATER'], ['WATER']],
-  'market': [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 6], ['SELL', 'WHEAT', 14]]},
+  'market': [['SELL', 'STRAWBERRY', 6], ['SELL', 'MILK', 3], ['SELL', 'WHEAT', 14], ['SELL', 'WOOL', 4]]},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['COLLECT_FERTILIZER'], ['EAST'], ['NORTH'], ['SOUTH'], ['SOUTH'], ['HARVEST'], ['HARVEST'], ['WATER'],
             ['HARVEST'], ['EAST'], ['PASS'], ['PASS']],
@@ -1373,8 +1375,8 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': [['SELL', 'STRAWBERRY', 6]]},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [],
-  'market': [['SELL', 'STRAWBERRY', 16], ['SELL', 'MILK', 3], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
-             ['BUY_SEED', 'WHEAT', 7], ['SELL', 'FERTILIZER', 4]]},
+  'market': [['SELL', 'STRAWBERRY', 16], ['SELL', 'MILK', 3], ['SELL', 'FERTILIZER', 4], ['HIRE'], ['HIRE'], ['HIRE'],
+             ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 7]]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 2], ['PICKUP', 'WHEAT', 2]],
   'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
@@ -1417,7 +1419,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['WATER'],
   'hands': [['EAST'], ['WATER'], ['FERTILIZE'], ['WATER'], ['EAST'], ['EAST'], ['EAST'], ['FERTILIZE'], ['WATER'],
             ['HARVEST'], ['HARVEST'], ['WATER'], ['PLANT', 'WHEAT'], ['WATER']],
-  'market': [['BUY_PRODUCT', 'WHEAT', 3]]},
+  'market': [['SELL', 'WOOL', 4], ['BUY_PRODUCT', 'WHEAT', 3]]},
  {'farmer': ['HARVEST'],
   'hands': [['WATER'], ['EAST'], ['WATER'], ['HARVEST'], ['WATER'], ['WATER'], ['WATER'], ['WATER'], ['EAST'],
             ['PLANT', 'WHEAT'], ['PLANT', 'WHEAT'], ['WEST'], ['WATER'], ['HARVEST']],
@@ -1469,8 +1471,8 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': [['SELL', 'STRAWBERRY', 6], ['SELL', 'WHEAT', 4]]},
  {'farmer': ['PICKUP', 'WHEAT', 4],
   'hands': [],
-  'market': [['SELL', 'MILK', 6], ['SELL', 'WHEAT', 20], ['SELL', 'FERTILIZER', 5], ['HIRE'], ['HIRE'], ['HIRE'],
-             ['HIRE'], ['HIRE'], ['SELL', 'STRAWBERRY', 2]]},
+  'market': [['SELL', 'MILK', 6], ['SELL', 'WHEAT', 20], ['SELL', 'FERTILIZER', 5], ['SELL', 'STRAWBERRY', 2], ['HIRE'],
+             ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 4], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 2], ['PICKUP', 'WHEAT', 2]],
   'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
@@ -1533,7 +1535,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['DROP'],
   'hands': [['HARVEST'], ['HARVEST'], ['WEST'], ['EAST'], ['SOUTH'], ['NORTH'], ['WEST'], ['EAST'], ['SOUTH'], ['EAST'],
             ['SOUTH'], ['NORTH'], ['SOUTH']],
-  'market': [['SELL', 'WOOL', 4], ['SELL', 'FERTILIZER', 5], ['SELL', 'WHEAT', 1]]},
+  'market': [['SELL', 'FERTILIZER', 5], ['SELL', 'WOOL', 4], ['SELL', 'WHEAT', 1]]},
  {'farmer': ['HARVEST'],
   'hands': [['SOUTH'], ['EAST'], ['FERTILIZE'], ['EAST'], ['SOUTH'], ['EAST'], ['WEST'], ['EAST'], ['SOUTH'], ['EAST'],
             ['SOUTH'], ['WEST'], ['SOUTH']],
@@ -1541,7 +1543,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['DROP'],
   'hands': [['WEST'], ['DROP'], ['WATER'], ['DROP'], ['WEST'], ['EAST'], ['WEST'], ['EAST'], ['SOUTH'], ['EAST'],
             ['WEST'], ['WEST'], ['EAST']],
-  'market': [['SELL', 'MILK', 6], ['SELL', 'MELON', 6], ['SELL', 'WOOL', 4]]},
+  'market': [['SELL', 'MELON', 6], ['SELL', 'MILK', 6], ['SELL', 'WOOL', 4]]},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['WEST'], ['HARVEST'], ['EAST'], ['NORTH'], ['WEST'], ['EAST'], ['DROP'], ['EAST'], ['WEST'], ['EAST'],
             ['WEST'], ['COLLECT_FERTILIZER'], ['EAST']],
@@ -1549,7 +1551,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['WEST'],
   'hands': [['DROP'], ['DROP'], ['EAST'], ['HARVEST'], ['DROP'], ['DROP'], ['NORTH'], ['DROP'], ['NORTH'], ['DROP'],
             ['DROP'], ['NORTH'], ['DROP']],
-  'market': [['SELL', 'MELON', 24], ['SELL', 'STRAWBERRY', 31]]},
+  'market': [['SELL', 'MELON', 24], ['SELL', 'STRAWBERRY', 31], ['SELL', 'WOOL', 4]]},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['HARVEST'], ['COLLECT_FERTILIZER'], ['EAST'], ['COLLECT_FERTILIZER'], ['NORTH'], ['PASS'], ['NORTH'],
             ['SOUTH'], ['NORTH'], ['NORTH'], ['EAST'], ['WEST'], ['NORTH']],
@@ -1564,11 +1566,11 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': []},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [],
-  'market': [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 4], ['BUY_PRODUCT', 'WHEAT', 6], ['HIRE'], ['HIRE'], ['HIRE'],
-             ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 7], ['SELL', 'FERTILIZER', 3]]},
+  'market': [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 4], ['SELL', 'FERTILIZER', 3], ['BUY_PRODUCT', 'WHEAT', 6],
+             ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 7]]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2]],
-  'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
+  'market': [['SELL', 'WOOL', 4], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['CARE'],
   'hands': [['FEED'], ['FEED'], ['PICKUP', 'FERTILIZER', 1], ['NORTH'], ['NORTH'], ['WEST'], ['NORTH'],
             ['PICKUP', 'FERTILIZER', 3], ['PICKUP', 'WHEAT', 1], ['NORTH']],
@@ -1663,7 +1665,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
              ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 5]]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 1], ['PICKUP', 'WHEAT', 2]],
-  'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['SELL', 'FERTILIZER', 3]]},
+  'market': [['SELL', 'FERTILIZER', 3], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['CARE'],
   'hands': [['FEED'], ['FEED'], ['SOUTH'], ['NORTH'], ['NORTH'], ['WEST'], ['NORTH'], ['SOUTH'], ['PICKUP', 'WHEAT', 1],
             ['NORTH']],
@@ -1739,7 +1741,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['NORTH'], ['DROP'], ['NORTH'], ['SOUTH'], ['HARVEST'], ['NORTH'], ['SOUTH'], ['NORTH'], ['WEST'], ['DROP'],
             ['PASS'], ['PASS'], ['PASS']],
-  'market': [['SELL', 'WOOL', 4], ['SELL', 'MILK', 3]]},
+  'market': [['SELL', 'MILK', 3], ['SELL', 'WOOL', 4]]},
  {'farmer': ['WEST'],
   'hands': [['EAST'], ['HARVEST'], ['NORTH'], ['SOUTH'], ['WEST'], ['DROP'], ['SOUTH'], ['NORTH'], ['HARVEST'],
             ['PASS'], ['PASS'], ['PASS'], ['PASS']],
@@ -1747,18 +1749,18 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['HARVEST'], ['DROP'], ['SOUTH'], ['EAST'], ['HARVEST'], ['SOUTH'], ['NORTH'], ['SOUTH'],
             ['COLLECT_FERTILIZER'], ['PASS'], ['PASS'], ['PASS'], ['PASS']],
-  'market': []},
+  'market': [['SELL', 'WOOL', 4]]},
  {'farmer': ['NORTH'],
   'hands': [['DIG'], ['COLLECT_FERTILIZER'], ['SOUTH'], ['EAST'], ['DIG'], ['SOUTH'], ['NORTH'], ['SOUTH'], ['NORTH'],
             ['PASS'], ['PASS'], ['PASS'], ['PASS']],
   'market': []},
  {'farmer': ['CARE'],
   'hands': [],
-  'market': [['SELL', 'STRAWBERRY', 47], ['SELL', 'MILK', 9], ['BUY_PRODUCT', 'WHEAT', 14], ['HIRE'], ['HIRE'],
-             ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 12], ['SELL', 'FERTILIZER', 4]]},
+  'market': [['SELL', 'STRAWBERRY', 47], ['SELL', 'MILK', 9], ['SELL', 'FERTILIZER', 4], ['BUY_PRODUCT', 'WHEAT', 14],
+             ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 12]]},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 2], ['PICKUP', 'WHEAT', 3]],
-  'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
+  'market': [['SELL', 'MELON', 6], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['FEED'],
   'hands': [['FEED'], ['PICKUP', 'FERTILIZER', 4], ['PICKUP', 'FERTILIZER', 5], ['NORTH'], ['NORTH'], ['WEST'],
             ['NORTH'], ['PICKUP', 'FERTILIZER', 2], ['NORTH'], ['PICKUP', 'WHEAT', 1]],
@@ -1834,7 +1836,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['DROP'],
   'hands': [['DIG'], ['FERTILIZE'], ['EAST'], ['HARVEST'], ['COLLECT_FERTILIZER'], ['WATER'], ['DROP'], ['EAST'],
             ['EAST'], ['SOUTH'], ['SOUTH'], ['EAST'], ['SOUTH'], ['SOUTH']],
-  'market': [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 4]]},
+  'market': [['SELL', 'STRAWBERRY', 4], ['SELL', 'MILK', 3]]},
  {'farmer': ['HARVEST'],
   'hands': [['PLANT', 'WHEAT'], ['EAST'], ['FERTILIZE'], ['COLLECT_FERTILIZER'], ['SOUTH'], ['WEST'], ['HARVEST'],
             ['HARVEST'], ['HARVEST'], ['HARVEST'], ['SOUTH'], ['EAST'], ['SOUTH'], ['EAST']],
@@ -1846,14 +1848,15 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['SOUTH'], ['EAST'], ['COLLECT_FERTILIZER'], ['COLLECT_FERTILIZER'], ['DROP'], ['WATER'], ['EAST'],
             ['HARVEST'], ['SOUTH'], ['DROP'], ['EAST'], ['COLLECT_FERTILIZER'], ['SOUTH'], ['PASS']],
-  'market': [['SELL', 'STRAWBERRY', 2]]},
+  'market': [['SELL', 'STRAWBERRY', 2], ['SELL', 'WOOL', 1], ['SELL', 'WOOL', 1], ['SELL', 'WOOL', 2]]},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [],
-  'market': [['SELL', 'STRAWBERRY', 12], ['SELL', 'MILK', 6], ['SELL', 'WOOL', 1], ['SELL', 'WHEAT', 10], ['HIRE'],
+  'market': [['SELL', 'STRAWBERRY', 12], ['SELL', 'MILK', 6], ['SELL', 'WHEAT', 10], ['SELL', 'WOOL', 1], ['HIRE'],
              ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 6]]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 3]],
-  'market': [['SELL', 'WOOL', 1], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['SELL', 'FERTILIZER', 4]]},
+  'market': [['SELL', 'FERTILIZER', 4], ['SELL', 'WOOL', 1], ['SELL', 'WOOL', 2], ['HIRE'], ['HIRE'], ['HIRE'],
+             ['HIRE'], ['HIRE']]},
  {'farmer': ['CARE'],
   'hands': [['FEED'], ['PICKUP', 'FERTILIZER', 1], ['PICKUP', 'FERTILIZER', 1], ['NORTH'], ['NORTH'], ['WEST'],
             ['NORTH'], ['SOUTH'], ['NORTH'], ['NORTH']],
@@ -1941,11 +1944,11 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['PASS'],
   'hands': [['PASS'], ['COLLECT_FERTILIZER'], ['EAST'], ['WEST'], ['DROP'], ['DROP'], ['WEST'], ['EAST'], ['SOUTH'],
             ['PASS'], ['EAST'], ['PASS'], ['PASS'], ['PASS']],
-  'market': [['SELL', 'STRAWBERRY', 14], ['SELL', 'WOOL', 3]]},
+  'market': [['SELL', 'STRAWBERRY', 14], ['SELL', 'WOOL', 3], ['SELL', 'WOOL', 1]]},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [],
-  'market': [['SELL', 'STRAWBERRY', 42], ['SELL', 'WOOL', 1], ['BUY_PRODUCT', 'WHEAT', 2], ['HIRE'], ['HIRE'], ['HIRE'],
-             ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 12], ['SELL', 'FERTILIZER', 5]]},
+  'market': [['SELL', 'STRAWBERRY', 42], ['SELL', 'FERTILIZER', 5], ['SELL', 'WOOL', 1], ['BUY_PRODUCT', 'WHEAT', 2],
+             ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 12]]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 3]],
   'market': [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
@@ -2039,11 +2042,11 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
   'market': [['SELL', 'WHEAT', 18], ['SELL', 'FERTILIZER', 1]]},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [],
-  'market': [['SELL', 'WOOL', 7], ['SELL', 'STRAWBERRY', 9], ['SELL', 'MILK', 3], ['SELL', 'WHEAT', 2], ['HIRE'],
+  'market': [['SELL', 'STRAWBERRY', 9], ['SELL', 'MILK', 3], ['SELL', 'WOOL', 7], ['SELL', 'WHEAT', 2], ['HIRE'],
              ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 8]]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2]],
-  'market': [['SELL', 'WOOL', 1], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['SELL', 'FERTILIZER', 2]]},
+  'market': [['SELL', 'WOOL', 1], ['SELL', 'FERTILIZER', 2], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['CARE'],
   'hands': [['FEED'], ['FEED'], ['SOUTH'], ['NORTH'], ['NORTH'], ['WEST'], ['NORTH'], ['PICKUP', 'FERTILIZER', 1],
             ['NORTH'], ['NORTH']],
@@ -2127,14 +2130,14 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['HARVEST'],
   'hands': [['WEST'], ['EAST'], ['SOUTH'], ['COLLECT_FERTILIZER'], ['DROP'], ['DROP'], ['PASS'], ['HARVEST'], ['PASS'],
             ['PASS'], ['PASS'], ['PASS'], ['PASS'], ['PASS']],
-  'market': [['SELL', 'WOOL', 4], ['SELL', 'MILK', 3], ['SELL', 'WHEAT', 4], ['SELL', 'FERTILIZER', 2]]},
+  'market': [['SELL', 'MILK', 3], ['SELL', 'FERTILIZER', 2], ['SELL', 'WHEAT', 4], ['SELL', 'WOOL', 4]]},
  {'farmer': ['EAST'],
   'hands': [['DROP'], ['HARVEST'], ['HARVEST'], ['SOUTH'], ['PASS'], ['SOUTH'], ['PASS'], ['DIG'], ['PASS'], ['PASS'],
             ['PASS'], ['PASS'], ['PASS'], ['PASS']],
   'market': [['SELL', 'MILK', 3], ['SELL', 'MILK', 3]]},
  {'farmer': ['PICKUP', 'WHEAT', 3],
   'hands': [],
-  'market': [['SELL', 'STRAWBERRY', 31], ['SELL', 'WOOL', 8], ['SELL', 'MILK', 6], ['SELL', 'FERTILIZER', 14],
+  'market': [['SELL', 'STRAWBERRY', 31], ['SELL', 'MILK', 6], ['SELL', 'FERTILIZER', 14], ['SELL', 'WOOL', 8],
              ['SELL', 'WHEAT', 8], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['FEED'],
   'hands': [['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 2], ['WEST'], ['PICKUP', 'WHEAT', 3], ['PICKUP', 'WHEAT', 3]],
@@ -2165,7 +2168,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['CARE'],
   'hands': [['FEED'], ['SOUTH'], ['DIG'], ['NORTH'], ['NORTH'], ['HARVEST'], ['WATER'], ['WEST'], ['NORTH'], ['WEST'],
             ['HARVEST'], ['WATER'], ['HARVEST']],
-  'market': []},
+  'market': [['SELL', 'WHEAT', 14]]},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['CARE'], ['WEST'], ['SOUTH'], ['EAST'], ['WEST'], ['EAST'], ['EAST'], ['WEST'], ['WATER'], ['WATER'],
             ['EAST'], ['HARVEST'], ['NORTH']],
@@ -2209,7 +2212,7 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['EAST'],
   'hands': [['WEST'], ['EAST'], ['HARVEST'], ['SOUTH'], ['SOUTH'], ['WEST'], ['SOUTH'], ['EAST'], ['SOUTH'], ['SOUTH'],
             ['SOUTH'], ['DROP'], ['WEST']],
-  'market': [['SELL', 'WOOL', 4], ['SELL', 'FERTILIZER', 1], ['SELL', 'WHEAT', 3]]},
+  'market': [['SELL', 'WOOL', 4], ['SELL', 'WHEAT', 3], ['SELL', 'FERTILIZER', 1]]},
  {'farmer': ['HARVEST'],
   'hands': [['DROP'], ['EAST'], ['DIG'], ['SOUTH'], ['NORTH'], ['WEST'], ['SOUTH'], ['EAST'], ['NORTH'], ['SOUTH'],
             ['WEST'], ['COLLECT_FERTILIZER'], ['WATER']],
@@ -2221,21 +2224,21 @@ _PRIMARY_ACTIONS = [{'farmer': ['PASS'],
  {'farmer': ['DROP'],
   'hands': [['COLLECT_FERTILIZER'], ['NORTH'], ['WEST'], ['DROP'], ['HARVEST'], ['NORTH'], ['WEST'], ['DROP'],
             ['SOUTH'], ['HARVEST'], ['DROP'], ['WEST'], ['SOUTH']],
-  'market': [['SELL', 'WHEAT', 26], ['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 2], ['SELL', 'FERTILIZER', 1]]},
+  'market': [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 2], ['SELL', 'WHEAT', 26], ['SELL', 'FERTILIZER', 1]]},
  {'farmer': ['HARVEST'],
   'hands': [['PASS'], ['COLLECT_FERTILIZER'], ['DIG'], ['PASS'], ['COLLECT_FERTILIZER'], ['PASS'], ['WEST'],
             ['COLLECT_FERTILIZER'], ['SOUTH'], ['NORTH'], ['PASS'], ['COLLECT_FERTILIZER'], ['SOUTH']],
   'market': []},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [],
-  'market': [['SELL', 'WOOL', 4], ['SELL', 'WHEAT', 45], ['SELL', 'STRAWBERRY', 4], ['SELL', 'MILK', 3],
-             ['SELL', 'FERTILIZER', 9], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
+  'market': [['SELL', 'WHEAT', 45], ['SELL', 'FERTILIZER', 9], ['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 4],
+             ['SELL', 'WOOL', 4], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']]},
  {'farmer': ['DROP'],
   'hands': [['HARVEST'], ['HARVEST'], ['WEST'], ['NORTH'], ['NORTH']],
   'market': [['SELL', 'FERTILIZER', 1], ['HIRE']]},
  {'farmer': ['WEST'],
   'hands': [['DROP'], ['DROP'], ['SOUTH'], ['NORTH'], ['NORTH'], ['NORTH']],
-  'market': [['SELL', 'WOOL', 4], ['SELL', 'MILK', 3]]},
+  'market': [['SELL', 'MILK', 3], ['SELL', 'WOOL', 4]]},
  {'farmer': ['COLLECT_FERTILIZER'],
   'hands': [['COLLECT_FERTILIZER'], ['COLLECT_FERTILIZER'], ['SOUTH'], ['HARVEST'], ['HARVEST'], ['NORTH']],
   'market': []},
@@ -4468,8 +4471,243 @@ _ALTERNATE_ACTIONS = [{'farmer': ['PASS'],
 
 _ACTIONS = _PRIMARY_ACTIONS
 
-_ROUTE_ACTION_SHA256 = '8cac690f11b593f6407c15a0718eac2467bb26b8b105171cf80aecee626d41f6'
+_ROUTE_ACTION_SHA256 = '4a0c36676bc16852de643df803a7fd4406bee6333022634ddd6ff8d50df54e01'
 _ALTERNATE_ACTION_SHA256 = 'bb52eef866610efb828f4b0d77221f9924c5ac11d15a6506b1b16043b041e6b9'
+
+# Public opponent market schedule used only to prioritize contested sells.
+_THREAT_MARKETS = [[['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_ANIMAL', 'SHEEP', 2], ['BUY_ANIMAL', 'COW', 2],
+  ['BUY_SEED', 'WHEAT', 7], ['BUY_SEED', 'MELON', 12]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+ [['BUY_PRODUCT', 'WHEAT', 3]], [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'FERTILIZER', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 3]], [['BUY_PRODUCT', 'WHEAT', 3]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]], [], [], [], [],
+ [['SELL', 'FERTILIZER', 2], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 3]], [], [],
+ [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2]], [], [], [],
+ [['SELL', 'FERTILIZER', 4], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 4],
+  ['BUY_ANIMAL', 'COW', 1]],
+ [], [['BUY_PRODUCT', 'WHEAT', 1]], [], [], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]],
+ [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]],
+ [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]],
+ [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]],
+ [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]],
+ [['SELL', 'WHEAT', 1]], [], [], [],
+ [['SELL', 'FERTILIZER', 4], ['BUY_PRODUCT', 'WHEAT', 1], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['BUY_PRODUCT', 'WHEAT', 5], ['BUY_SEED', 'WHEAT', 7]],
+ [], [['BUY_PRODUCT', 'WHEAT', 1]], [], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 1]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 3]], [], [], [], [], [], [], [], [], [],
+ [], [], [], [['SELL', 'WHEAT', 3], ['SELL', 'FERTILIZER', 2]], [],
+ [['SELL', 'WHEAT', 25], ['SELL', 'FERTILIZER', 3], ['HIRE'], ['BUY_ANIMAL', 'COW', 1]], [], [], [], [], [], [], [], [],
+ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+ [['SELL', 'FERTILIZER', 5], ['BUY_PRODUCT', 'WHEAT', 1], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['BUY_PRODUCT', 'WHEAT', 6]],
+ [], [['BUY_PRODUCT', 'WHEAT', 1]], [], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 1]], [],
+ [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 3]], [['BUY_PRODUCT', 'WHEAT', 3]], [], [], [], [], [], [], [], [], [],
+ [], [],
+ [['SELL', 'WOOL', 12], ['SELL', 'FERTILIZER', 6], ['SELL', 'WHEAT', 1], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['BUY_LAND'], ['BUY_ANIMAL', 'SHEEP', 2], ['BUY_ANIMAL', 'COW', 2]],
+ [['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 9], ['BUY_SEED', 'STRAWBERRY', 8]], [['BUY_PRODUCT', 'WHEAT', 1]], [],
+ [], [['BUY_PRODUCT', 'WHEAT', 1]], [], [], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 3]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 5]], [], [], [],
+ [['SELL', 'FERTILIZER', 6], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 7],
+  ['BUY_SEED', 'STRAWBERRY', 4]],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 10]], [['BUY_PRODUCT', 'WHEAT', 8]],
+ [['BUY_PRODUCT', 'WHEAT', 9]], [['BUY_PRODUCT', 'WHEAT', 10]], [['BUY_PRODUCT', 'WHEAT', 10]],
+ [['BUY_PRODUCT', 'WHEAT', 10]], [['BUY_PRODUCT', 'WHEAT', 10]], [['BUY_PRODUCT', 'WHEAT', 10]],
+ [['BUY_PRODUCT', 'WHEAT', 10]], [['BUY_PRODUCT', 'WHEAT', 10]], [['BUY_PRODUCT', 'WHEAT', 8]],
+ [['BUY_PRODUCT', 'WHEAT', 5]], [], [], [], [], [], [], [], [], [['SELL', 'MILK', 6]], [['SELL', 'FERTILIZER', 2]],
+ [['SELL', 'MILK', 6]],
+ [['SELL', 'WHEAT', 13], ['SELL', 'FERTILIZER', 1], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['BUY_ANIMAL', 'COW', 2], ['BUY_SEED', 'STRAWBERRY', 7]],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+ [['SELL', 'WOOL', 4]], [], [], [], [],
+ [['SELL', 'FERTILIZER', 2], ['BUY_PRODUCT', 'WHEAT', 2], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 12]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 3]],
+ [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]], [['SELL', 'WHEAT', 6]],
+ [['SELL', 'MELON', 12], ['SELL', 'WOOL', 4]], [], [['SELL', 'MELON', 6], ['SELL', 'MILK', 3]],
+ [['SELL', 'MELON', 6], ['SELL', 'MELON', 6]], [], [],
+ [['SELL', 'MELON', 30], ['SELL', 'FERTILIZER', 9], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_LAND'],
+  ['BUY_ANIMAL', 'SHEEP', 2], ['BUY_SEED', 'MELON', 12]],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'STRAWBERRY', 23]],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 16]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [], [['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 3]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]], [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]], [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]],
+ [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]],
+ [['SELL', 'MELON', 6], ['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]],
+ [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]],
+ [['SELL', 'MILK', 3], ['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]],
+ [['SELL', 'WHEAT', 7], ['SELL', 'FERTILIZER', 2]], [], [], [],
+ [['SELL', 'MELON', 6], ['SELL', 'MILK', 6], ['SELL', 'FERTILIZER', 10], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['HIRE'], ['BUY_SEED', 'WHEAT', 7]],
+ [['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 14]], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 3]], [], [], [['SELL', 'WHEAT', 1]], [], [], [], [['SELL', 'MILK', 3]], [['SELL', 'FERTILIZER', 2]],
+ [['SELL', 'WOOL', 8], ['SELL', 'MILK', 3]], [['SELL', 'FERTILIZER', 2]],
+ [['SELL', 'FERTILIZER', 10], ['SELL', 'WHEAT', 14], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+ [], [], [],
+ [['SELL', 'WOOL', 6], ['SELL', 'MILK', 9], ['SELL', 'FERTILIZER', 12], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 14]],
+ [], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]], [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]], [['BUY_PRODUCT', 'WHEAT', 7]], [], [],
+ [['SELL', 'WOOL', 2], ['SELL', 'WOOL', 2], ['SELL', 'WOOL', 2]], [['SELL', 'WOOL', 2], ['SELL', 'FERTILIZER', 1]], [],
+ [], [['SELL', 'FERTILIZER', 9], ['SELL', 'WOOL', 2], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [['HIRE'], ['HIRE'], ['HIRE']], [], [], [], [], [], [], [], [], [],
+ [], [], [], [['SELL', 'MILK', 3]], [], [], [['SELL', 'MILK', 3]], [], [], [], [], [['SELL', 'FERTILIZER', 2]],
+ [['SELL', 'MILK', 12], ['SELL', 'FERTILIZER', 12], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['BUY_SEED', 'WHEAT', 7]],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 14]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'MILK', 6], ['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 3]],
+ [['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WHEAT', 3]], [], [], [['SELL', 'WHEAT', 1]], [], [],
+ [], [['SELL', 'MILK', 3]], [], [['SELL', 'MILK', 3]], [],
+ [['SELL', 'FERTILIZER', 4], ['SELL', 'WHEAT', 14], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [['HIRE']], [], [], [], [], [], [], [], [], [], [], [], [],
+ [['SELL', 'MILK', 6]], [], [['SELL', 'MILK', 3]], [['SELL', 'WOOL', 16]], [],
+ [['SELL', 'MILK', 6], ['SELL', 'STRAWBERRY', 8]], [], [], [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 2]],
+ [['SELL', 'MILK', 6], ['SELL', 'STRAWBERRY', 6], ['SELL', 'FERTILIZER', 7], ['SELL', 'WOOL', 6], ['HIRE'], ['HIRE'],
+  ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 14]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 3]],
+ [['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]], [['BUY_PRODUCT', 'WHEAT', 7]], [], [], [], [],
+ [['SELL', 'WOOL', 22], ['SELL', 'MILK', 3]], [['SELL', 'WHEAT', 14]], [['SELL', 'MILK', 3]], [],
+ [['SELL', 'STRAWBERRY', 4], ['SELL', 'WOOL', 4]], [],
+ [['SELL', 'STRAWBERRY', 4], ['SELL', 'FERTILIZER', 2], ['SELL', 'WOOL', 4], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 14]],
+ [['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WOOL', 6], ['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'WHEAT', 1], ['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'WOOL', 14], ['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'FERTILIZER', 8], ['SELL', 'WHEAT', 7]], [['BUY_PRODUCT', 'WHEAT', 14]],
+ [['SELL', 'STRAWBERRY', 6], ['SELL', 'MILK', 3], ['SELL', 'WHEAT', 14], ['SELL', 'WOOL', 4]],
+ [['SELL', 'WOOL', 4], ['BUY_PRODUCT', 'WHEAT', 14]],
+ [['SELL', 'MILK', 3], ['SELL', 'WHEAT', 14], ['SELL', 'FERTILIZER', 1]], [['SELL', 'MILK', 3], ['SELL', 'MILK', 3]],
+ [], [], [['SELL', 'STRAWBERRY', 6]],
+ [['SELL', 'STRAWBERRY', 16], ['SELL', 'MILK', 3], ['SELL', 'FERTILIZER', 4], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['HIRE'], ['BUY_SEED', 'WHEAT', 7]],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 14]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 6]], [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 7]],
+ [['SELL', 'WOOL', 4], ['BUY_PRODUCT', 'WHEAT', 3]], [], [], [], [], [], [], [], [], [], [], [],
+ [['SELL', 'STRAWBERRY', 6], ['SELL', 'WHEAT', 4]],
+ [['SELL', 'MILK', 6], ['SELL', 'WHEAT', 20], ['SELL', 'FERTILIZER', 5], ['SELL', 'STRAWBERRY', 2], ['HIRE'], ['HIRE'],
+  ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [['HIRE'], ['HIRE'], ['HIRE']], [], [], [], [], [], [], [], [],
+ [['SELL', 'WOOL', 4]], [], [], [['SELL', 'WHEAT', 5]], [],
+ [['SELL', 'FERTILIZER', 5], ['SELL', 'WOOL', 4], ['SELL', 'WHEAT', 1]], [],
+ [['SELL', 'MELON', 6], ['SELL', 'MILK', 6], ['SELL', 'WOOL', 4]], [['SELL', 'STRAWBERRY', 8]],
+ [['SELL', 'MELON', 24], ['SELL', 'STRAWBERRY', 31], ['SELL', 'WOOL', 4]], [], [['SELL', 'MILK', 3]], [],
+ [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 4], ['SELL', 'FERTILIZER', 3], ['BUY_PRODUCT', 'WHEAT', 6], ['HIRE'],
+  ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 7]],
+ [['SELL', 'WOOL', 4], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 15]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 3]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 5]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 7]],
+ [['SELL', 'WHEAT', 8], ['BUY_PRODUCT', 'WHEAT', 6]], [['BUY_PRODUCT', 'WHEAT', 8]], [], [], [], [], [], [],
+ [['SELL', 'WOOL', 8]], [['SELL', 'WHEAT', 14]], [], [], [['SELL', 'MELON', 6], ['SELL', 'MILK', 3]],
+ [['SELL', 'MELON', 30], ['SELL', 'STRAWBERRY', 20], ['SELL', 'MILK', 6], ['SELL', 'WOOL', 8], ['HIRE'], ['HIRE'],
+  ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 5]],
+ [['SELL', 'FERTILIZER', 3], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [['HIRE'], ['HIRE'], ['HIRE']], [], [],
+ [], [], [], [], [], [], [], [], [], [], [], [], [], [], [['SELL', 'MILK', 3]],
+ [['SELL', 'MILK', 3], ['SELL', 'WOOL', 4]], [['SELL', 'STRAWBERRY', 19]], [['SELL', 'WOOL', 4]], [],
+ [['SELL', 'STRAWBERRY', 47], ['SELL', 'MILK', 9], ['SELL', 'FERTILIZER', 4], ['BUY_PRODUCT', 'WHEAT', 14], ['HIRE'],
+  ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 12]],
+ [['SELL', 'MELON', 6], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 14]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 3]], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 1]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 1]], [['SELL', 'WHEAT', 2], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'WHEAT', 7], ['BUY_PRODUCT', 'WHEAT', 3]], [['BUY_PRODUCT', 'WHEAT', 7]], [],
+ [['SELL', 'MELON', 6], ['SELL', 'WOOL', 4]], [['SELL', 'WHEAT', 10]], [], [], [], [],
+ [['SELL', 'STRAWBERRY', 4], ['SELL', 'MILK', 3]], [['SELL', 'WHEAT', 4]], [['SELL', 'MILK', 6]],
+ [['SELL', 'STRAWBERRY', 2], ['SELL', 'WOOL', 1], ['SELL', 'WOOL', 1], ['SELL', 'WOOL', 2]],
+ [['SELL', 'STRAWBERRY', 12], ['SELL', 'MILK', 6], ['SELL', 'WHEAT', 10], ['SELL', 'WOOL', 1], ['HIRE'], ['HIRE'],
+  ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 6]],
+ [['SELL', 'FERTILIZER', 4], ['SELL', 'WOOL', 1], ['SELL', 'WOOL', 2], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'],
+  ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [], [], [], [], [], [], [], [], [], [['SELL', 'WOOL', 6]], [], [], [], [],
+ [['SELL', 'WHEAT', 1]], [], [['SELL', 'MILK', 9], ['SELL', 'WHEAT', 1]], [['SELL', 'MILK', 6]], [['SELL', 'MILK', 3]],
+ [], [['SELL', 'STRAWBERRY', 14], ['SELL', 'WOOL', 3], ['SELL', 'WOOL', 1]],
+ [['SELL', 'STRAWBERRY', 42], ['SELL', 'FERTILIZER', 5], ['SELL', 'WOOL', 1], ['BUY_PRODUCT', 'WHEAT', 2], ['HIRE'],
+  ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 12]],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_PRODUCT', 'WHEAT', 15]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['BUY_PRODUCT', 'WHEAT', 2]], [['BUY_PRODUCT', 'WHEAT', 1]], [['BUY_PRODUCT', 'WHEAT', 2]],
+ [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 2]], [['SELL', 'WHEAT', 3], ['BUY_PRODUCT', 'WHEAT', 5]],
+ [['SELL', 'WHEAT', 6], ['BUY_PRODUCT', 'WHEAT', 4]], [['SELL', 'WHEAT', 4], ['BUY_PRODUCT', 'WHEAT', 6]],
+ [['SELL', 'WHEAT', 8], ['BUY_PRODUCT', 'WHEAT', 6]], [], [], [], [], [], [], [], [], [], [['SELL', 'MILK', 3]], [],
+ [['SELL', 'WHEAT', 18], ['SELL', 'FERTILIZER', 1]],
+ [['SELL', 'STRAWBERRY', 9], ['SELL', 'MILK', 3], ['SELL', 'WOOL', 7], ['SELL', 'WHEAT', 2], ['HIRE'], ['HIRE'],
+  ['HIRE'], ['HIRE'], ['HIRE'], ['BUY_SEED', 'WHEAT', 8]],
+ [['SELL', 'WOOL', 1], ['SELL', 'FERTILIZER', 2], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [],
+ [['SELL', 'FERTILIZER', 20]], [], [['SELL', 'STRAWBERRY', 4], ['SELL', 'WHEAT', 4]],
+ [['SELL', 'MILK', 3], ['SELL', 'FERTILIZER', 2], ['SELL', 'WHEAT', 4]],
+ [['SELL', 'MILK', 3], ['SELL', 'FERTILIZER', 2], ['SELL', 'WHEAT', 4], ['SELL', 'WOOL', 4]],
+ [['SELL', 'MILK', 3], ['SELL', 'MILK', 3]],
+ [['SELL', 'STRAWBERRY', 31], ['SELL', 'MILK', 6], ['SELL', 'FERTILIZER', 14], ['SELL', 'WOOL', 8],
+  ['SELL', 'WHEAT', 8], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']], [['HIRE'], ['HIRE'], ['HIRE']], [], [], [], [], [],
+ [['SELL', 'WHEAT', 14]], [], [], [], [], [], [], [], [], [], [],
+ [['SELL', 'WOOL', 4], ['SELL', 'WHEAT', 3], ['SELL', 'FERTILIZER', 1]],
+ [['SELL', 'FERTILIZER', 2], ['SELL', 'WHEAT', 4]], [['SELL', 'WHEAT', 10]],
+ [['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 2], ['SELL', 'WHEAT', 26], ['SELL', 'FERTILIZER', 1]], [],
+ [['SELL', 'WHEAT', 45], ['SELL', 'FERTILIZER', 9], ['SELL', 'MILK', 3], ['SELL', 'STRAWBERRY', 4], ['SELL', 'WOOL', 4],
+  ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE'], ['HIRE']],
+ [['SELL', 'FERTILIZER', 1], ['HIRE']], [['SELL', 'MILK', 3], ['SELL', 'WOOL', 4]], [], [['SELL', 'FERTILIZER', 2]], [],
+ [], [], [], [], [], [], [], [], [['SELL', 'WHEAT', 6]],
+ [['SELL', 'WOOL', 4], ['SELL', 'FERTILIZER', 2], ['SELL', 'WHEAT', 4]], [],
+ [['SELL', 'MILK', 9], ['SELL', 'FERTILIZER', 5], ['SELL', 'WHEAT', 2]], [['SELL', 'MILK', 3], ['SELL', 'WHEAT', 5]],
+ [['SELL', 'MILK', 3], ['SELL', 'FERTILIZER', 4], ['SELL', 'WHEAT', 2]], [], [], [['SELL', 'WHEAT', 8]]]
 _ARCHITECTURE = 'V17 transparent route, recovery, and all-product market search'
 
 # Empirical premium-sale hazard model. Keys are upcoming turn numbers.
@@ -4819,7 +5057,7 @@ _GOLD_HAZARD = {'102': [['WHEAT', 1.0, 1.0, 6]],
  '92': [['WHEAT', 1.0, 1.0, 6]],
  '96': [['FERTILIZER', 1.0, 4.0, 6]]}
 
-_WEED_REPLAY_STEPS = 2
+_WEED_REPLAY_STEPS = 8
 _WEED_STATE = {0: {"last_step": -1, "active": {}}, 1: {"last_step": -1, "active": {}}}
 _SHIFT_STATE = {
     0: {"last_step": -1, "due_step": -1, "due": {}, "last_preempt": -10**9},
@@ -4831,6 +5069,8 @@ _PREEMPT_FRACTION = 2.0
 _PREEMPT_MAX_BATCH = 100
 _PREEMPT_COOLDOWN = 1
 _PREEMPT_MAX_CLONE_DISTANCE = 6
+_PREEMPT_LOOKAHEAD = 1
+_PREEMPT_LEAD = 1
 _PREEMPT_START = 120
 _PREEMPT_STOP = 719
 _PREMIUM = (
@@ -4841,6 +5081,12 @@ _SELLABLE = (
     "STRAWBERRY", "MELON", "MILK", "WOOL", "WHEAT",
     "FERTILIZER", "EGG", "TOMATO", "CARROT",
 )
+_PRODUCT_BY_ANIMAL = {"COW": "MILK", "SHEEP": "WOOL", "GOOSE": "EGG"}
+_GLUT_WEIGHT = {
+    "STRAWBERRY": 2.0, "MELON": 3.6, "MILK": 2.0, "WOOL": 3.2,
+    "EGG": 1.5, "TOMATO": 1.3, "CARROT": 1.0, "WHEAT": 1.0,
+    "FERTILIZER": 1.0,
+}
 
 
 def _get(obj, key, default=None):
@@ -5074,13 +5320,16 @@ def _repay_shift(obs, action, step):
 
 
 def _future_base_sells(step):
-    if step + 1 >= len(_ACTIONS):
-        return {}
+    due_step = step + max(1, int(_PREEMPT_LEAD))
+    if due_step >= len(_ACTIONS):
+        return {}, {}
     result = {}
-    for raw in (_ACTIONS[step + 1].get("market") or []):
+    due_steps = {}
+    for raw in (_ACTIONS[due_step].get("market") or []):
         if len(raw) >= 3 and raw[0] == "SELL" and raw[1] in _PREMIUM:
             result[raw[1]] = result.get(raw[1], 0) + max(0, int(raw[2]))
-    return result
+            due_steps[raw[1]] = due_step
+    return result, due_steps
 
 
 def _remaining_shed(obs, action):
@@ -5101,15 +5350,25 @@ def _preempt_shift(obs, action, step):
         return action
     if _clone_distance(obs) > _PREEMPT_MAX_CLONE_DISTANCE:
         return action
-    future_base = _future_base_sells(step)
+    future_base, future_due_steps = _future_base_sells(step)
     if not future_base:
         return action
     hazards = {
-        row[0]: row for row in _GOLD_HAZARD.get(str(step + 1), [])
+        row[0]: row for row in _GOLD_HAZARD.get(str(step + max(1, int(_PREEMPT_LEAD))), [])
         if row[0] in _PREMIUM and float(row[1]) >= _PREEMPT_THRESHOLD
     }
     if not hazards:
         return action
+    matching_due_steps = [
+        future_due_steps[item] for item in hazards if item in future_due_steps
+    ]
+    if not matching_due_steps:
+        return action
+    future_due_step = min(matching_due_steps)
+    future_base = {
+        item: quantity for item, quantity in future_base.items()
+        if future_due_steps[item] == future_due_step
+    }
 
     action = _safe_market(obs, action)
     market = list(action.get("market") or [])
@@ -5148,7 +5407,7 @@ def _preempt_shift(obs, action, step):
         shifted[item] = target
     if shifted:
         action["market"] = market[:10]
-        state["due_step"] = step + 1
+        state["due_step"] = future_due_step
         state["due"] = shifted
         state["last_preempt"] = step
     return action
@@ -5176,20 +5435,49 @@ def _safe_market(obs, action):
     return action
 
 
+def _opponent_exposure(obs):
+    """Estimate which products the opponent can dump into the final market."""
+    seat, _own_farm = _farm(obs)
+    farms = list(_get(obs, "farms", []) or [])
+    opponent = farms[1 - seat] if len(farms) >= 2 else {}
+    exposure = {item: 0.0 for item in _SELLABLE}
+    for row in (_get(opponent, "tiles", []) or []):
+        for tile in row if isinstance(row, list) else [row]:
+            if not isinstance(tile, dict):
+                continue
+            crop = str(tile.get("crop", "")).upper()
+            if crop in exposure:
+                exposure[crop] += max(1.0, float(tile.get("yield_units", 0) or 0))
+            product = _PRODUCT_BY_ANIMAL.get(str(tile.get("animal", "")).upper())
+            if product:
+                exposure[product] += 1.0 + max(0.0, float(tile.get("yield_units", 0) or 0))
+            if tile.get("fertilizer_available", False):
+                exposure["FERTILIZER"] += 1.0
+    return exposure
+
+
 def _terminal_market(obs, action):
+    """Liquidate all products, prioritizing the most dangerous price collisions."""
     action = _align_hands(action, obs)
     shed = _projected_shed(obs, action)
-    existing = [list(order) for order in (action.get("market") or []) if order]
-    existing_sell = {order[1] for order in existing if len(order) >= 3 and order[0] == "SELL"}
-    rows = []
     prices = _get(_get(obs, "market", {}) or {}, "prices", {}) or {}
+    exposure = _opponent_exposure(obs)
+    rows = []
     for index, item in enumerate(_SELLABLE):
         quantity = max(0, int(shed.get(item, 0) or 0))
-        if quantity > 0 and item not in existing_sell:
-            rows.append((float(prices.get(item, 1) or 1), -index, item, quantity))
+        if quantity <= 0:
+            continue
+        score = (
+            (1.0 + exposure.get(item, 0.0))
+            * _GLUT_WEIGHT.get(item, 1.0)
+            * max(1.0, float(prices.get(item, 1) or 1))
+            * math.log1p(quantity)
+        )
+        rows.append((score, -index, item, quantity))
     rows.sort(reverse=True)
-    action["market"] = existing + [["SELL", item, quantity] for _, _, item, quantity in rows]
-    action["market"] = action["market"][:10]
+    action["market"] = [
+        ["SELL", item, quantity] for _score, _index, item, quantity in rows[:10]
+    ]
     return action
 
 
@@ -5214,6 +5502,38 @@ def _activate_action_book(obs, step):
     mode = _PORTFOLIO_MODE[seat]
     _ACTIONS = _ALTERNATE_ACTIONS if mode == "alternate" else _PRIMARY_ACTIONS
     return mode
+
+
+def _counter_order(action, step):
+    """Prioritize products a recognized threat is selling on this turn."""
+    # The threat tape describes the primary opening.  Keep an independently
+    # selected alternate route's tested order intact.
+    if "_PRIMARY_ACTIONS" in globals() and _ACTIONS is not _PRIMARY_ACTIONS:
+        return action
+    if not (0 <= step < len(_THREAT_MARKETS)):
+        return action
+    threat_items = [
+        order[1] for order in (_THREAT_MARKETS[step] or [])
+        if len(order) >= 3 and order[0] == "SELL"
+    ]
+    if not threat_items:
+        return action
+    ranks = {item: index for index, item in enumerate(threat_items)}
+    market = list(action.get("market") or [])
+    sells = [(index, list(order)) for index, order in enumerate(market)
+             if len(order) >= 3 and order[0] == "SELL"]
+    if len(sells) < 2:
+        return action
+    reordered = sorted(
+        sells,
+        key=lambda row: (ranks.get(row[1][1], len(ranks)), row[0]),
+    )
+    iterator = iter(order for _index, order in reordered)
+    action["market"] = [
+        next(iterator) if len(order) >= 3 and order[0] == "SELL" else order
+        for order in market
+    ]
+    return action
 
 
 # The complete command vocabulary is kept explicit.  The opening book is the
@@ -5338,6 +5658,7 @@ def agent(obs):
             # Bridge the primary turn-zero purchase into the alternate route.
             action["market"] = [["BUY_PRODUCT", "WHEAT", 5]]
         action = _weed_repair_action(obs, action, step)
+        action = _counter_order(action, step)
         action = _repay_shift(obs, action, step)
         action = _safe_market(obs, action)
         action = _preempt_shift(obs, action, step)

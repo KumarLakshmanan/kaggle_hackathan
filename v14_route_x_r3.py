@@ -8,6 +8,7 @@ premium shifts with exact next-turn repayment, and final liquidation.
 import base64
 import copy
 import json
+import math
 import zlib
 
 
@@ -150,7 +151,7 @@ _GOLD_HAZARD = json.loads(zlib.decompress(base64.b85decode((
     '&^8Px<@BAC{s!^V1>u}+ZdmjkowMjWYym#HcfGk215k8eUT<YLjcUV<_q(D=?$7<Ax4zej-oGo5D-JyiiP48!^Kelkv4g^5W{Vzf'
     '4a{%sxwq`1M{7@X@GV)Klv*b}(8{?hX^suie`Ms+vDOGuMQ{5b8=CnhTX9CTy`1oKfZlGo-R0Z?{{0V4Dr6P'
 ))).decode("utf-8"))
-_WEED_REPLAY_STEPS = 2
+_WEED_REPLAY_STEPS = 8
 _WEED_STATE = {0: {"last_step": -1, "active": {}}, 1: {"last_step": -1, "active": {}}}
 _SHIFT_STATE = {
     0: {"last_step": -1, "due_step": -1, "due": {}, "last_preempt": -10**9},
@@ -162,6 +163,8 @@ _PREEMPT_FRACTION = 2.0
 _PREEMPT_MAX_BATCH = 30
 _PREEMPT_COOLDOWN = 1
 _PREEMPT_MAX_CLONE_DISTANCE = 6
+_PREEMPT_LOOKAHEAD = 1
+_PREEMPT_LEAD = 1
 _PREEMPT_START = 120
 _PREEMPT_STOP = 680
 _PREMIUM = ("STRAWBERRY", "MELON", "MILK", "WOOL")
@@ -169,6 +172,12 @@ _SELLABLE = (
     "STRAWBERRY", "MELON", "MILK", "WOOL", "WHEAT",
     "FERTILIZER", "EGG", "TOMATO", "CARROT",
 )
+_PRODUCT_BY_ANIMAL = {"COW": "MILK", "SHEEP": "WOOL", "GOOSE": "EGG"}
+_GLUT_WEIGHT = {
+    "STRAWBERRY": 2.0, "MELON": 3.6, "MILK": 2.0, "WOOL": 3.2,
+    "EGG": 1.5, "TOMATO": 1.3, "CARROT": 1.0, "WHEAT": 1.0,
+    "FERTILIZER": 1.0,
+}
 
 
 def _get(obj, key, default=None):
@@ -402,13 +411,16 @@ def _repay_shift(obs, action, step):
 
 
 def _future_base_sells(step):
-    if step + 1 >= len(_ACTIONS):
-        return {}
+    due_step = step + max(1, int(_PREEMPT_LEAD))
+    if due_step >= len(_ACTIONS):
+        return {}, {}
     result = {}
-    for raw in (_ACTIONS[step + 1].get("market") or []):
+    due_steps = {}
+    for raw in (_ACTIONS[due_step].get("market") or []):
         if len(raw) >= 3 and raw[0] == "SELL" and raw[1] in _PREMIUM:
             result[raw[1]] = result.get(raw[1], 0) + max(0, int(raw[2]))
-    return result
+            due_steps[raw[1]] = due_step
+    return result, due_steps
 
 
 def _remaining_shed(obs, action):
@@ -429,15 +441,25 @@ def _preempt_shift(obs, action, step):
         return action
     if _clone_distance(obs) > _PREEMPT_MAX_CLONE_DISTANCE:
         return action
-    future_base = _future_base_sells(step)
+    future_base, future_due_steps = _future_base_sells(step)
     if not future_base:
         return action
     hazards = {
-        row[0]: row for row in _GOLD_HAZARD.get(str(step + 1), [])
+        row[0]: row for row in _GOLD_HAZARD.get(str(step + max(1, int(_PREEMPT_LEAD))), [])
         if row[0] in _PREMIUM and float(row[1]) >= _PREEMPT_THRESHOLD
     }
     if not hazards:
         return action
+    matching_due_steps = [
+        future_due_steps[item] for item in hazards if item in future_due_steps
+    ]
+    if not matching_due_steps:
+        return action
+    future_due_step = min(matching_due_steps)
+    future_base = {
+        item: quantity for item, quantity in future_base.items()
+        if future_due_steps[item] == future_due_step
+    }
 
     action = _safe_market(obs, action)
     market = list(action.get("market") or [])
@@ -476,7 +498,7 @@ def _preempt_shift(obs, action, step):
         shifted[item] = target
     if shifted:
         action["market"] = market[:10]
-        state["due_step"] = step + 1
+        state["due_step"] = future_due_step
         state["due"] = shifted
         state["last_preempt"] = step
     return action
@@ -504,20 +526,49 @@ def _safe_market(obs, action):
     return action
 
 
+def _opponent_exposure(obs):
+    """Estimate which products the opponent can dump into the final market."""
+    seat, _own_farm = _farm(obs)
+    farms = list(_get(obs, "farms", []) or [])
+    opponent = farms[1 - seat] if len(farms) >= 2 else {}
+    exposure = {item: 0.0 for item in _SELLABLE}
+    for row in (_get(opponent, "tiles", []) or []):
+        for tile in row if isinstance(row, list) else [row]:
+            if not isinstance(tile, dict):
+                continue
+            crop = str(tile.get("crop", "")).upper()
+            if crop in exposure:
+                exposure[crop] += max(1.0, float(tile.get("yield_units", 0) or 0))
+            product = _PRODUCT_BY_ANIMAL.get(str(tile.get("animal", "")).upper())
+            if product:
+                exposure[product] += 1.0 + max(0.0, float(tile.get("yield_units", 0) or 0))
+            if tile.get("fertilizer_available", False):
+                exposure["FERTILIZER"] += 1.0
+    return exposure
+
+
 def _terminal_market(obs, action):
+    """Liquidate all products, prioritizing the most dangerous price collisions."""
     action = _align_hands(action, obs)
     shed = _projected_shed(obs, action)
-    existing = [list(order) for order in (action.get("market") or []) if order]
-    existing_sell = {order[1] for order in existing if len(order) >= 3 and order[0] == "SELL"}
-    rows = []
     prices = _get(_get(obs, "market", {}) or {}, "prices", {}) or {}
+    exposure = _opponent_exposure(obs)
+    rows = []
     for index, item in enumerate(_SELLABLE):
         quantity = max(0, int(shed.get(item, 0) or 0))
-        if quantity > 0 and item not in existing_sell:
-            rows.append((float(prices.get(item, 1) or 1), -index, item, quantity))
+        if quantity <= 0:
+            continue
+        score = (
+            (1.0 + exposure.get(item, 0.0))
+            * _GLUT_WEIGHT.get(item, 1.0)
+            * max(1.0, float(prices.get(item, 1) or 1))
+            * math.log1p(quantity)
+        )
+        rows.append((score, -index, item, quantity))
     rows.sort(reverse=True)
-    action["market"] = existing + [["SELL", item, quantity] for _, _, item, quantity in rows]
-    action["market"] = action["market"][:10]
+    action["market"] = [
+        ["SELL", item, quantity] for _score, _index, item, quantity in rows[:10]
+    ]
     return action
 
 

@@ -156,6 +156,7 @@ def build(
     all_product_preempt: bool = False,
     alternate_source: Path | None = None,
     threat_source: Path | None = None,
+    hazard_source: Path | None = None,
 ) -> None:
     if source.name.endswith(".json.gz"):
         payload = _read_route(source)
@@ -204,6 +205,23 @@ def build(
         if len(threat_actions) != len(actions):
             raise RuntimeError("Strategy and threat routes have different lengths")
         threat_markets = [row.get("market", []) for row in threat_actions]
+    hazard_model = module._GOLD_HAZARD
+    if hazard_source is not None:
+        hazard_actions = _read_route(hazard_source)["actions"]
+        if len(hazard_actions) != len(actions):
+            raise RuntimeError("Strategy and hazard routes have different lengths")
+        hazard_model = {}
+        for step, action in enumerate(hazard_actions):
+            quantities = {}
+            for order in action.get("market", []) or []:
+                if len(order) >= 3 and order[0] == "SELL":
+                    item = order[1]
+                    quantities[item] = quantities.get(item, 0) + max(0, int(order[2]))
+            if quantities:
+                hazard_model[str(step)] = [
+                    [item, 1.0, float(quantity), 1]
+                    for item, quantity in quantities.items()
+                ]
     marker = "_WEED_REPLAY_STEPS ="
     marker_at = source_text.index(marker)
     readable_logic = source_text[marker_at:]
@@ -263,6 +281,10 @@ def _activate_action_book(obs, step):
         threat_engine = r'''
 def _counter_order(action, step):
     """Prioritize products a recognized threat is selling on this turn."""
+    # The threat tape describes the primary opening.  Keep an independently
+    # selected alternate route's tested order intact.
+    if "_PRIMARY_ACTIONS" in globals() and _ACTIONS is not _PRIMARY_ACTIONS:
+        return action
     if not (0 <= step < len(_THREAT_MARKETS)):
         return action
     threat_items = [
@@ -335,10 +357,11 @@ compressed, encoded, or dynamically evaluated.
 from __future__ import annotations
 
 import copy
+import math
 
 '''
     actions_literal = pprint.pformat(actions, width=120, compact=True, sort_dicts=False)
-    hazards = pprint.pformat(module._GOLD_HAZARD, width=120, compact=True, sort_dicts=True)
+    hazards = pprint.pformat(hazard_model, width=120, compact=True, sort_dicts=True)
     action_tables = (
         f"_ACTIONS = {actions_literal}\n\n"
         if alternate_actions is None
@@ -386,6 +409,11 @@ def main() -> None:
         help="Public route whose same-turn sales should receive counter-order priority",
     )
     parser.add_argument(
+        "--hazard-source",
+        type=Path,
+        help="Public route whose next-turn sales should trigger bounded preemption",
+    )
+    parser.add_argument(
         "--alternate-source",
         type=Path,
         help="Optional second route selected from the opponent's public turn-one state",
@@ -399,6 +427,7 @@ def main() -> None:
         args.all_product_preempt,
         args.alternate_source.resolve() if args.alternate_source else None,
         args.threat_source.resolve() if args.threat_source else None,
+        args.hazard_source.resolve() if args.hazard_source else None,
     )
     print(args.output.resolve())
 

@@ -1,0 +1,134 @@
+[
+  {
+    "episode_id": 90613978,
+    "seed": 178194345,
+    "team": "venks",
+    "source_seat": 0,
+    "reward": 120826.0,
+    "action_count": 719,
+    "action_sha256": "764cfc7f2eef0b5e18d54abbe5d2d95468749f32dbc361624571195ce03c1f79",
+    "path": "best_replay\\routes\\episode-90613978-seat0.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90616293,
+    "seed": 864998396,
+    "team": "THUNDER THUNDER",
+    "source_seat": 0,
+    "reward": 131214.0,
+    "action_count": 719,
+    "action_sha256": "c47c1480ed78532f304498720cbb3ba5d21bf7a588f76e34fdd11bb71fd35799",
+    "path": "best_replay\\routes\\episode-90616293-seat0.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90617094,
+    "seed": 1465818491,
+    "team": "venks",
+    "source_seat": 1,
+    "reward": 85237.0,
+    "action_count": 719,
+    "action_sha256": "1ae97f48bee0d5cd20329010d597f92498bcf5e92e8b63720599a933b86860ff",
+    "path": "best_replay\\routes\\episode-90617094-seat1.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90617877,
+    "seed": 1537531300,
+    "team": "THUNDER THUNDER",
+    "source_seat": 0,
+    "reward": 103524.0,
+    "action_count": 719,
+    "action_sha256": "7a9e39d01639462cee2ec74c3ce714ccba0ff813ce3300b01a72688b452e158c",
+    "path": "best_replay\\routes\\episode-90617877-seat0.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90618657,
+    "seed": 1397357614,
+    "team": "venks",
+    "source_seat": 1,
+    "reward": 93643.0,
+    "action_count": 719,
+    "action_sha256": "96e05e85af507800de8e45f2eeda6e9bd8a96265c104ac9e4cae46ed6780f6d1",
+    "path": "best_replay\\routes\\episode-90618657-seat1.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90619447,
+    "seed": 497350641,
+    "team": "Seb (allegedly)",
+    "source_seat": 0,
+    "reward": 80431.0,
+    "action_count": 719,
+    "action_sha256": "7c1239b23e1cb2ddf078a3b8da53fe1fc94384ea24d17d03b4af30cfdb6da50c",
+    "path": "best_replay\\routes\\episode-90619447-seat0.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90620234,
+    "seed": 1595666282,
+    "team": "Seb (allegedly)",
+    "source_seat": 1,
+    "reward": 116259.0,
+    "action_count": 719,
+    "action_sha256": "ba533dde7d0c89535c93a9e40d2600b9a70883f2ce1aaeb51dd987056c6af596",
+    "path": "best_replay\\routes\\episode-90620234-seat1.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90622597,
+    "seed": 665632561,
+    "team": "Dahoui Alex Armel ",
+    "source_seat": 1,
+    "reward": 83025.0,
+    "action_count": 719,
+    "action_sha256": "c60b2796d0e6abdc27914a06e1d68e4979d6ab3da17c4fc22f57de54c7bbad64",
+    "path": "best_replay\\routes\\episode-90622597-seat1.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90625760,
+    "seed": 290494414,
+    "team": "venks",
+    "source_seat": 0,
+    "reward": 120650.0,
+    "action_count": 719,
+    "action_sha256": "8d4587c474e540a4ca358bc920893d50bd5893602323f9581e676dbad8c03792",
+    "path": "best_replay\\routes\\episode-90625760-seat0.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90630506,
+    "seed": 1949153827,
+    "team": "THUNDER THUNDER",
+    "source_seat": 0,
+    "reward": 144167.0,
+    "action_count": 719,
+    "action_sha256": "0360b36f3a0f8cbbfcc28e296a902c933c27191d469f35044d59ade199955184",
+    "path": "best_replay\\routes\\episode-90630506-seat0.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90631991,
+    "seed": 1462516754,
+    "team": "Wufang Hong",
+    "source_seat": 1,
+    "reward": 120299.0,
+    "action_count": 719,
+    "action_sha256": "9d59c1edb498ef988f00187c3a322d26a47490a071413dfeb92d49101ed512f1",
+    "path": "best_replay\\routes\\episode-90631991-seat1.json.gz",
+    "duplicate_of": null
+  },
+  {
+    "episode_id": 90635995,
+    "seed": 1887056264,
+    "team": "Seb (allegedly)",
+    "source_seat": 0,
+    "reward": 112160.0,
+    "action_count": 719,
+    "action_sha256": "2e561e610d5d2771396b0e6f10100d8f7b948a33592b4a82ece102fb6c3089d4",
+    "path": "best_replay\\routes\\episode-90635995-seat0.json.gz",
+    "duplicate_of": null
+  }
+]

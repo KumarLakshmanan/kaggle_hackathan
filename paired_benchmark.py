@@ -91,12 +91,22 @@ def _pass_agent(obs: Any) -> dict[str, Any]:
 def _farm_signature(farm: Any) -> dict[str, Any]:
     counts: dict[str, int] = {}
     weeds = 0
-    for row in _value(farm, "tiles", []) or []:
-        for tile in row if isinstance(row, list) else [row]:
+    occupied: list[list[Any]] = []
+    for y, row in enumerate(_value(farm, "tiles", []) or []):
+        for x, tile in enumerate(row if isinstance(row, list) else [row]):
             if not isinstance(tile, dict):
                 continue
             if tile.get("kind") == "WEED":
                 weeds += 1
+            occupied.append(
+                [
+                    x,
+                    y,
+                    tile.get("kind"),
+                    tile.get("crop"),
+                    tile.get("animal"),
+                ]
+            )
             for field in ("crop", "animal", "kind"):
                 value = str(tile.get(field, "")).upper()
                 if value:
@@ -108,6 +118,7 @@ def _farm_signature(farm: Any) -> dict[str, Any]:
         "land": len(_value(farm, "unlocked_quadrants", []) or []),
         "weeds": weeds,
         "counts": counts,
+        "occupied": occupied,
     }
 
 
@@ -167,18 +178,47 @@ def _load_agent(
     if specification.lower() == "pass":
         timed = TimedAgent(_pass_agent, capture_step)
         return timed, timed
+    delayed_switch = specification.lower().startswith("v31-switch:")
+    readable_route = specification.lower().startswith("v26-route:")
     route_preempt = specification.lower().startswith("route+preempt:")
-    if route_preempt or specification.lower().startswith("route:"):
+    if delayed_switch or readable_route or route_preempt or specification.lower().startswith("route:"):
         route_path = Path(specification.split(":", 1)[1]).resolve()
         with gzip.open(route_path, "rt", encoding="utf-8") as handle:
             payload = json.load(handle)
         actions = payload.get("actions", [])
         if len(actions) != 719:
             raise RuntimeError(f"Expected 719 actions in {route_path}, found {len(actions)}")
-        base_path = Path(__file__).resolve().parent / "v13r3_notebook_output" / "main.py"
+        if delayed_switch:
+            base_path = Path(__file__).resolve().parent / "main_v31_observable_portfolio.py"
+        elif readable_route:
+            base_path = Path(__file__).resolve().parent / "main.py"
+        else:
+            base_path = Path(__file__).resolve().parent / "v13r3_notebook_output" / "main.py"
         module = _load_module(base_path, f"route_proxy_{tag}")
-        module._ACTIONS = actions
-        module._PREEMPT_ENABLED = route_preempt
+        if delayed_switch:
+            original_activate = module._activate_action_book
+
+            def activate_delayed(obs: Any, step: int) -> str:
+                mode = original_activate(obs, step)
+                if mode == "alternate" and step >= 144:
+                    module._ACTIONS = actions
+                return mode
+
+            module._activate_action_book = activate_delayed
+        else:
+            module._ACTIONS = actions
+        if readable_route:
+            module._PRIMARY_ACTIONS = actions
+            module._ALTERNATE_ACTIONS = actions
+            module._counter_order = lambda action, step: action
+
+            def activate_route(_obs: Any, _step: int) -> str:
+                module._ACTIONS = actions
+                return "primary"
+
+            module._activate_action_book = activate_route
+        else:
+            module._PREEMPT_ENABLED = route_preempt
         _apply_overrides(module, overrides or {})
         function = getattr(module, "agent")
         timed = TimedAgent(function, capture_step)

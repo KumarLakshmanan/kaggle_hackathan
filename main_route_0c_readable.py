@@ -491,15 +491,15 @@ _ACTIONS = [{'farmer': ['PASS'],
             ['PLANT', 'STRAWBERRY'], ['COLLECT_FERTILIZER']],
   'market': []},
  {'farmer': ['FEED'],
-  'hands': [['WATER'], ['WATER'], ['COLLECT_FERTILIZER'], ['WATER'], ['WATER'], ['WATER'], ['PLANT', 'STRAWBERRY'],
-            ['WATER'], ['WATER'], ['EAST']],
+  'hands': [['WATER'], ['WATER'], ['COLLECT_FERTILIZER'], ['WATER'], ['WATER'], ['WATER'], ['DIG'], ['WATER'],
+            ['WATER'], ['EAST']],
   'market': []},
  {'farmer': ['CARE'],
-  'hands': [['SOUTH'], ['SOUTH'], ['NORTH'], ['WEST'], ['NORTH'], ['PASS'], ['WATER'], ['PASS'], ['PASS'],
+  'hands': [['SOUTH'], ['SOUTH'], ['NORTH'], ['WEST'], ['NORTH'], ['PASS'], ['PLANT', 'STRAWBERRY'], ['PASS'], ['PASS'],
             ['COLLECT_FERTILIZER']],
   'market': []},
  {'farmer': ['EAST'],
-  'hands': [['WATER'], ['EAST'], ['WEST'], ['WATER'], ['PLANT', 'STRAWBERRY'], ['PASS'], ['PASS'], ['PASS'], ['PASS'],
+  'hands': [['WATER'], ['EAST'], ['WEST'], ['WATER'], ['PLANT', 'STRAWBERRY'], ['PASS'], ['WATER'], ['PASS'], ['PASS'],
             ['PASS']],
   'market': []},
  {'farmer': ['FEED'],
@@ -2287,7 +2287,7 @@ _ACTIONS = [{'farmer': ['PASS'],
   'hands': [['PASS'], ['PASS'], ['PASS'], ['PASS'], ['PASS'], ['PASS']],
   'market': [['SELL', 'WHEAT', 8]]}]
 
-_ROUTE_ACTION_SHA256 = 'fc5b5bb3e98438f610c16d656ea56cb6f5bbe38b5e950ecc64e6fdac991f40c3'
+_ROUTE_ACTION_SHA256 = '0c06a04991aad42e393f869d19dd4b25790bab4f41071cecb7e3bdde6abf9d0d'
 _ARCHITECTURE = 'V15 transparent route, recovery, and market search'
 
 # Empirical premium-sale hazard model. Keys are upcoming turn numbers.

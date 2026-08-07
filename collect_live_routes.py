@@ -8,6 +8,7 @@ import hashlib
 import io
 import json
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -99,6 +100,8 @@ def collect_episode(
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     parser = argparse.ArgumentParser()
     parser.add_argument("submission_id", type=int)
     parser.add_argument("--kaggle", required=True)

@@ -149,7 +149,14 @@ def _read_route(path: Path) -> dict:
         return json.load(handle)
 
 
-def build(source: Path, destination: Path, unit_source: Path | None = None) -> None:
+def build(
+    source: Path,
+    destination: Path,
+    unit_source: Path | None = None,
+    all_product_preempt: bool = False,
+    alternate_source: Path | None = None,
+    threat_source: Path | None = None,
+) -> None:
     if source.name.endswith(".json.gz"):
         payload = _read_route(source)
         actions = payload["actions"]
@@ -177,10 +184,121 @@ def build(source: Path, destination: Path, unit_source: Path | None = None) -> N
         actions = module._ACTIONS
         route_hash = module._ROUTE_ACTION_SHA256
         source_text = source.read_text(encoding="utf-8")
+
+    alternate_actions = None
+    alternate_hash = None
+    if alternate_source is not None:
+        alternate_payload = _read_route(alternate_source)
+        alternate_actions = alternate_payload["actions"]
+        if len(alternate_actions) != len(actions):
+            raise RuntimeError("Primary and alternate routes have different lengths")
+        alternate_canonical = json.dumps(
+            alternate_actions, separators=(",", ":"), sort_keys=True
+        ).encode("utf-8")
+        alternate_hash = hashlib.sha256(alternate_canonical).hexdigest()
+
+    threat_markets = None
+    if threat_source is not None:
+        threat_payload = _read_route(threat_source)
+        threat_actions = threat_payload["actions"]
+        if len(threat_actions) != len(actions):
+            raise RuntimeError("Strategy and threat routes have different lengths")
+        threat_markets = [row.get("market", []) for row in threat_actions]
     marker = "_WEED_REPLAY_STEPS ="
     marker_at = source_text.index(marker)
     readable_logic = source_text[marker_at:]
+    if all_product_preempt:
+        readable_logic = readable_logic.replace("_PREEMPT_MAX_BATCH = 30", "_PREEMPT_MAX_BATCH = 100")
+        readable_logic = readable_logic.replace("_PREEMPT_STOP = 680", "_PREEMPT_STOP = 719")
+        readable_logic = readable_logic.replace(
+            '_PREMIUM = ("STRAWBERRY", "MELON", "MILK", "WOOL")',
+            '_PREMIUM = (\n'
+            '    "STRAWBERRY", "MELON", "MILK", "WOOL", "WHEAT",\n'
+            '    "FERTILIZER", "EGG", "TOMATO", "CARROT",\n'
+            ')',
+        )
     agent_marker = "\ndef agent(obs):"
+    if alternate_actions is not None:
+        portfolio_engine = r'''
+_PORTFOLIO_MODE = {0: "primary", 1: "primary"}
+
+
+def _activate_action_book(obs, step):
+    """Select a compatible opening after observing the opponent's first turn."""
+    global _ACTIONS
+    seat = 1 if int(_get(obs, "player", 0) or 0) == 1 else 0
+    if step == 0:
+        _PORTFOLIO_MODE[seat] = "primary"
+    elif step == 1:
+        farms = list(_get(obs, "farms", []) or [])
+        opponent = farms[1 - seat] if len(farms) >= 2 else {}
+        opponent_money = float(_get(opponent, "money", 10**9) or 0)
+        # The alternate industrial route uniquely spends down to about $25 on
+        # turn zero.  The narrow interval avoids misclassifying other openings.
+        _PORTFOLIO_MODE[seat] = (
+            "alternate" if 18.0 <= opponent_money <= 32.0 else "primary"
+        )
+    mode = _PORTFOLIO_MODE[seat]
+    _ACTIONS = _ALTERNATE_ACTIONS if mode == "alternate" else _PRIMARY_ACTIONS
+    return mode
+'''
+        readable_logic = readable_logic.replace(
+            agent_marker,
+            "\n" + portfolio_engine.strip() + "\n\n\ndef agent(obs):",
+            1,
+        )
+        readable_logic = readable_logic.replace(
+            "        step = _step(obs)\n"
+            "        action = _weed_repair_action(obs, _copy_action(_ACTIONS[step]), step)",
+            "        step = _step(obs)\n"
+            "        mode = _activate_action_book(obs, step)\n"
+            "        action = _copy_action(_ACTIONS[step])\n"
+            "        if mode == \"alternate\" and step == 1:\n"
+            "            # Bridge the primary turn-zero purchase into the alternate route.\n"
+            "            action[\"market\"] = [[\"BUY_PRODUCT\", \"WHEAT\", 5]]\n"
+            "        action = _weed_repair_action(obs, action, step)",
+            1,
+        )
+    if threat_markets is not None:
+        threat_engine = r'''
+def _counter_order(action, step):
+    """Prioritize products a recognized threat is selling on this turn."""
+    if not (0 <= step < len(_THREAT_MARKETS)):
+        return action
+    threat_items = [
+        order[1] for order in (_THREAT_MARKETS[step] or [])
+        if len(order) >= 3 and order[0] == "SELL"
+    ]
+    if not threat_items:
+        return action
+    ranks = {item: index for index, item in enumerate(threat_items)}
+    market = list(action.get("market") or [])
+    sells = [(index, list(order)) for index, order in enumerate(market)
+             if len(order) >= 3 and order[0] == "SELL"]
+    if len(sells) < 2:
+        return action
+    reordered = sorted(
+        sells,
+        key=lambda row: (ranks.get(row[1][1], len(ranks)), row[0]),
+    )
+    iterator = iter(order for _index, order in reordered)
+    action["market"] = [
+        next(iterator) if len(order) >= 3 and order[0] == "SELL" else order
+        for order in market
+    ]
+    return action
+'''
+        readable_logic = readable_logic.replace(
+            agent_marker,
+            "\n" + threat_engine.strip() + "\n\n\ndef agent(obs):",
+            1,
+        )
+        readable_logic = readable_logic.replace(
+            "        action = _repay_shift(obs, action, step)",
+            "        action = _counter_order(action, step)\n"
+            "        action = _repay_shift(obs, action, step)",
+            1,
+        )
     readable_logic = readable_logic.replace(
         agent_marker,
         "\n" + COMPLETE_ACTION_ENGINE.strip() + "\n\n\ndef agent(obs):",
@@ -199,7 +317,8 @@ def build(source: Path, destination: Path, unit_source: Path | None = None) -> N
         1,
     )
 
-    header = '''"""Transparent V15 Kaggriculture agent.
+    version = "V17" if alternate_actions is not None else "V16" if all_product_preempt else "V15"
+    header = f'''"""Transparent {version} Kaggriculture agent.
 
 Architecture
 ------------
@@ -220,12 +339,31 @@ import copy
 '''
     actions_literal = pprint.pformat(actions, width=120, compact=True, sort_dicts=False)
     hazards = pprint.pformat(module._GOLD_HAZARD, width=120, compact=True, sort_dicts=True)
+    action_tables = (
+        f"_ACTIONS = {actions_literal}\n\n"
+        if alternate_actions is None
+        else (
+            f"_PRIMARY_ACTIONS = {actions_literal}\n\n"
+            f"_ALTERNATE_ACTIONS = {pprint.pformat(alternate_actions, width=120, compact=True, sort_dicts=False)}\n\n"
+            "_ACTIONS = _PRIMARY_ACTIONS\n\n"
+        )
+    )
+    route_hash_lines = f"_ROUTE_ACTION_SHA256 = {route_hash!r}\n"
+    if alternate_hash is not None:
+        route_hash_lines += f"_ALTERNATE_ACTION_SHA256 = {alternate_hash!r}\n"
+    threat_table = (
+        ""
+        if threat_markets is None
+        else "\n# Public opponent market schedule used only to prioritize contested sells.\n"
+        + f"_THREAT_MARKETS = {pprint.pformat(threat_markets, width=120, compact=True, sort_dicts=False)}\n"
+    )
     generated = (
         header
         + "# Complete legal action book: one entry for each decision turn.\n"
-        + f"_ACTIONS = {actions_literal}\n\n"
-        + f"_ROUTE_ACTION_SHA256 = {route_hash!r}\n"
-        + "_ARCHITECTURE = 'V15 transparent route, recovery, and market search'\n\n"
+        + action_tables
+        + route_hash_lines
+        + threat_table
+        + f"_ARCHITECTURE = '{version} transparent route, recovery, and all-product market search'\n\n"
         + "# Empirical premium-sale hazard model. Keys are upcoming turn numbers.\n"
         + f"_GOLD_HAZARD = {hazards}\n\n"
         + readable_logic
@@ -237,12 +375,30 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, default=ROOT / "v14_route_x_r3.py")
     parser.add_argument("--unit-source", type=Path)
+    parser.add_argument(
+        "--all-product-preempt",
+        action="store_true",
+        help="Counter predicted same-route sales for every product through the endgame",
+    )
+    parser.add_argument(
+        "--threat-source",
+        type=Path,
+        help="Public route whose same-turn sales should receive counter-order priority",
+    )
+    parser.add_argument(
+        "--alternate-source",
+        type=Path,
+        help="Optional second route selected from the opponent's public turn-one state",
+    )
     parser.add_argument("--output", type=Path, default=ROOT / "main_readable.py")
     args = parser.parse_args()
     build(
         args.source.resolve(),
         args.output.resolve(),
         args.unit_source.resolve() if args.unit_source else None,
+        args.all_product_preempt,
+        args.alternate_source.resolve() if args.alternate_source else None,
+        args.threat_source.resolve() if args.threat_source else None,
     )
     print(args.output.resolve())
 

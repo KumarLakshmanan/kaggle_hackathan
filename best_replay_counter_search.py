@@ -28,14 +28,17 @@ def _play(job: tuple[str, str, int, int, str, str]) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--panel", type=Path, required=True)
-    parser.add_argument("--summary", type=Path, required=True)
+    parser.add_argument("--summary", type=Path, nargs="+", required=True)
     parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--seats", type=int, nargs="+", choices=(0, 1), default=[0, 1])
     parser.add_argument("--json-out", type=Path, required=True)
     args = parser.parse_args()
 
     panel = json.loads(args.panel.read_text(encoding="utf-8"))
     targets = [row for row in panel["rows"] if float(row["pair_margin"]) < 0]
-    entries = json.loads(args.summary.read_text(encoding="utf-8"))
+    entries = []
+    for summary_path in args.summary:
+        entries.extend(json.loads(summary_path.read_text(encoding="utf-8")))
 
     unique_entries: list[dict[str, Any]] = []
     seen: set[str] = set()
@@ -60,7 +63,7 @@ def main() -> None:
                 continue
             candidate_key = Path(entry["absolute_path"]).name
             metadata[(target_key, candidate_key)] = entry
-            for seat in (0, 1):
+            for seat in args.seats:
                 jobs.append(
                     (
                         f"v26-route:{entry['absolute_path']}",

@@ -1,0 +1,21 @@
+{
+  "id": "beicicc/kaggriculture-c30-pr1394-activation-control",
+  "id_no": 130009355,
+  "title": "Kaggriculture C30 PR1394 Activation Control",
+  "code_file": "kaggriculture-c30-pr1394-activation-control.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "kaggriculture"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:dafd4ce5668bbf1ad422e4c109e0f18c9623c3a7c7f48b0235f13142755c40b9",
+  "machine_shape": "None"
+}

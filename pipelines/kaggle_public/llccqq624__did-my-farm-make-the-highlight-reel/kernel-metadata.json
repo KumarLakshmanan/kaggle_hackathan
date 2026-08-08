@@ -1,0 +1,24 @@
+{
+  "id": "llccqq624/did-my-farm-make-the-highlight-reel",
+  "id_no": 129305492,
+  "title": "Did My Farm Make the Highlight Reel?",
+  "code_file": "did-my-farm-make-the-highlight-reel.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "kaggle/kaggriculture-episodes-2026-07-30",
+    "kaggle/kaggriculture-episodes-index"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "kaggriculture"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:dafd4ce5668bbf1ad422e4c109e0f18c9623c3a7c7f48b0235f13142755c40b9",
+  "machine_shape": "None"
+}

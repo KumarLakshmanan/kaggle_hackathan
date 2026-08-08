@@ -25,16 +25,19 @@ def _play(job):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--summary", type=Path, required=True)
+    parser.add_argument("--summary", type=Path, nargs="+", required=True)
     parser.add_argument("--opening-reference", type=Path, required=True)
     parser.add_argument("--opponent", required=True)
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--workers", type=int, default=6)
+    parser.add_argument("--candidate-prefix", default="v26-route")
     parser.add_argument("--json-out", type=Path, required=True)
     args = parser.parse_args()
 
     opening = _actions(args.opening_reference)[0]
-    entries = json.loads(args.summary.read_text(encoding="utf-8"))
+    entries = []
+    for summary_path in args.summary:
+        entries.extend(json.loads(summary_path.read_text(encoding="utf-8")))
     candidates = []
     seen = set()
     for entry in entries:
@@ -46,7 +49,7 @@ def main() -> None:
         candidates.append(entry)
 
     jobs = [
-        (f"v26-route:{Path(entry['path']).resolve()}", args.opponent, args.seed, seat)
+        (f"{args.candidate_prefix}:{Path(entry['path']).resolve()}", args.opponent, args.seed, seat)
         for entry in candidates
         for seat in (0, 1)
     ]
@@ -57,7 +60,7 @@ def main() -> None:
 
     groups = []
     for entry in candidates:
-        spec = f"v26-route:{Path(entry['path']).resolve()}"
+        spec = f"{args.candidate_prefix}:{Path(entry['path']).resolve()}"
         games = [row for row in rows if row["candidate_spec"] == spec]
         groups.append(
             {

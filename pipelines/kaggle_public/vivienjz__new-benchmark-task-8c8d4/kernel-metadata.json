@@ -1,0 +1,24 @@
+{
+  "id": "vivienjz/new-benchmark-task-8c8d4",
+  "id_no": 129299447,
+  "title": "New Benchmark Task 8c8d4",
+  "code_file": "new-benchmark-task-8c8d4.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "personal benchmark",
+    "scheduled"
+  ],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "kaggriculture"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-private-byod/personal-benchmarks-new@sha256:b5c69dd4550b12d0de51f1397eed5829f17d97afb4ff36ff0c247c324d75306a",
+  "machine_shape": "None"
+}

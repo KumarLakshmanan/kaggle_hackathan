@@ -29,13 +29,28 @@ def _play(job: tuple[str, str, int, int, int | None]) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate", required=True)
-    parser.add_argument("--summary", type=Path, required=True)
+    parser.add_argument("--summary", type=Path, nargs="+", required=True)
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--capture-step", type=int)
+    parser.add_argument(
+        "--losses-from",
+        type=Path,
+        help="Restrict the summary to routes with negative pair margins in a prior panel",
+    )
     parser.add_argument("--json-out", type=Path, required=True)
     args = parser.parse_args()
 
-    entries = json.loads(args.summary.read_text(encoding="utf-8"))
+    entries = []
+    for summary_path in args.summary:
+        entries.extend(json.loads(summary_path.read_text(encoding="utf-8")))
+    if args.losses_from:
+        prior = json.loads(args.losses_from.read_text(encoding="utf-8"))
+        losing_digests = {
+            str(row["action_sha256"])
+            for row in prior["rows"]
+            if float(row["pair_margin"]) < 0
+        }
+        entries = [entry for entry in entries if str(entry["action_sha256"]) in losing_digests]
     unique: list[dict[str, Any]] = []
     seen: set[str] = set()
     for entry in entries:
@@ -78,8 +93,8 @@ def main() -> None:
         groups.append(
             {
                 "episode_id": entry["episode_id"],
-                "team": entry["team"],
-                "source_seat": entry["source_seat"],
+                "team": entry.get("team", entry.get("opponent_team", "unknown")),
+                "source_seat": entry.get("source_seat"),
                 "seed": entry["seed"],
                 "action_sha256": entry["action_sha256"],
                 "opponent_path": opponent_path,
@@ -90,7 +105,7 @@ def main() -> None:
 
     payload = {
         "candidate": str(Path(args.candidate).resolve()),
-        "summary_source": str(args.summary.resolve()),
+        "summary_source": [str(path.resolve()) for path in args.summary],
         "unique_routes": len(unique),
         "rows": groups,
         "summary": summarize(rows),

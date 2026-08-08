@@ -1,5 +1,8 @@
 __pycache__/
+.venv/
 live_routes/*
 benchmark_results/*
-failed_replay/routes/*.gz
-best_replay/routes/*.gz
+failed_replay/*/*.gz
+failed_replay/*/*.-reply.json
+best_replay/*/*.gz
+best_replay/*/*-replay.json

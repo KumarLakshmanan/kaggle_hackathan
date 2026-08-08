@@ -49,17 +49,22 @@ class TimedAgent:
             self.accepts_configuration = False
 
     def __call__(self, observation: Any, configuration: Any = None) -> Any:
-        if (
+        capturing = (
             self.capture_step is not None
             and self.capture is None
             and int(_value(observation, "step", -1) or -1) == self.capture_step
-        ):
+        )
+        if capturing:
             self.capture = _capture_public(observation)
         started = time.perf_counter()
         try:
             if self.accepts_configuration:
-                return self.function(observation, configuration)
-            return self.function(observation)
+                result = self.function(observation, configuration)
+            else:
+                result = self.function(observation)
+            if capturing and self.capture is not None:
+                self.capture["action"] = result
+            return result
         finally:
             elapsed = time.perf_counter() - started
             self.timing.calls += 1
@@ -178,11 +183,69 @@ def _load_agent(
     if specification.lower() == "pass":
         timed = TimedAgent(_pass_agent, capture_step)
         return timed, timed
+    if specification.lower().startswith("agent-threat:"):
+        agent_text, threat_text = specification.split(":", 1)[1].split("|", 1)
+        module = _load_module(Path(agent_text).resolve(), f"agent_threat_{tag}")
+        with gzip.open(Path(threat_text).resolve(), "rt", encoding="utf-8") as handle:
+            threat_actions = json.load(handle).get("actions", [])
+        hazards: dict[str, list[list[Any]]] = {}
+        for step, action in enumerate(threat_actions):
+            quantities: dict[str, int] = {}
+            for order in action.get("market", []) or []:
+                if len(order) >= 3 and order[0] == "SELL":
+                    quantities[str(order[1])] = quantities.get(str(order[1]), 0) + int(order[2])
+            if quantities:
+                hazards[str(step)] = [
+                    [item, 1.0, float(quantity), 1] for item, quantity in quantities.items()
+                ]
+        module._GOLD_HAZARD = hazards
+        _apply_overrides(module, overrides or {})
+        timed = TimedAgent(getattr(module, "agent"), capture_step)
+        return timed, timed
     delayed_switch = specification.lower().startswith("v31-switch:")
+    v32_switch = specification.lower().startswith(("v32-switch:", "v32-switch-threat:"))
+    v32base_switch = specification.lower().startswith("v32base-switch:")
+    v32base_step1 = specification.lower().startswith("v32base-step1:")
+    v32base_step144 = specification.lower().startswith("v32base-step144:")
+    pasture5_switch = specification.lower().startswith("pasture5-switch:")
+    step_one_switch = specification.lower().startswith(("step1-route:", "step1-threat:"))
+    step144_switch = specification.lower().startswith("step144-route:")
     readable_route = specification.lower().startswith("v26-route:")
+    threat_route = specification.lower().startswith("route-threat:")
+    portfolio_threat = specification.lower().startswith("portfolio-threat:")
+    hybrid_route = specification.lower().startswith(("hybrid-route:", "hybrid-threat:"))
     route_preempt = specification.lower().startswith("route+preempt:")
-    if delayed_switch or readable_route or route_preempt or specification.lower().startswith("route:"):
-        route_path = Path(specification.split(":", 1)[1]).resolve()
+    if (
+        delayed_switch
+        or v32_switch
+        or v32base_switch
+        or v32base_step1
+        or v32base_step144
+        or pasture5_switch
+        or step_one_switch
+        or step144_switch
+        or readable_route
+        or threat_route
+        or portfolio_threat
+        or hybrid_route
+        or route_preempt
+        or specification.lower().startswith("route:")
+    ):
+        route_argument = specification.split(":", 1)[1]
+        threat_actions = None
+        opening_actions = None
+        if hybrid_route:
+            opening_text, route_text = route_argument.split("|", 1)
+            with gzip.open(Path(opening_text).resolve(), "rt", encoding="utf-8") as handle:
+                opening_actions = json.load(handle).get("actions", [])
+            route_path = Path(route_text).resolve()
+        elif portfolio_threat:
+            route_text, threat_text = route_argument.split("|", 1)
+            route_path = Path(route_text).resolve()
+            with gzip.open(Path(threat_text).resolve(), "rt", encoding="utf-8") as handle:
+                threat_actions = json.load(handle).get("actions", [])
+        else:
+            route_path = Path(route_argument).resolve()
         with gzip.open(route_path, "rt", encoding="utf-8") as handle:
             payload = json.load(handle)
         actions = payload.get("actions", [])
@@ -190,24 +253,52 @@ def _load_agent(
             raise RuntimeError(f"Expected 719 actions in {route_path}, found {len(actions)}")
         if delayed_switch:
             base_path = Path(__file__).resolve().parent / "main_v31_observable_portfolio.py"
+        elif v32base_switch or v32base_step1 or v32base_step144:
+            base_path = Path(__file__).resolve().parent / "main_v32_observable_portfolio.py"
+        elif v32_switch or pasture5_switch or step_one_switch or step144_switch:
+            base_path = Path(__file__).resolve().parent / "main.py"
         elif readable_route:
+            base_path = Path(__file__).resolve().parent / "main.py"
+        elif threat_route or portfolio_threat or hybrid_route:
             base_path = Path(__file__).resolve().parent / "main.py"
         else:
             base_path = Path(__file__).resolve().parent / "v13r3_notebook_output" / "main.py"
         module = _load_module(base_path, f"route_proxy_{tag}")
-        if delayed_switch:
+        if delayed_switch or v32_switch or v32base_switch or v32base_step1 or v32base_step144 or pasture5_switch or step_one_switch or step144_switch:
             original_activate = module._activate_action_book
 
             def activate_delayed(obs: Any, step: int) -> str:
                 mode = original_activate(obs, step)
-                if mode == "alternate" and step >= 144:
+                if pasture5_switch and step == 1:
+                    player = int(_value(obs, "player", 0) or 0)
+                    farms = list(_value(obs, "farms", []) or [])
+                    opponent_farm = farms[1 - player] if len(farms) >= 2 else {}
+                    hands = len(_value(opponent_farm, "hands", []) or [])
+                    tiles = list(_value(opponent_farm, "tiles", []) or [])
+                    center = tiles[4][4] if len(tiles) > 4 and len(tiles[4]) > 4 else None
+                    if hands >= 5 and isinstance(center, dict) and center.get("kind") == "PASTURE":
+                        module._OPPONENT_PASTURE[player] = True
+                        module._PORTFOLIO_MODE[player] = "alternate"
+                        module._ACTIONS = module._ALTERNATE_ACTIONS
+                        mode = "alternate"
+                threshold = 1 if (step_one_switch or v32base_step1) else 144
+                if step >= threshold and (step_one_switch or v32base_step1 or v32base_step144 or step144_switch or mode == "alternate"):
                     module._ACTIONS = actions
                 return mode
 
             module._activate_action_book = activate_delayed
         else:
             module._ACTIONS = actions
-        if readable_route:
+        if hybrid_route:
+            module._PRIMARY_ACTIONS = actions
+            module._ALTERNATE_ACTIONS = actions
+
+            def activate_hybrid(_obs: Any, step: int) -> str:
+                module._ACTIONS = opening_actions if step == 0 else actions
+                return "primary"
+
+            module._activate_action_book = activate_hybrid
+        elif readable_route:
             module._PRIMARY_ACTIONS = actions
             module._ALTERNATE_ACTIONS = actions
             module._counter_order = lambda action, step: action
@@ -217,8 +308,30 @@ def _load_agent(
                 return "primary"
 
             module._activate_action_book = activate_route
-        else:
+        elif route_preempt or specification.lower().startswith("route:"):
             module._PREEMPT_ENABLED = route_preempt
+        if threat_route or portfolio_threat:
+            module._PREEMPT_ENABLED = True
+            module._PRIMARY_ACTIONS = actions
+            module._ALTERNATE_ACTIONS = actions
+
+            def activate_threat_route(_obs: Any, _step: int) -> str:
+                module._ACTIONS = actions
+                return "primary"
+
+            module._activate_action_book = activate_threat_route
+        if threat_route or portfolio_threat or "-threat:" in specification.lower():
+            hazards: dict[str, list[list[Any]]] = {}
+            for step, action in enumerate(threat_actions or actions):
+                rows: dict[str, int] = {}
+                for order in action.get("market", []) or []:
+                    if len(order) >= 3 and order[0] == "SELL":
+                        rows[str(order[1])] = rows.get(str(order[1]), 0) + int(order[2])
+                if rows:
+                    hazards[str(step)] = [
+                        [item, 1.0, float(quantity), 1] for item, quantity in rows.items()
+                    ]
+            module._GOLD_HAZARD = hazards
         _apply_overrides(module, overrides or {})
         function = getattr(module, "agent")
         timed = TimedAgent(function, capture_step)

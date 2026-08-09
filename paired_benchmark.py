@@ -203,6 +203,12 @@ def _load_agent(
         timed = TimedAgent(getattr(module, "agent"), capture_step)
         return timed, timed
     delayed_switch = specification.lower().startswith("v31-switch:")
+    v37_switch = specification.lower().startswith("v37-switch:")
+    v37_switch_threat = specification.lower().startswith("v37-switch-threat:")
+    v37_step1 = specification.lower().startswith("v37-step1:")
+    v37_step216 = specification.lower().startswith("v37-step216:")
+    v37_step288 = specification.lower().startswith("v37-step288:")
+    v37_step360 = specification.lower().startswith("v37-step360:")
     v32_switch = specification.lower().startswith(("v32-switch:", "v32-switch-threat:"))
     v32base_switch = specification.lower().startswith("v32base-switch:")
     v32base_step1 = specification.lower().startswith("v32base-step1:")
@@ -215,8 +221,15 @@ def _load_agent(
     portfolio_threat = specification.lower().startswith("portfolio-threat:")
     hybrid_route = specification.lower().startswith(("hybrid-route:", "hybrid-threat:"))
     route_preempt = specification.lower().startswith("route+preempt:")
+    wheat_first_route = specification.lower().startswith("wheat-first-route:")
     if (
         delayed_switch
+        or v37_switch
+        or v37_switch_threat
+        or v37_step1
+        or v37_step216
+        or v37_step288
+        or v37_step360
         or v32_switch
         or v32base_switch
         or v32base_step1
@@ -229,12 +242,23 @@ def _load_agent(
         or portfolio_threat
         or hybrid_route
         or route_preempt
+        or wheat_first_route
         or specification.lower().startswith("route:")
     ):
         route_argument = specification.split(":", 1)[1]
         threat_actions = None
         opening_actions = None
-        if hybrid_route:
+        if v37_switch_threat:
+            route_text, threat_text = route_argument.split("|", 1)
+            route_path = Path(route_text).resolve()
+            with gzip.open(Path(threat_text).resolve(), "rt", encoding="utf-8") as handle:
+                threat_actions = json.load(handle).get("actions", [])
+        elif threat_route:
+            route_text, threat_text = route_argument.split("|", 1)
+            route_path = Path(route_text).resolve()
+            with gzip.open(Path(threat_text).resolve(), "rt", encoding="utf-8") as handle:
+                threat_actions = json.load(handle).get("actions", [])
+        elif hybrid_route:
             opening_text, route_text = route_argument.split("|", 1)
             with gzip.open(Path(opening_text).resolve(), "rt", encoding="utf-8") as handle:
                 opening_actions = json.load(handle).get("actions", [])
@@ -251,8 +275,37 @@ def _load_agent(
         actions = payload.get("actions", [])
         if len(actions) != 719:
             raise RuntimeError(f"Expected 719 actions in {route_path}, found {len(actions)}")
+        if wheat_first_route:
+            # Preserve the route's complete opening portfolio but execute its
+            # WHEAT product purchase before the price can be moved by the
+            # opponent.  This is the observable-policy variant used by the
+            # current opening-order search.
+            actions = [
+                {
+                    "farmer": list(actions[0].get("farmer") or ["PASS"]),
+                    "hands": [list(order) for order in actions[0].get("hands", []) or []],
+                    "market": [list(order) for order in actions[0].get("market", []) or []],
+                },
+                *actions[1:],
+            ]
+            market = actions[0]["market"]
+            wheat = next(
+                (
+                    order for order in market
+                    if len(order) >= 3 and order[0] == "BUY_PRODUCT"
+                    and order[1] == "WHEAT"
+                ),
+                None,
+            )
+            if wheat is not None:
+                actions[0]["market"] = [wheat, *[order for order in market if order is not wheat]]
         if delayed_switch:
             base_path = Path(__file__).resolve().parent / "main_v31_observable_portfolio.py"
+        elif (
+            v37_switch or v37_switch_threat or v37_step1
+            or v37_step216 or v37_step288 or v37_step360
+        ):
+            base_path = Path(__file__).resolve().parent / "main.py"
         elif v32base_switch or v32base_step1 or v32base_step144:
             base_path = Path(__file__).resolve().parent / "main_v32_observable_portfolio.py"
         elif v32_switch or pasture5_switch or step_one_switch or step144_switch:
@@ -264,7 +317,26 @@ def _load_agent(
         else:
             base_path = Path(__file__).resolve().parent / "v13r3_notebook_output" / "main.py"
         module = _load_module(base_path, f"route_proxy_{tag}")
-        if delayed_switch or v32_switch or v32base_switch or v32base_step1 or v32base_step144 or pasture5_switch or step_one_switch or step144_switch:
+        if (
+            v37_switch or v37_switch_threat or v37_step1
+            or v37_step216 or v37_step288 or v37_step360
+        ):
+            original_select = module._select_public_book
+            switch_step = (
+                1 if v37_step1 else
+                216 if v37_step216 else
+                288 if v37_step288 else
+                360 if v37_step360 else
+                144
+            )
+
+            def select_v37(obs: Any, step: int) -> None:
+                original_select(obs, step)
+                if step >= switch_step:
+                    module._ACTIONS = actions
+
+            module._select_public_book = select_v37
+        elif delayed_switch or v32_switch or v32base_switch or v32base_step1 or v32base_step144 or pasture5_switch or step_one_switch or step144_switch:
             original_activate = module._activate_action_book
 
             def activate_delayed(obs: Any, step: int) -> str:
@@ -298,6 +370,15 @@ def _load_agent(
                 return "primary"
 
             module._activate_action_book = activate_hybrid
+            # V36+ selects its tape through ``_select_public_book`` instead of
+            # ``_activate_action_book``.  Override both hooks so hybrid-route
+            # experiments actually use the requested continuation regardless
+            # of which transparent wrapper is currently in main.py.
+            if hasattr(module, "_select_public_book"):
+                def select_hybrid(_obs: Any, step: int) -> None:
+                    module._ACTIONS = opening_actions if step == 0 else actions
+
+                module._select_public_book = select_hybrid
         elif readable_route:
             module._PRIMARY_ACTIONS = actions
             module._ALTERNATE_ACTIONS = actions
@@ -308,7 +389,7 @@ def _load_agent(
                 return "primary"
 
             module._activate_action_book = activate_route
-        elif route_preempt or specification.lower().startswith("route:"):
+        elif route_preempt or wheat_first_route or specification.lower().startswith("route:"):
             module._PREEMPT_ENABLED = route_preempt
         if threat_route or portfolio_threat:
             module._PREEMPT_ENABLED = True
@@ -332,7 +413,45 @@ def _load_agent(
                         [item, 1.0, float(quantity), 1] for item, quantity in rows.items()
                     ]
             module._GOLD_HAZARD = hazards
+        # Raw route proxies can participate in opening-portfolio searches via
+        # the same override used by generated routers.  Define the setting
+        # before validation, then apply it to a private copy of turn zero.
+        if not hasattr(module, "OPENING_MARKET_OVERRIDE"):
+            module.OPENING_MARKET_OVERRIDE = None
+        if not hasattr(module, "ACTION_PATCHES"):
+            module.ACTION_PATCHES = {}
         _apply_overrides(module, overrides or {})
+        if module.OPENING_MARKET_OVERRIDE is not None:
+            module._ACTIONS = [
+                {
+                    "farmer": list(module._ACTIONS[0].get("farmer") or ["PASS"]),
+                    "hands": [
+                        list(order) for order in module._ACTIONS[0].get("hands", []) or []
+                    ],
+                    "market": [list(order) for order in module.OPENING_MARKET_OVERRIDE],
+                },
+                *module._ACTIONS[1:],
+            ]
+        if module.ACTION_PATCHES:
+            if not isinstance(module.ACTION_PATCHES, dict):
+                raise RuntimeError("ACTION_PATCHES must be a JSON object")
+            module._ACTIONS = list(module._ACTIONS)
+            for raw_step, patch in module.ACTION_PATCHES.items():
+                step = int(raw_step)
+                if not 0 <= step < len(module._ACTIONS) or not isinstance(patch, dict):
+                    raise RuntimeError(f"invalid action patch at step {raw_step!r}")
+                original = module._ACTIONS[step]
+                module._ACTIONS[step] = {
+                    "farmer": list(patch.get("farmer", original.get("farmer") or ["PASS"])),
+                    "hands": [
+                        list(order)
+                        for order in patch.get("hands", original.get("hands", []) or [])
+                    ],
+                    "market": [
+                        list(order)
+                        for order in patch.get("market", original.get("market", []) or [])
+                    ],
+                }
         function = getattr(module, "agent")
         timed = TimedAgent(function, capture_step)
         return timed, timed
@@ -469,6 +588,14 @@ def main() -> None:
     parser.add_argument("--candidate", required=True, help="Agent .py path or built-in name")
     parser.add_argument("--opponent", required=True, help="Agent .py path or built-in name")
     parser.add_argument("--seeds", nargs="+", type=int, required=True)
+    parser.add_argument(
+        "--seats",
+        nargs="+",
+        type=int,
+        choices=(0, 1),
+        default=[0, 1],
+        help="Candidate seats to benchmark (default: both)",
+    )
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--capture-step", type=int)
     parser.add_argument(
@@ -494,7 +621,7 @@ def main() -> None:
     print(f"engine={engine_version} candidate={args.candidate} opponent={args.opponent}")
     rows: list[dict[str, Any]] = []
     for seed in args.seeds:
-        for candidate_seat in (0, 1):
+        for candidate_seat in args.seats:
             row = run_game(
                 args.candidate,
                 args.opponent,

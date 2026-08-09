@@ -7,6 +7,7 @@ import gzip
 import hashlib
 import io
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -22,7 +23,10 @@ def _run_json(command: list[str]) -> Any:
         text=True,
         encoding="utf-8",
     )
-    return json.loads(completed.stdout)
+    start = completed.stdout.find("[")
+    if start < 0:
+        raise ValueError(f"Kaggle returned no JSON: {completed.stdout[:200]!r}")
+    return json.JSONDecoder().raw_decode(completed.stdout[start:])[0]
 
 
 def _result(margin: float) -> str:
@@ -34,6 +38,7 @@ def collect_episode(
     episode_id: int,
     own_team: str,
     output_dir: Path,
+    failed_raw_dir: Path | None = None,
 ) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="kaggriculture-replay-") as temporary:
         subprocess.run(
@@ -51,7 +56,8 @@ def collect_episode(
         replay_paths = list(Path(temporary).glob("*.json"))
         if len(replay_paths) != 1:
             raise RuntimeError(f"Expected one replay for {episode_id}, found {replay_paths}")
-        replay = json.loads(replay_paths[0].read_text(encoding="utf-8"))
+        raw_replay_bytes = replay_paths[0].read_bytes()
+        replay = json.loads(raw_replay_bytes)
 
     names = list(replay.get("info", {}).get("TeamNames", []))
     try:
@@ -96,6 +102,11 @@ def collect_episode(
                 json.dump(payload, text_handle, separators=(",", ":"), sort_keys=True)
     metadata["path"] = str(destination)
     metadata["compressed_bytes"] = destination.stat().st_size
+    if failed_raw_dir is not None and metadata["result"] == "loss":
+        failed_raw_dir.mkdir(parents=True, exist_ok=True)
+        raw_destination = failed_raw_dir / f"episode-{episode_id}-replay.json"
+        raw_destination.write_bytes(raw_replay_bytes)
+        metadata["raw_replay"] = str(raw_destination)
     return metadata
 
 
@@ -107,6 +118,11 @@ def main() -> None:
     parser.add_argument("--kaggle", required=True)
     parser.add_argument("--own-team", default="Lakshmanan R")
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument(
+        "--failed-raw-dir",
+        type=Path,
+        help="Preserve the full replay JSON only when our team loses",
+    )
     parser.add_argument("--limit", type=int, default=0, help="0 collects every public episode")
     args = parser.parse_args()
 
@@ -135,7 +151,13 @@ def main() -> None:
             row["path"] = str(destination)
             row["compressed_bytes"] = destination.stat().st_size
         else:
-            row = collect_episode(args.kaggle, episode_id, args.own_team, args.output_dir)
+            row = collect_episode(
+                args.kaggle,
+                episode_id,
+                args.own_team,
+                args.output_dir,
+                args.failed_raw_dir,
+            )
         rows.append(row)
         print(
             f"[{index:02d}/{len(public):02d}] episode={episode_id} "

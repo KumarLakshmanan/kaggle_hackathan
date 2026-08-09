@@ -61,46 +61,42 @@ _ROUTE_ACTION_INDEX = -1
 _ROUTE_ACTIONS = None
 _FORCED_ROUTE = None
 
-# Four late five-hire continuations have complementary performance.  Every
-# mapped public town state strictly improved route-win count over the default
-# in the current top-ten panel; unknown states keep the stronger default.
+# The two five-hire continuations have complementary performance.  These
+# public town states are the conservative subset where the alternate route
+# improved route-win count in the current top-ten panel.  Unknown states keep
+# the stronger default route.
 FAMILY5_ALT_SHOPS = frozenset({
+    ('BAKERY', 'SMOOTHIE_SHOP'),
     ('BAKERY', 'YARN_STORE'),
-    ('BRUNCH_SPOT', 'YARN_STORE'),
+    ('FARMERS_MARKET', 'ICE_CREAM_SHOP'),
+    ('FARMERS_MARKET', 'PET_CAFE'),
     ('FARMERS_MARKET', 'YARN_STORE'),
-    ('ICE_CREAM_SHOP', 'BAKERY'),
     ('ICE_CREAM_SHOP', 'PET_CAFE'),
-    ('ICE_CREAM_SHOP', 'PIZZA_SHOP'),
     ('ICE_CREAM_SHOP', 'YARN_STORE'),
-    ('PET_CAFE', 'BRUNCH_SPOT'),
     ('PET_CAFE', 'ICE_CREAM_SHOP'),
-    ('PIZZA_SHOP', 'BRUNCH_SPOT'),
     ('PIZZA_SHOP', 'ICE_CREAM_SHOP'),
     ('PIZZA_SHOP', 'YARN_STORE'),
+    ('SMOOTHIE_SHOP', 'PIZZA_SHOP'),
     ('YARN_STORE', 'BAKERY'),
     ('YARN_STORE', 'BRUNCH_SPOT'),
+    ('YARN_STORE', 'FARMERS_MARKET'),
     ('YARN_STORE', 'ICE_CREAM_SHOP'),
     ('YARN_STORE', 'PET_CAFE'),
-    ('YARN_STORE', 'SMOOTHIE_SHOP'),
 })
-FAMILY5_ALT_ALL = False
 # Experimental/final third continuation hook.  The builder can pack an
 # additional suffix and map only public shop states that benefit from it.
 FAMILY5_ALT2_SHOPS = frozenset({
     ('BAKERY', 'SMOOTHIE_SHOP'),
     ('BRUNCH_SPOT', 'PET_CAFE'),
     ('FARMERS_MARKET', 'FARMERS_MARKET'),
-    ('FARMERS_MARKET', 'ICE_CREAM_SHOP'),
-    ('FARMERS_MARKET', 'PET_CAFE'),
     ('ICE_CREAM_SHOP', 'SMOOTHIE_SHOP'),
     ('PIZZA_SHOP', 'SMOOTHIE_SHOP'),
     ('SMOOTHIE_SHOP', 'FARMERS_MARKET'),
 })
 FAMILY5_ALT2_ALL = False
 FAMILY5_ALT3_SHOPS = frozenset({
+    ('PET_CAFE', 'BRUNCH_SPOT'),
     ('PET_CAFE', 'SMOOTHIE_SHOP'),
-    ('SMOOTHIE_SHOP', 'PIZZA_SHOP'),
-    ('YARN_STORE', 'FARMERS_MARKET'),
 })
 FAMILY5_ALT3_ALL = False
 _SHIFT_STATE = {
@@ -404,7 +400,7 @@ def agent(obs, config=None):
                 FAMILY5_ALT2_ALL or shops in FAMILY5_ALT2_SHOPS
             ):
                 _FORCED_ROUTE = alternate2
-            elif FAMILY5_ALT_ALL or shops in FAMILY5_ALT_SHOPS:
+            elif shops in FAMILY5_ALT_SHOPS:
                 alternate = FORCED_ROUTE_BY_LABEL.get("family5_alt")
                 if alternate is not None:
                     _FORCED_ROUTE = alternate

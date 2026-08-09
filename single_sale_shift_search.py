@@ -42,6 +42,24 @@ def main() -> None:
     parser.add_argument("--start-step", type=int, default=120)
     parser.add_argument("--end-step", type=int, default=717)
     parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument(
+        "--deltas",
+        type=int,
+        nargs="+",
+        default=[-1, 1],
+        help="Turn offsets to test for each selected sale",
+    )
+    parser.add_argument(
+        "--items",
+        nargs="+",
+        help="Only move SELL orders for these products",
+    )
+    parser.add_argument(
+        "--candidate-prefix",
+        choices=("route", "readable", "v37-switch"),
+        default="route",
+        help="Benchmark generated routes directly or as a V37 turn-144 continuation",
+    )
     parser.add_argument("--workdir", type=Path, required=True)
     parser.add_argument("--json-out", type=Path, required=True)
     args = parser.parse_args()
@@ -56,7 +74,9 @@ def main() -> None:
         for order_index, order in enumerate(market):
             if len(order) < 3 or order[0] != "SELL":
                 continue
-            for delta in (-1, 1):
+            if args.items and str(order[1]) not in set(args.items):
+                continue
+            for delta in args.deltas:
                 target = step + delta
                 if not (0 <= target < len(actions)):
                     continue
@@ -73,11 +93,17 @@ def main() -> None:
                     "delta": delta,
                 }
                 route_path = args.workdir / f"{key}.json.gz"
-                agent_path = args.workdir / f"{key}.py"
                 write(route_path, payload)
-                build(route_path, agent_path)
+                if args.candidate_prefix == "v37-switch":
+                    candidate = f"v37-switch:{route_path.resolve()}"
+                elif args.candidate_prefix == "route":
+                    candidate = f"route:{route_path.resolve()}"
+                else:
+                    agent_path = args.workdir / f"{key}.py"
+                    build(route_path, agent_path)
+                    candidate = str(agent_path.resolve())
                 metadata[key] = payload["metadata"]["single_sale_shift"]
-                jobs.append((str(agent_path.resolve()), f"route:{args.opponent.resolve()}", args.seed, key))
+                jobs.append((candidate, f"route:{args.opponent.resolve()}", args.seed, key))
 
     rows = []
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.workers) as pool:

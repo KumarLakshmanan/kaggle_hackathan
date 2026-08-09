@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import gzip
 import json
 from pathlib import Path
 from typing import Any
@@ -11,8 +12,8 @@ from typing import Any
 from paired_benchmark import run_game, summarize
 
 
-def _play(job: tuple[str, str, int, int, int | None]) -> dict[str, Any]:
-    candidate, opponent_path, seed, seat, capture_step = job
+def _play(job: tuple[str, str, int, int, int | None, dict[str, Any]]) -> dict[str, Any]:
+    candidate, opponent_path, seed, seat, capture_step, candidate_overrides = job
     row = run_game(
         candidate=candidate,
         opponent=f"route:{opponent_path}",
@@ -20,7 +21,7 @@ def _play(job: tuple[str, str, int, int, int | None]) -> dict[str, Any]:
         candidate_seat=seat,
         debug=False,
         capture_step=capture_step,
-        candidate_overrides={},
+        candidate_overrides=candidate_overrides,
     )
     row["opponent_path"] = opponent_path
     return row
@@ -31,18 +32,72 @@ def main() -> None:
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--summary", type=Path, nargs="+", required=True)
     parser.add_argument("--workers", type=int, default=6)
+    parser.add_argument(
+        "--seats",
+        type=int,
+        nargs="+",
+        choices=(0, 1),
+        default=[0, 1],
+        help="Candidate seats to run (default: both; use one seat for a fast screen)",
+    )
     parser.add_argument("--capture-step", type=int)
+    parser.add_argument(
+        "--candidate-override",
+        action="append",
+        default=[],
+        metavar="NAME=JSON",
+        help="Override a candidate module setting after import",
+    )
     parser.add_argument(
         "--losses-from",
         type=Path,
         help="Restrict the summary to routes with negative pair margins in a prior panel",
     )
+    parser.add_argument(
+        "--episode-ids",
+        type=int,
+        nargs="+",
+        help="Restrict the panel to the listed replay episode IDs",
+    )
+    parser.add_argument(
+        "--opening-hires",
+        type=int,
+        choices=range(0, 13),
+        help="Restrict opponents to routes buying this many workers on turn zero",
+    )
     parser.add_argument("--json-out", type=Path, required=True)
     args = parser.parse_args()
+
+    candidate_overrides: dict[str, Any] = {}
+    for raw in args.candidate_override:
+        if "=" not in raw:
+            parser.error(f"Invalid override {raw!r}; expected NAME=JSON")
+        name, value = raw.split("=", 1)
+        try:
+            candidate_overrides[name] = json.loads(value)
+        except json.JSONDecodeError:
+            candidate_overrides[name] = value
 
     entries = []
     for summary_path in args.summary:
         entries.extend(json.loads(summary_path.read_text(encoding="utf-8")))
+    if args.episode_ids:
+        episode_ids = set(args.episode_ids)
+        entries = [
+            entry for entry in entries if int(entry["episode_id"]) in episode_ids
+        ]
+    if args.opening_hires is not None:
+        filtered = []
+        for entry in entries:
+            with gzip.open(Path(entry["path"]), "rt", encoding="utf-8") as handle:
+                opening = (json.load(handle).get("actions", [{}]) or [{}])[0]
+            hires = sum(
+                bool(order) and order[0] == "HIRE"
+                for order in opening.get("market", []) or []
+            )
+            if hires == args.opening_hires:
+                filtered.append(entry)
+        entries = filtered
     if args.losses_from:
         prior = json.loads(args.losses_from.read_text(encoding="utf-8"))
         losing_digests = {
@@ -67,9 +122,10 @@ def main() -> None:
             int(entry["seed"]),
             seat,
             args.capture_step,
+            candidate_overrides,
         )
         for entry in unique
-        for seat in (0, 1)
+        for seat in args.seats
     ]
     rows: list[dict[str, Any]] = []
     with concurrent.futures.ProcessPoolExecutor(max_workers=max(1, args.workers)) as pool:

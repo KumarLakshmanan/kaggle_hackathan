@@ -366,7 +366,7 @@ def _weed_repair(obs, action, step):
     for actor, (position, intended) in enumerate(zip(positions, orders)):
         if actor in active or not isinstance(intended, list) or not intended:
             continue
-        if intended[0] not in ("BUILD_PASTURE", "PLANT"):
+        if intended[0] not in ("BUILD_COOP", "BUILD_PASTURE", "PLANT"):
             continue
         if _tile_at(farm, position) == "LOCKED":
             continue
@@ -470,6 +470,143 @@ def _terminal_liquidation(obs, action, step):
         planned[item] = planned.get(item, 0) + extra
     action["market"] = market[:10]
     return action
+
+
+def _recovery_move(position, target):
+    try:
+        x, y = int(position[0]), int(position[1])
+        tx, ty = int(target[0]), int(target[1])
+    except (IndexError, TypeError, ValueError):
+        return ["PASS"]
+    if x < tx:
+        return ["EAST"]
+    if x > tx:
+        return ["WEST"]
+    if y < ty:
+        return ["SOUTH"]
+    if y > ty:
+        return ["NORTH"]
+    return ["PASS"]
+
+
+def _recovery_action(obs, step):
+    """State-driven rescue policy used only when the replay route cannot run.
+
+    The normal agent remains route-based.  This controller is deliberately
+    conservative: it performs only actions justified by the live board, keeps
+    the market within the ten-order limit, and prefers preserving farm
+    production over speculative purchases.
+    """
+    try:
+        player = int(obs.get("player", 0) or 0)
+        farms = obs.get("farms", []) or []
+        farm = farms[player] if 0 <= player < len(farms) else {}
+        tiles = list(farm.get("tiles", []) or [])
+        positions = [farm.get("farmer", [0, 0]), *list(farm.get("hands", []) or [])]
+        private = obs.get("private", {}) or {}
+        inventories = [dict(value or {}) for value in list(private.get("inventories", []) or [])]
+        seeds = {key: max(0, int(value or 0)) for key, value in dict(private.get("seeds", {}) or {}).items()}
+        shed = {key: max(0, int(value or 0)) for key, value in dict(private.get("shed", {}) or {}).items()}
+
+        if step < 600:
+            crop_order = ("MELON", "STRAWBERRY", "WHEAT", "TOMATO", "CARROT")
+        else:
+            crop_order = ("WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON")
+        fallback_seed = next((crop for crop in crop_order if seeds.get(crop, 0) > 0), None)
+
+        targets = []
+        for y, row in enumerate(tiles):
+            for x, tile in enumerate(list(row or [])):
+                if tile == "LOCKED":
+                    continue
+                if not isinstance(tile, dict):
+                    if tile is None and fallback_seed is not None:
+                        targets.append((6, x, y, ["PLANT", fallback_seed]))
+                    continue
+                kind = tile.get("kind")
+                if kind == "WEED":
+                    targets.append((0, x, y, ["DIG"]))
+                    continue
+                if kind == "PLANT":
+                    if int(tile.get("yield_units", 0) or 0) > 0:
+                        targets.append((1, x, y, ["HARVEST"]))
+                    elif not tile.get("watered_today", False):
+                        targets.append((4, x, y, ["WATER"]))
+                    continue
+                if tile.get("animal"):
+                    if not tile.get("fed_today", False):
+                        targets.append((2, x, y, ["FEED"]))
+                    if not tile.get("cared_today", False):
+                        targets.append((3, x, y, ["CARE"]))
+                    if tile.get("fertilizer_available", False):
+                        targets.append((5, x, y, ["COLLECT_FERTILIZER"]))
+
+        orders = []
+        claimed = set()
+        for actor, position in enumerate(positions):
+            inventory = inventories[actor] if actor < len(inventories) else {}
+            candidates = []
+            for priority, x, y, task in targets:
+                if (x, y) in claimed:
+                    continue
+                if task[0] == "FEED" and int(inventory.get("WHEAT", 0) or 0) <= 0:
+                    continue
+                if task[0] == "PLANT" and seeds.get(task[1], 0) <= 0:
+                    continue
+                try:
+                    distance = abs(int(position[0]) - x) + abs(int(position[1]) - y)
+                except (IndexError, TypeError, ValueError):
+                    distance = 10 ** 6
+                candidates.append((priority, distance, y, x, task))
+            if not candidates:
+                orders.append(["PASS"])
+                continue
+            _, _, y, x, task = min(candidates)
+            claimed.add((x, y))
+            if int(position[0]) == x and int(position[1]) == y:
+                orders.append(list(task))
+            else:
+                orders.append(_recovery_move(position, (x, y)))
+
+        market = []
+        if step >= 700:
+            for item in _TERMINAL_LIQUIDATION_ORDER:
+                quantity = shed.get(item, 0)
+                if quantity > 0:
+                    market.append(["SELL", item, quantity])
+                if len(market) >= 10:
+                    break
+        else:
+            market_info = obs.get("market", {}) or {}
+            prices = market_info.get("prices", {}) or {}
+            sale_candidates = []
+            for item, quantity in shed.items():
+                if item not in _MARKET_PARAMS or quantity <= 0:
+                    continue
+                base = _MARKET_PARAMS[item][0]
+                sale_candidates.append((float(prices.get(item, base) or base) / base, item, quantity))
+            for ratio, item, quantity in sorted(sale_candidates, reverse=True):
+                if ratio >= 1.15:
+                    market.append(["SELL", item, quantity])
+                if len(market) >= 10:
+                    break
+            if not market and fallback_seed is None:
+                empty_tiles = any(tile is None for row in tiles for tile in list(row or []))
+                money = float(farm.get("money", 0) or 0)
+                if empty_tiles and money >= 100:
+                    market.append(["BUY_SEED", "WHEAT", 5])
+
+        hand_count = len(farm.get("hands", []) or [])
+        return {
+            "farmer": orders[0] if orders else ["PASS"],
+            "hands": (orders[1:] + [["PASS"] for _ in range(hand_count)])[:hand_count],
+            "market": market[:10],
+        }
+    except Exception:
+        farms = obs.get("farms", []) or []
+        player = int(obs.get("player", 0) or 0)
+        hand_count = len((farms[player] if 0 <= player < len(farms) else {}).get("hands", []) or [])
+        return {"farmer": ["PASS"], "hands": [["PASS"] for _ in range(hand_count)], "market": []}
 
 
 def _clone_profile(farm):
@@ -650,10 +787,11 @@ def agent(obs, config=None):
         action["market"] = list(action.get("market") or [])[:10]
         return action
     except Exception:
-        player = int(obs.get("player", 0) or 0)
-        farms = obs.get("farms", []) or []
-        hand_count = len((farms[player] if player < len(farms) else {}).get("hands", []) or [])
-        return {"farmer": ["PASS"], "hands": [["PASS"] for _ in range(hand_count)], "market": []}
+        try:
+            recovery_step = max(0, int(obs.get("step", 0) or 0))
+        except (AttributeError, TypeError, ValueError):
+            recovery_step = 0
+        return _recovery_action(obs, recovery_step)
 
 
 def _kaggle_submission_entrypoint(obs):

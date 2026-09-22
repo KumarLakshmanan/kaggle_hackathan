@@ -31954,11 +31954,106 @@ def _v53_use_rank41_for(observation):
     return bool(_V53_USE_RANK41.get(player, False))
 
 
+def _v58_direct_wheat_opening(action, observation):
+    """Remove the step-0 wheat round-trip while preserving net wheat=5.
+
+    The production policy previously bought 20 wheat and immediately sold 15.
+    On the expanded ranks 201-300 replay panel, replacing that with one direct
+    five-unit purchase improved paired wins without changing later decisions.
+    Keep this as plain, auditable logic rather than embedding a downloaded
+    policy.
+    """
+    try:
+        if int(observation.get('step', -1)) != 0:
+            return action
+        if not isinstance(action, dict):
+            return action
+        orders = action.get('market')
+        if not isinstance(orders, list):
+            return action
+        has_buy = any(
+            isinstance(order, (list, tuple))
+            and len(order) >= 2
+            and order[0] == 'BUY_PRODUCT'
+            and order[1] == 'WHEAT'
+            for order in orders
+        )
+        has_sell = any(
+            isinstance(order, (list, tuple))
+            and len(order) >= 2
+            and order[0] == 'SELL'
+            and order[1] == 'WHEAT'
+            for order in orders
+        )
+        if not (has_buy and has_sell):
+            return action
+        rewritten = []
+        inserted = False
+        for order in orders:
+            if (
+                isinstance(order, (list, tuple))
+                and len(order) >= 2
+                and order[0] == 'BUY_PRODUCT'
+                and order[1] == 'WHEAT'
+            ):
+                if not inserted:
+                    rewritten.append(['BUY_PRODUCT', 'WHEAT', 5])
+                    inserted = True
+                continue
+            if (
+                isinstance(order, (list, tuple))
+                and len(order) >= 2
+                and order[0] == 'SELL'
+                and order[1] == 'WHEAT'
+            ):
+                continue
+            rewritten.append(list(order) if isinstance(order, tuple) else order)
+        action['market'] = rewritten
+    except Exception:
+        # Preserve the proven base action if an unexpected observation shape
+        # appears in a future simulator version.
+        return action
+    return action
+
+
 def agent(observation, configuration=None):
-    return _V53_BASE_AGENT(observation, configuration)
+    action = _V53_BASE_AGENT(observation, configuration)
+    return _v58_direct_wheat_opening(action, observation)
 
 
 agent.telemetry = {
     'router': 'v52-base-after-v53-paired-ablation',
     'rank41_rescue_enabled': False,
+    'opening_rule': 'direct-five-wheat-buy',
 }
+
+
+# ===== V54 STATIC SHOP ROUTE FIX (VALIDATED, PLAIN SOURCE) =====
+# The expanded top-100 replay panel contains five YARN_STORE -> ICE_CREAM_SHOP
+# episodes.  The original route-9 tape lost all five paired replays.  A clean
+# route-panel sweep over routes 0..12 found route 10 to be the only route with
+# a positive aggregate on the three additional seeds, and the full 170-route
+# paired benchmark improved from 86/170 to 89/170 paired wins.  Update the
+# route tables directly so this fix has no per-turn router overhead.
+_V54_YARN_ICE_PAIR = ('YARN_STORE', 'ICE_CREAM_SHOP')
+_V54_YARN_ICE_ROUTE = 10
+_V54_ROUTE_NAMESPACES = [globals()]
+for _v54_name in (
+    '_V49_EMBEDDED_NAMESPACE',
+    '_V51_HAIDE_NAMESPACE',
+    '_V52_RANK41_NAMESPACE',
+):
+    _v54_namespace = globals().get(_v54_name)
+    if isinstance(_v54_namespace, dict):
+        _V54_ROUTE_NAMESPACES.append(_v54_namespace)
+
+for _v54_namespace in _V54_ROUTE_NAMESPACES:
+    for _v54_table_name in ('_R108_SHOP_ROUTES', '_R110_OLD_SHOPS', '_V92_TABLE'):
+        _v54_table = _v54_namespace.get(_v54_table_name)
+        if isinstance(_v54_table, dict) and _V54_YARN_ICE_PAIR in _v54_table:
+            _v54_table[_V54_YARN_ICE_PAIR] = _V54_YARN_ICE_ROUTE
+
+agent.telemetry.update({
+    'shop_route_fix': 'YARN_STORE,ICE_CREAM_SHOP->route10',
+    'shop_route_fix_validation': 'top100 paired 86/170 -> 89/170',
+})

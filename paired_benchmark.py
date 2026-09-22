@@ -49,10 +49,11 @@ class TimedAgent:
             self.accepts_configuration = False
 
     def __call__(self, observation: Any, configuration: Any = None) -> Any:
+        observed_step = _value(observation, "step", -1)
         if (
             self.capture_step is not None
             and self.capture is None
-            and int(_value(observation, "step", -1) or -1) == self.capture_step
+            and int(observed_step if observed_step is not None else -1) == self.capture_step
         ):
             self.capture = _capture_public(observation)
         started = time.perf_counter()

@@ -1,0 +1,4 @@
+{"action": {"farmer": ["WEST"], "hands": [], "market": [["SELL", "WHEAT", 7], ["SELL", "FERTILIZER", 1], ["HIRE"], ["HIRE"], ["HIRE"], ["HIRE"], ["HIRE"]]}, "step": 144}
+{"action": {"farmer": ["NORTH"], "hands": [["PICKUP", "WHEAT", 5], ["WEST"], ["WEST"], ["WEST"], ["PASS"]], "market": [["HIRE"], ["HIRE"], ["HIRE"]]}, "step": 145}
+{"action": {"farmer": ["WEST"], "hands": [], "market": [["SELL", "WHEAT", 7], ["SELL", "FERTILIZER", 1], ["HIRE"], ["HIRE"], ["HIRE"], ["HIRE"], ["HIRE"]]}, "step": 144}
+{"action": {"farmer": ["NORTH"], "hands": [["PICKUP", "WHEAT", 5], ["WEST"], ["WEST"], ["WEST"], ["PASS"]], "market": [["HIRE"], ["HIRE"], ["HIRE"]]}, "step": 145}

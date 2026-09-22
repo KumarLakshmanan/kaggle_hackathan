@@ -1,0 +1,309 @@
+import subprocess
+import sys
+from importlib.metadata import PackageNotFoundError, version as package_version
+from pathlib import Path
+
+_EXPECTED_ENGINE_VERSION = '1.32.6'
+try:
+    _engine_version = package_version("kaggle-environments")
+except PackageNotFoundError:
+    _engine_version = None
+if _engine_version != _EXPECTED_ENGINE_VERSION:
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--quiet",
+            "--disable-pip-version-check",
+            "--no-deps",
+            f"kaggle-environments=={_EXPECTED_ENGINE_VERSION}",
+        ],
+        check=True,
+    )
+    _engine_version = package_version("kaggle-environments")
+assert _engine_version == _EXPECTED_ENGINE_VERSION
+
+import hashlib
+import importlib.util
+import json
+import matplotlib.pyplot as plt
+import numpy as np
+from IPython.display import Markdown, display
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap
+from matplotlib.ticker import PercentFormatter
+
+Path("output").mkdir(exist_ok=True)
+
+ANALYSIS = json.loads(r'''{"adaptive_livestock":{"peak_cow_range":[5,12],"peak_pasture_animals_median":20.0,"peak_sheep_range":[9,16],"spearman_sheep_share_vs_expansion_price_gap":0.7727272727272727,"spearman_sheep_share_vs_final_shop_demand_gap":0.5269797899346473},"land_rules":{"fourth_quadrant_capacity_tiles":25,"fourth_quadrant_marginal_cost":4000,"incremental_prices":[0,1000,2000,4000],"order":["NW","NE","SW","SE"],"total_extra_land_cost":7000},"medoid_tape_transplant":{"all_four_quadrants":true,"games":4,"invalid_actions_total":0,"losses":0,"median_dead_crops":41.5,"median_ineffective_unit_actions":33.5,"median_margin":16593.0,"source_episode":90915190,"wins":4},"reconstructability":{"frame_modal_farmer_mean":0.5703628777342269,"frame_modal_full_action_mean":0.27019850802882794,"frame_modal_hands_mean":0.3203944872929574,"frame_modal_market_mean":0.5955240864837527,"pairwise_farmer_median":0.4172461752433936,"pairwise_first_full_divergence_frame_median":102.0,"pairwise_full_action_median":0.16968011126564672,"pairwise_hands_median":0.2336578581363004,"pairwise_market_median":0.4520166898470097},"resource_flow_medians":{"Seb":{"buy_product_wheat":373.0,"buy_seed_wheat":22.0,"feed_commands":392.0,"hire_orders":303.0,"sell_wheat":74.0},"V14":{"buy_product_wheat":266.0,"buy_seed_wheat":109.0,"feed_commands":300.0,"hire_orders":263.0,"sell_wheat":305.0}},"route_signature_medians":{"Seb":{"final_quadrants":4.0,"peak_cow":8.0,"peak_hands":12.0,"peak_melon":16.0,"peak_sheep":11.0,"peak_strawberry":43.0,"reward":78936.0},"V14":{"final_quadrants":3.0,"peak_cow":8.0,"peak_hands":14.0,"peak_melon":12.0,"peak_sheep":6.0,"peak_strawberry":42.0,"reward":106243.5}},"sample":{"medoid_episode":90915190,"seb_losses":0,"seb_replays":11,"seb_seat0":5,"seb_seat1":6,"seb_wins":11,"v14_replays":4},"seb_fourth_quadrant":{"first_use_delay_frames_max":17,"first_use_delay_frames_median":12.0,"peak_se_occupied_max":17,"peak_se_occupied_median":16.0,"peak_se_occupied_min":15,"unlock_batches_selling_melon":9,"unlock_day_median":10.625,"unlock_frame_max":259,"unlock_frame_median":255.0,"unlock_frame_min":252},"seb_se_observed_harvest_units_median":{"MELON":18.0,"STRAWBERRY":59.0,"WOOL":61.0}}''')
+IDENTITY = json.loads(r'''{"agent_sha256":"10185cc15bd00f44d6ecf0bf42da1d6e58fc7988b5155900d7805af0fe3b7260","counts":{"exact":719,"farmer":719,"hands":719,"market":719,"turns":719},"passed":true,"source_episode":90915190,"source_replay_sha256":"0d4bc9d8441d5472b4f3c55a9e60c9758c81681c5cdefc15ff43a08daf6155d0","source_seat":1}''')
+STRUCTURE = json.loads(r'''{"error_logs_total":0,"escaped_animals_total":0,"four_q_core_successes":8,"four_quadrant_successes":8,"full_target_structure_successes":4,"games":8,"invalid_actions_total":0,"losses":2,"median_dead_crops":42.0,"median_ineffective_unit_actions":37.5,"median_margin":4600.5,"structure_ranges":{"cow":[8,8],"melon":[14,17],"sheep":[11,12],"strawberry":[41,43]},"timeouts_total":0,"unlock_frames":{"NE":[119],"SE":[252],"SW":[159]},"wins":6,"worst_margin":-1017.0}''')
+LAND_EVENTS = json.loads(r'''[{"episode":90851845,"first_use_frame":123,"quadrant":"NE","unlock_frame":118},{"episode":90851845,"first_use_frame":171,"quadrant":"SW","unlock_frame":159},{"episode":90851845,"first_use_frame":268,"quadrant":"SE","unlock_frame":257},{"episode":90893264,"first_use_frame":123,"quadrant":"NE","unlock_frame":119},{"episode":90893264,"first_use_frame":168,"quadrant":"SW","unlock_frame":159},{"episode":90893264,"first_use_frame":268,"quadrant":"SE","unlock_frame":256},{"episode":90904182,"first_use_frame":123,"quadrant":"NE","unlock_frame":119},{"episode":90904182,"first_use_frame":171,"quadrant":"SW","unlock_frame":159},{"episode":90904182,"first_use_frame":268,"quadrant":"SE","unlock_frame":255},{"episode":90904933,"first_use_frame":123,"quadrant":"NE","unlock_frame":119},{"episode":90904933,"first_use_frame":171,"quadrant":"SW","unlock_frame":159},{"episode":90904933,"first_use_frame":269,"quadrant":"SE","unlock_frame":259},{"episode":90904998,"first_use_frame":123,"quadrant":"NE","unlock_frame":119},{"episode":90904998,"first_use_frame":170,"quadrant":"SW","unlock_frame":159},{"episode":90904998,"first_use_frame":268,"quadrant":"SE","unlock_frame":254},{"episode":90907562,"first_use_frame":123,"quadrant":"NE","unlock_frame":118},{"episode":90907562,"first_use_frame":171,"quadrant":"SW","unlock_frame":150},{"episode":90907562,"first_use_frame":264,"quadrant":"SE","unlock_frame":254},{"episode":90914286,"first_use_frame":123,"quadrant":"NE","unlock_frame":118},{"episode":90914286,"first_use_frame":171,"quadrant":"SW","unlock_frame":159},{"episode":90914286,"first_use_frame":269,"quadrant":"SE","unlock_frame":252},{"episode":90915190,"first_use_frame":123,"quadrant":"NE","unlock_frame":119},{"episode":90915190,"first_use_frame":171,"quadrant":"SW","unlock_frame":159},{"episode":90915190,"first_use_frame":268,"quadrant":"SE","unlock_frame":252},{"episode":90917654,"first_use_frame":120,"quadrant":"NE","unlock_frame":118},{"episode":90917654,"first_use_frame":170,"quadrant":"SW","unlock_frame":150},{"episode":90917654,"first_use_frame":267,"quadrant":"SE","unlock_frame":257},{"episode":90926064,"first_use_frame":120,"quadrant":"NE","unlock_frame":119},{"episode":90926064,"first_use_frame":170,"quadrant":"SW","unlock_frame":158},{"episode":90926064,"first_use_frame":264,"quadrant":"SE","unlock_frame":257},{"episode":90932785,"first_use_frame":123,"quadrant":"NE","unlock_frame":119},{"episode":90932785,"first_use_frame":183,"quadrant":"SW","unlock_frame":159},{"episode":90932785,"first_use_frame":269,"quadrant":"SE","unlock_frame":253}]''')
+LIVESTOCK = json.loads(r'''[{"episode":90851845,"peak_animals":19,"price_gap":-41.0,"sheep_share":0.5263157894736842,"shop_gap":3.0},{"episode":90893264,"peak_animals":20,"price_gap":61.0,"sheep_share":0.55,"shop_gap":3.0},{"episode":90904182,"peak_animals":20,"price_gap":-34.0,"sheep_share":0.45,"shop_gap":-4.0},{"episode":90904933,"peak_animals":19,"price_gap":46.0,"sheep_share":0.7368421052631579,"shop_gap":-1.0},{"episode":90904998,"peak_animals":21,"price_gap":142.0,"sheep_share":0.7619047619047619,"shop_gap":3.0},{"episode":90907562,"peak_animals":22,"price_gap":22.0,"sheep_share":0.6818181818181818,"shop_gap":2.0},{"episode":90914286,"peak_animals":21,"price_gap":-54.0,"sheep_share":0.47619047619047616,"shop_gap":-2.0},{"episode":90915190,"peak_animals":20,"price_gap":6.0,"sheep_share":0.6,"shop_gap":0.0},{"episode":90917654,"peak_animals":21,"price_gap":-72.0,"sheep_share":0.42857142857142855,"shop_gap":-4.0},{"episode":90926064,"peak_animals":21,"price_gap":37.0,"sheep_share":0.6666666666666666,"shop_gap":3.0},{"episode":90932785,"peak_animals":18,"price_gap":54.0,"sheep_share":0.6111111111111112,"shop_gap":5.0}]''')
+CONSENSUS = np.array(json.loads(r'''[[1.0,0.671969696969697,0.41742424242424236,0.3984848484848485,0.43636363636363634,0.5015151515151515],[0.944996180290298,0.28863636363636364,0.1303030303030303,0.1325757575757576,0.13333333333333333,0.29772727272727273],[0.9908326967150496,0.7522727272727272,0.49772727272727274,0.45,0.4106060606060606,0.475],[0.944996180290298,0.2553030303030303,0.09545454545454546,0.0946969696969697,0.09242424242424244,0.14393939393939395]]'''), dtype=float)
+BOARD_LABELS = json.loads(r'''[["EMPTY","EMPTY","EMPTY","EMPTY","EMPTY","EMPTY","MELON","EMPTY","EMPTY","EMPTY"],["STRAWBERRY","STRAWBERRY","STRAWBERRY","WHEAT","STRAWBERRY","STRAWBERRY","STRAWBERRY","STRAWBERRY","EMPTY","EMPTY"],["STRAWBERRY","SHEEP","COW","COW","STRAWBERRY","STRAWBERRY","SHEEP","STRAWBERRY","EMPTY","EMPTY"],["STRAWBERRY","COW","COW","COW","SHEEP","STRAWBERRY","STRAWBERRY","STRAWBERRY","MELON","EMPTY"],["STRAWBERRY","STRAWBERRY","COW","STRAWBERRY","SHEEP","STRAWBERRY","STRAWBERRY","STRAWBERRY","MELON","EMPTY"],["STRAWBERRY","SHEEP","COW","STRAWBERRY","STRAWBERRY","STRAWBERRY","STRAWBERRY","SHEEP","MELON","EMPTY"],["STRAWBERRY","SHEEP","SHEEP","STRAWBERRY","COW","SHEEP","SHEEP","SHEEP","MELON","EMPTY"],["STRAWBERRY","STRAWBERRY","STRAWBERRY","STRAWBERRY","SHEEP","STRAWBERRY","STRAWBERRY","STRAWBERRY","MELON","EMPTY"],["STRAWBERRY","STRAWBERRY","STRAWBERRY","STRAWBERRY","STRAWBERRY","STRAWBERRY","STRAWBERRY","STRAWBERRY","EMPTY","EMPTY"],["EMPTY","EMPTY","EMPTY","EMPTY","EMPTY","EMPTY","EMPTY","EMPTY","EMPTY","EMPTY"]]''')
+OPPONENTS = json.loads(r'''[{"evidence":"Executable code","games":12,"losses":0,"mean_margin":26573.666666666668,"opponent":"Indar verified","paired_negative":0,"paired_positive":6,"win_rate":1.0,"wins":12,"worst_margin":6070.0},{"evidence":"Executable code","games":12,"losses":12,"mean_margin":-9609.166666666666,"opponent":"Kaito V22","paired_negative":6,"paired_positive":0,"win_rate":0.0,"wins":0,"worst_margin":-19822.0},{"evidence":"Executable code","games":12,"losses":0,"mean_margin":29064.083333333332,"opponent":"Kaito V23","paired_negative":0,"paired_positive":6,"win_rate":1.0,"wins":12,"worst_margin":6725.0},{"evidence":"Executable code","games":12,"losses":0,"mean_margin":25098.416666666668,"opponent":"Kakuteki frontier","paired_negative":0,"paired_positive":6,"win_rate":1.0,"wins":12,"worst_margin":4493.0},{"evidence":"Executable code","games":12,"losses":8,"mean_margin":-208.91666666666666,"opponent":"Rayk V21","paired_negative":4,"paired_positive":2,"win_rate":0.3333333333333333,"wins":4,"worst_margin":-13470.0},{"evidence":"Replay proxy","games":12,"losses":9,"mean_margin":-1389.0833333333333,"opponent":"Seb 90851845 proxy","paired_negative":5,"paired_positive":1,"win_rate":0.25,"wins":3,"worst_margin":-21862.0},{"evidence":"Replay proxy","games":12,"losses":1,"mean_margin":10544.583333333334,"opponent":"Seb 90893264 proxy","paired_negative":1,"paired_positive":5,"win_rate":0.9166666666666666,"wins":11,"worst_margin":-3081.0},{"evidence":"Replay proxy","games":12,"losses":5,"mean_margin":3388.8333333333335,"opponent":"Seb 90914286 proxy","paired_negative":3,"paired_positive":3,"win_rate":0.5833333333333334,"wins":7,"worst_margin":-10076.0},{"evidence":"Replay proxy","games":12,"losses":5,"mean_margin":3886.5833333333335,"opponent":"Ueddy 90900709 proxy","paired_negative":3,"paired_positive":3,"win_rate":0.5833333333333334,"wins":7,"worst_margin":-10435.0},{"evidence":"Replay proxy","games":12,"losses":5,"mean_margin":3347.8333333333335,"opponent":"Ueddy 90916074 proxy","paired_negative":3,"paired_positive":3,"win_rate":0.5833333333333334,"wins":7,"worst_margin":-10539.0},{"evidence":"Executable code","games":12,"losses":9,"mean_margin":-1576.3333333333333,"opponent":"V13-R3","paired_negative":4,"paired_positive":2,"win_rate":0.25,"wins":3,"worst_margin":-12753.0},{"evidence":"Executable code","games":12,"losses":0,"mean_margin":25098.416666666668,"opponent":"V14 (exact local)","paired_negative":0,"paired_positive":6,"win_rate":1.0,"wins":12,"worst_margin":4493.0},{"evidence":"Executable code","games":12,"losses":1,"mean_margin":41135.083333333336,"opponent":"wangtf96","paired_negative":0,"paired_positive":6,"win_rate":0.9166666666666666,"wins":11,"worst_margin":-2092.0}]''')
+FAILURE_RECHECK = json.loads(r'''[{"escaped_animals":6,"four_q_core":6,"games":6,"ineffective_max":291,"ineffective_min":3,"opponent":"Kaito V22","wins":0},{"escaped_animals":0,"four_q_core":6,"games":6,"ineffective_max":142,"ineffective_min":1,"opponent":"V13-R3","wins":2}]''')
+
+INK = "#1F2937"
+GREY = "#667085"
+LIGHT_GREY = "#E5E7EB"
+BLUE = "#2F6F9F"
+GOLD = "#D49A17"
+ORANGE = "#E07A3F"
+TEAL = "#2A9D8F"
+
+plt.rcParams.update({
+    "figure.facecolor": "white",
+    "axes.facecolor": "white",
+    "axes.edgecolor": LIGHT_GREY,
+    "axes.labelcolor": INK,
+    "xtick.color": GREY,
+    "ytick.color": GREY,
+    "text.color": INK,
+    "font.size": 10,
+    "axes.titleweight": "bold",
+})
+
+assert ANALYSIS["sample"]["seb_replays"] == 11
+assert IDENTITY["passed"] and IDENTITY["counts"]["exact"] == 719
+assert STRUCTURE["four_q_core_successes"] == STRUCTURE["games"] == 8
+assert sum(row["games"] for row in OPPONENTS) == 156
+assert sum(row["wins"] for row in OPPONENTS) == 101
+assert sum(row["losses"] for row in OPPONENTS) == 55
+print(f"Using kaggle-environments=={_engine_version}.")
+print("Loaded 11 public Seb replays and 156 saved local evaluation games.")
+
+episodes = sorted({row["episode"] for row in LAND_EVENTS})
+y_pos = {episode: idx for idx, episode in enumerate(episodes)}
+quadrant_style = {
+    "NE": (TEAL, "o", "NE unlock ($1k)"),
+    "SW": (GOLD, "o", "SW unlock ($2k)"),
+    "SE": (BLUE, "o", "SE unlock ($4k)"),
+}
+fig, ax = plt.subplots(figsize=(11.5, 6.4))
+for row in LAND_EVENTS:
+    color, marker, _ = quadrant_style[row["quadrant"]]
+    y = y_pos[row["episode"]]
+    ax.scatter(row["unlock_frame"], y, s=50, color=color, marker=marker,
+               edgecolor="white", linewidth=0.8, zorder=3)
+    if row["quadrant"] == "SE" and row["first_use_frame"] is not None:
+        ax.plot([row["unlock_frame"], row["first_use_frame"]], [y, y],
+                color=BLUE, linewidth=2, alpha=0.50)
+        ax.scatter(row["first_use_frame"], y, s=55, color=ORANGE, marker="D",
+                   edgecolor="white", linewidth=0.8, zorder=3)
+ax.set_yticks(range(len(episodes)), [str(value) for value in episodes])
+ax.set_xlim(90, 290)
+ax.set_xlabel("Replay frame (24 frames = 1 game day)")
+ax.set_ylabel("Seb public episode")
+ax.set_title("Land unlock and first-use frames in 11 Seb replays", loc="left", fontsize=15, pad=28)
+ax.text(0, 1.015, "Dots mark unlocks; orange diamonds mark the first occupied SE tile.",
+        transform=ax.transAxes, color=GREY, fontsize=10, va="bottom")
+ax.grid(axis="x", color=LIGHT_GREY, linewidth=0.8)
+ax.spines[["top", "right", "left"]].set_visible(False)
+ax.tick_params(axis="y", length=0)
+handles = [
+    plt.Line2D([], [], marker="o", linestyle="", color=TEAL, label="NE unlock ($1k)"),
+    plt.Line2D([], [], marker="o", linestyle="", color=GOLD, label="SW unlock ($2k)"),
+    plt.Line2D([], [], marker="o", linestyle="", color=BLUE, label="SE unlock ($4k)"),
+    plt.Line2D([], [], marker="D", linestyle="", color=ORANGE, label="First SE use"),
+]
+ax.legend(handles=handles, frameon=False, ncol=4, loc="upper center", bbox_to_anchor=(0.5, -0.14))
+fig.subplots_adjust(left=0.16, right=0.98, top=0.86, bottom=0.20)
+plt.show()
+
+categories = ["EMPTY", "LOCKED", "WHEAT", "STRAWBERRY", "MELON", "COW", "SHEEP", "PASTURE", "WEED", "OTHER"]
+category_code = {label: idx for idx, label in enumerate(categories)}
+board = np.array([[category_code.get(label, category_code["OTHER"]) for label in row] for row in BOARD_LABELS])
+colors = ["#F8FAFC", "#CBD5E1", "#E9C46A", "#E76F51", "#F4A261", "#457B9D", "#7B2CBF", "#90A955", "#6B705C", "#94A3B8"]
+fig, ax = plt.subplots(figsize=(9.8, 7.4))
+ax.imshow(board, cmap=ListedColormap(colors), vmin=-0.5, vmax=len(categories) - 0.5)
+ax.set_xticks(np.arange(-0.5, 10, 1), minor=True)
+ax.set_yticks(np.arange(-0.5, 10, 1), minor=True)
+ax.grid(which="minor", color="white", linewidth=1.2)
+ax.axvline(4.5, color=INK, linewidth=3)
+ax.axhline(4.5, color=INK, linewidth=3)
+ax.set_xticks([]); ax.set_yticks([])
+for x, y, label in [(2, 2, "NW"), (7, 2, "NE"), (2, 7, "SW"), (7, 7, "SE")]:
+    ax.text(x, y, label, ha="center", va="center", fontsize=15, fontweight="bold", color=INK, alpha=0.28)
+handles = [
+    plt.Line2D([], [], marker="s", markersize=10, linestyle="", color=colors[idx], label=label.title())
+    for idx, label in enumerate(categories) if label not in {"EMPTY", "LOCKED", "OTHER"}
+]
+ax.legend(handles=handles, frameon=False, ncol=2, bbox_to_anchor=(1.03, 0.5), loc="center left")
+ax.set_title("Representative four-quadrant board", loc="left", fontsize=15, pad=28)
+ax.text(0, 1.015, "Seb medoid episode 90915190, frame 480; replay-visible tile state.",
+        transform=ax.transAxes, color=GREY, fontsize=10, va="bottom")
+fig.subplots_adjust(left=0.05, right=0.76, top=0.86, bottom=0.05)
+plt.show()
+
+%%writefile output/r0_main.py
+"""V15-4Q-R0: replay-derived four-quadrant macro-route prototype.
+
+Source evidence: public episode 90915190, Seb seat 1.  This standalone agent
+replays the medoid macro schedule and only repairs the number of hand actions.
+It targets the observed four-land, roughly 8-COW/12-SHEEP route, but it does
+not recover Seb's hidden price/shop/weed/inventory condition logic.
+"""
+import base64
+import copy
+import json
+import zlib
+
+_ACTIONS = json.loads(zlib.decompress(base64.b85decode('c-rlqOK;sra>c(3*IbwnNp^M``3@|M#xf*1#Ka(s0Wv{=V6vEG7v#G~V^a6=uhYLeRo$1CCtB%(msG#It4^Id_0#`c{M(=Z_Se7s?c$$)y7=9Xuit$8^A9iIfB5m;?&ALP;@|)Lpa1$_AHVtd@vndW+kgD!zdwHd>EgTBzkJ*M@Vg)X^z-}O?%RvYi$Ct(y#4;-@@DhnyYF@{KU`d1U4Q!d%kN+R@#UM3-@JNzcX4@rfB(Oi$Nm1{^{YSp_`~7rL&tx*xZAz|@JqAbzkT=NyI($i9N_!SkA}Z>I`Y`Z*v0qX?RGziPJa9D?GG0xT|2ZT`nFvQ+1uF1(ah|7Wp_YL$(xtof7p-R>%g0ruXg+PPg?)<zddY%&NRIIuzTlq<I^7<Z;ZoVhmOz=fysZ^2|v7h`|XdfJ{;}idw){izx{DAIyo7l>-9DI)TZnP?TkYgX({Ykfm6Ky?)cb^hPv$Zh+Xshzn}iW^58)+mc^Z@#{tNLycwKq*;}^3p8fmc3}z%Webmsx(<4^p)yvI!5L-fYVd0t#rw0$Tvrh_ZBo6ZS;M}Auwf~eqh559I9?@Ri|Ku=hjr(l(a(h0~C6`}~mkt_#+=}LvarhD4SWC}}xX||>4kMmgfOtXe=YZOLT(>o^NnD4+B@z0tZ&|#sr@u@$<il^uvmcvGTUy^_`k~a)e$Ey*6fdmvxgn>1Mc6}+yY`&kMC%BjT1r>H{QuHG`qZ^oZ{NJxz54L;?|1J$yngfgUmj1_{zOne3&w|-l*4`;^r6r+EJwUw9^I{@4`_P4-@W<!J~-;!!L<u(bZxBBzBRaZ#4I%?;negnuYgUj*4(gh@~H=UKTPyT{fDY|(k5E7I?4hQ?!maN&8^yON_YX`!)A@r;}GUMnpvgx{U;$JC;PtzyTWN`Fwjfe>JP8t=zuMMeuumBd@VIz{Lj20=bl>9(7BDVFAe>_Z7A3t>#XF0B`V>Cl95a{=c7NU97=){)OW#7UhY<p0czc)hnJ!WLt1D`z;s%uV_by&8z+Fi90Y7S8Ddm4yALz9XuuIeG~x03fCXwqb9?BAJ>cv6MYAp@Bi++tauwX>O|P>2o2Ur~KK3o{EtH23(~T)?I9NlCwl;rj`X1BsIq>bAPVDcL$H^(RySL{Y>wD12hyNq>5^gHK0J*xeF6XRku%@Zf{yMkGUUhA+@4uL%zrBWjvp{ifMJ%#OhgR>+;8_#EG602ZCgI3vSd9oG>jUiNF``{E;Q*Z$-B^Ig!U|Z<(RxTWK*WcEi%B_((w-pN3rGVQIJ`AoGb?++YMD-?S}?SHr}<EEWu$XEzbL{9@YZ2|0wQ=#@cbb%EeHzf#UT7hF!$9c*F*)J4^P)p)kwR&U)%xT)Ofm<Ak;D0kQdYWVvl}l=qZq8&#e9|0cY6*Y*<*;5fEH#HDHIfxNVmL>zMb02l~60@BTRjMFDa4NOgrJ-*?Esv0BdEr0d{uHY50(HYG?vVond!bNaah^bTfqKh)#@ALg})QpyF6-j_Ge4M2b2Lbj>WIqx*C+e835&iGy9#2z)F#)3{(em(J`4z2Y~C-z3Kb1MmBP=q8zizk#?#n>t~x^L@vDA?})gtZ!!GluPLslB!K4&jJTCnti;F}{(u6g@vNm~*!TahWqU6mj$T6@)%MnIq4CnI{86kA2!V1F?b;x{rN&G3e7it?<pu@4vmc_g$??T97?y;}oc;z_cF|8Q*_+_ww#{yLa#Y^sz%<=}gR<9BE`D)cUlF9sQWFa5ON(Zodmx+W~+=&Pa~IikB@1z4aiNL|sZtk-ma%bxb62ZYLjlHADM@nM^w(_6ml)ll{TdRx;1Bc^6q>+pm%(t9c)SvJ<jpw+(iju54?JOi*osY!|C(#AP#@Me|3iR@)J|GfSkHUR&u!pa=z{w7Hs_5dOd6_7Z&vUv_Ep(FuyS%GRMN*=0n{pr)c_cDAM(p%ZE<+EUaM+i}7i09!_DO&Esi_DM--mWRm<7Dfr_k5^mF?uXW;5k+ZD$-EGsKxAr)+i4RuD~2O?LstnVq0>^F<-?vG$}4P*%dp)Q4YQPF=I-AZ4iJ2f6SRDo{+}7;zlyigj0q?U@fg7{{g7Goy<op?hjG<}j4=;&9Leu7do&8g?KMDZ5B-%UjJP~g&^iuy51mDzSmMLPxX(#4$sp6Q3*$Jqj51?<iylgqfOu0Lep0ZUgq5}>1`nR0Mz(=!EFm!OuX$nd>^r(i@z)U1+qWP88KY{W*WuZ{j{)W;SdIJDOAZCpkHPXfXTnmOa40X+`JwPaB1s+4TEZJ~GhHDZDqgl)X6bZ3alCX_Nlf(ViVY-qVg~*Zct&67H(!|a-SETLl`w;g=Nms-&Mim2Y;f<BK*e<fVurgE`zC!uMC2CDU3BgdT2Ne-7SAS<o`q34jy71$dciUvKseCs+~|2Lh;uW;guxxigWoRB(kP2L9sLC$A~-KUMr1k;j!Z(0Yk<F&uK|Tw6!%D>{G#C=UuHM*iBDy!T$+}VpQ<)W!OfT5%YL<xKT8Sj<NvVLu~Ilew3zwh+_&Q6Ih4U(yHZgBu!7d0zZU;%F;mtrwRVvT$wu~%xYc8q91O*C&JEz)VP!>KIZoa*A}~hO%1G1zdX?~_@eONWAxU=?YCpz0;!j*vT0h=ZN_{B`#tkLkmN;RfWmx5$$*{|WCw5*w*kEyWL4oOH3K`-V^TdkLrM9VDh&L^=+$jmf{nUv&MLYO}86PtyDPH5yy(1<l4ARUzN%?Hk*$pX^$_msI-=X4Y6Pr6a+VEkRiriyE3nsY{w-SudQ{GjxGxnw_Cq6qp6A&;&?5yaGqGkzzZME4plx1pkH+5+(4V-a7k;vE^a<L{mK{@7ND~iU;>d0i?Hk5v>I8>B*_D3>l3D)9d6#!w}5v=$DAGF=yP!^-Q8qO?i&TOx3$d2^I4pyZd#HHy)4^^)ox9uNazxe|NczvpGLpV8}wpJf67wC&O#Fc+dx#d#Z+eJH11dhEuMbLJsgo$4m13g}bej|Bl&zKxkksDNQGmg>WU~g+yrQWd8^`y8%A<h*08MB5jGo4K@f?Bw~ArqQ}&;-|*f|P|cAXFX7vOstt$rmn!uEgtdk~6)P$BOo^9bjxMC?d}+ZYpGpy~tx{QIA>NC-arX0nI5>miDRP4<xM@!*}r3zL$s!eW>?H;7@i2<Hizb%c>e~b_O1XMaA#STd)<b6{oqgnF{{=kYQUDMHs8UT&A!Z%Ofv}2b=NMG)k;KZSS3C7qdlQ5-OcdF%yy|{w6bn<UY4rB#Ui|pO)t1j6IEDvl~iw7T4_V#-S~lRs8gd3+dnkW`k;NO>aU0n<ax_(B-XBRs#0p&J^7g_ozsWP?_wukS?L;=}uJS38;>mS-F0(T<UcpsW;ih!-5CB%vB`&IchB&5L_PgWpL%iZzTHb{Yf48sB$XWDun$(`4Lm0%Qi<fEoB3a^x#5{B7~wG*~3-|5*kPhFZzjz6FM|NxQ-w-8s6x`dz-=yrD^pv%jbn~u9VC6oVztiJIYCcsI#z>H)xCbL{5w$iQdCr@;L^keR#LPy^qH@8g+3+RJ0jF(r9hT;NL>gda-GQ!KJ>8{+V#K&szU9qd40lt`K~6_n@|N9v|py%vhvsxg1Ry*Wm{40H#3qqluQH3Umv;%3z!{6@IpF5Ce@KpIw2<3*<wVqg5D7l-YKxNJYLdg>@hH`>|R7VCdhtYKx((IObkldaFic#;n^K{xjLXNubuO@l{IDok<mTM%xhcKZ$!R$|Jq33>kdb8(R}|X&UU=bI8v@Bma$&8~(An_2kLXRVYU0?8>cXW=wO9g{`@sO+s0??Hdi(+>SW?gK+7!ad`{$<~VRFUOcSMV+JN$>5EnZ7c*{@a1OYU1xf{NO2p8uQK7s#5f|J$n|DTt3J7o9Oyh-l$3(XU!#I3`2{uGk^<H5W!hXGFV0L@JQ#*ya4|UMiiFgK*GfbMy(fe4Dpmb!`)SM#lG9<$cV)^}vcgk~Pyf~r1O=*fbb1Npu;<KoQx8TU0AOvVo$Zc%(T)tH2snrg2!(?|Gk9b!#GEd~OWww3BK_Lv=UkaoLs%>QoP~bIB1fLbEG;t4Mue}F#^PeuwBFp#@m<Tc|#v~S_v15#45?SvAt3n5FXdyf{*XjsDGy!u-kEC8!;CC3)mg1{jv;(ePuzqv?R9x}O4J^Qgz=g4=IpWsQ7EN_Ek#f}u=2Bkd-hItNKcgRqp=UbSz}7VM-Ww1gyv$Cd3zYv0esGh|^UVMY{pPdb^VsB;b5eVH^8XzgJquu&teH{yzA@-@Rd(TMA@`S(mvtc?rXks+;<(-17u*gJL$8y33YzQZ@%s-?M)sHy|L3l&rtZENz*!=D7vZnnkj>kGh^}+PDzk&Z3K2WZ*hL=Z)mG<74IwU0f{2E2S(dtaL}6ou)Vxt6o(A#~4|!IOZ9YDEh3pNrgh~44DkI#kqD2FYyew4Ah*(Ph9%>Zh%Iw&olU>d$nXUwj=TH17UYM=U!9F+d2I^at@C7IIy3cy?uT_jVStB0mcht3-BASDYRjZt_kj&fVb!3$v(xt4m%3RWrM47w&VRl$maeE=p1ju4!c&gl_SP8JD_Tkn*>!`*+O=aN=J9--?r>dg1BX&pJ=VF^ItkF>Eu3(4el8_6k3?KIS^ag=#v3>*{0uWHn)>R8}_5sVZj0CejTh*2%GKXah5U@y5os_pjo;GxXgN$z7E>=Td4IFSnBw2=Dd54}RIGVB;pu_&b{PzOuG%dCE7iwXf+l?o=B8zj*m@U-g<k1mNq@(R3AkDj7%1ZL(B+fLcy!kvHAvr0fVki!OrmP<1B{X&_RzT{Tt9E3PdnPypqTd{j1|1&q`+&sMtg0CCAEL`xxV50A9p3mQmMqpD;2rBokHx7tPqvqi4#oJ5cuPzyr@@lF$@`r-^)YPhkOJbYEAg{O4EU_swkb)g_G7WtqQ3<TT4R`@7!lLmQrHF~im*b(g-Dq(PQ_at>4_V0lAqrR+!VqKcB*dSk%cU6iVK*ffdEtJJpV!snw0Dt1$?tVk!FFV%W_+?w_|)&ya`2R_69%l=6+>`l5ftAexSMS!vhKYkqChE*<Xu`K=|I#z|&?8a(a$)qjZ%@H*NB|pcoO&A90@(PXS4|6Kn))0kB^DE+(}+?wgezzq+5RgSo4u-hgP<(y1mJ3dCLzlZgC+7564yOtt5}Rq=;T%l5nFILDZxp9uqF9tM*z)?7e>a!k=#!I9;+Vre;ILUZD|P!h1<5KC+D_@Y{ik^xl<NQxLHkHjHjB^Tya?R3%`9`D`cuU4eYc~wyvNZ9%E{p+-Wk4%8$ZKuGilkXGn6*kcX5nm02@>L2XQ8!uNtP)$*kT&;-DHmPf=`SvZRvw2yXM`uVmSAkgWKs;SX<&G6_FcVv-slO@KPENSc#a3=^ZA7N@FBJBeDV?0pA;c}SG>)OED4YDhyjyY1#>ll5O@Ph$Z5yKh^fZkh7VO2VuJKd=(FHq;f*wu%V`%IvXYc;pODVt2Jg+vLn;>HCL=Yf1}%f5OiqET2D6mRB9ac-9w64nu}wUTFLq0K$m}ab&OF|Y$!nQ0+G&odREr(MEs<Wv&|RZw7;}sOotlxWjoSp6?v{AcD((xa>Z=Vbnxj0eVd;t9)LxfFeT1r3RY%0o^r+3QoyuzQBuWLd&o{p*O2OQHh?VxlPj<9}1>M2ZLqeB0!YiHWMkN<9-BRNjce~cx$RzfiTw!Y=q?y4kt|jZRxlcQ{bX~39tr5?Lk`Q+Y+jcebdE8;j<3>dmPr9XZ47}_g5X>;OCgaVsQL+FU*)uosr=C8Uu?)PbOUjXU!Mx>nR}2kEJMtt!dc3^Dkkfj;T&idiI@jgeq^oWVuO;BBsx{TvXrd0aS+wHh9Nl7m=CR~PZO3J0Sw`E=GX|iL+SGefdY)4lo(>Fzx_pLRU6AIn^upJJHNHCLI6Z8T5is;nk2&s~l?<OrAjSOQQk`cdVO(H4RH;3U@?4YFy+x!Zw)nVaa>7_BfKy(1X{&F&i7S=J0oX&VJtaL&@L1xmjQukg(aeJ(<*mNjkhp6V3S#;21B`6}a1v)bi)NF&whBNSNhveHgp;+2aq+rCSIQ#<%uk%D0u|ljN(e7)jcq)LEGE1v3o9IoSgzK{w3Qf<?C%OaO#sK4>!^t7vF~@bK}nBQMk^{(Z;p0^L8)=_dZOZHqK`D0htbJrk)CBv)!D6#sU1(a9vJ04*uqFCessF%a}>FZonh~Fs$Wsz^I;YGxaht+J{X_~b08cl+^$<&B&kIDOJB7CM@Jp9nh%V1>1LGl0E6Zndz3qaPc`Srq1S`>l-swycD2az96zXo?GgKJJtE=_U#P5gK#pxJO^9mY7OG_bSciFS4%UlVJZ45<*vDTwRjfFIb6(ZqeL3;`^k>yLS*FgE2%)rt5+EV$0vVUW0#jJ4WRbnJ-D{?{2VA&_SuE)_(tFJ!$Lf=&Obz|J#kI~o5Dl5)xk%}1cT<vW1E3|klc7Insici`7*m@?n6&a_FAkmnWyTXL*D)hpkPc>uIw=(BuBs7@;iGEwu&jBWU_GPg+ZZWr>3L7!C(>1?tk63QVxy6^4~i`mfls|jpJgEL{3V&f@!CWaB@wdm>JNzjWO+5jT-j%Etiee@TKP~X;xvGMx#oV2)C_uGJ<gxJ5f*!xwIs=eO5j7ImCEz!U^t?Rwthy55R8soU;Ei$v)$HsHsTN`tU9?8urd3_MwD(A8+juct#2raNG}n8O8IKfgLnRnu8BE~Xho$6H61gw+q+53x;e#jhtwiVE|XPPDV)~{?h8KxEEM5>BzPa05Us*)RiNp3gWg0<|B*D()z#{(F(Q4eLYB_V8){`S9qaH|2{Z5$v&`v=EU~!fv)I1X??pzW<$inG%fx{i3MQYe&p<6w*oUc8JmGU=B1^n8vwRBlIcB7ZN;H0xN+xt!=#`50;@N~(z{^28Pp$_Ame7m)mH-R0=uv*il?b*EWsM500$<^S=S9Ov*7#~dOsI)(DD4E&!d|oOk?SJOf7<bMr|2sx55!PBBaO_T{@70e9(!$zCK)M~1h=PoDB~(mYj~FuE`&;ng#vM2skmkMyG^+vZz;<!8%iIRRAR)mhKrEdO1<2lGfKrcoT2Qhq=Qn}cjqa9iuP<aGSV7z1f}pom4v#H(2y_LR{Qbb#vbfqAchIN=pjJyymSv2{Xee?<Rp7jopz9PO1hALw?s)PJ$Tv5J9c-W=Vk2Xli95ynh^}S8o8ND?^;Y6n#lMX)*~+&8kpu~)d4ZtLD!S1-~@G|QGm<}9z*4lA#0i#OcWtxC$U2hazulX5@w3!m~5=2<RF?!`mU!<+nH=AE3OvUN}-}m!_9Z4K!SuxSr-LGiL#1BXUUxQ^=QP3XHIQG0;<pibUKKggvJCK(M*-~<0q==*&hVX`4@|nnQbKKs=#tc%4soNgBYqFdFCLu7m7;%L?}L^xk(fp>(@-Epu6GlgpZ}CKF<Vj-E?Oagbs$AB#6Se`WIE{dN99F<PuO;gE%Mg&G$<<HJ7M^7?#FFq&^bPsA{v9Xg-n~(`51y*qs4y6Ok*6HiIfMI&U%=BpL!Kw}5FfO<Ca#yEBF-Cd_5S0M^;rnFW<_dX0)1!1nV1yvVC50#kO%lrUMcmRXo#D8HI+<8O-DLVgk|;&fhF>6E~Fy_PQYRfICHMu+<O*)!G7%MzmheG+w=J2htEM2k@;>j74@Drr?Leb8!EWt;!I08>b!eij&I`ZVXS4n`V4oV+%X-gQ&qJV{H9!8}v}qI8%wx=O^C#;(<h%}uELEUak;$(Q2jYL|ZoQ1i;gBfNBJXXV+u<f?+RpBiXs4M8ujW$aLObwE&V$c|#WH6YF<xsQIS=>;T~T^`i{UY1Ufn~79ojAM9cs^E-ozN4#8b#zC??q~Ey=mwy3nfdh<mou&AmBAOR;*p+B%e!cn_KJ>yUttOvmOjlx<!9)n%#}WxHTg_H)Zs!&=4{*mrQK8`VHA-CQaAOAVhspDcSh_$g{wWo%db-7%xA5_p{Xb``0GM)VMOB$lu_Dnv6z^U?jgGESjnlDMkc(jSQ9KN9AzqJLoKH#$<BHVF<cEo49_T|@H3GGn*5=WzPti(@dTcyq=Ce_;2cZj8>i^pT&Z>_o}sHEXMT1=<LstOy)x^NVZh0K!<Sdyj!OUxYLiEi_}cyXCw$T7MElf$Rw~JLZh0zddaiulkT=dEDbI#i)b&j43pr5HsW<r<%akPu1th;vpMEkAN2nUcOfJtP`s7t?PcXE2#gP|wT`bO|8|ONfC7&Xt%ik8o6v{E;EH6d}6*Il1T=0a9^oO1ILWI|D^F7y8RUzf8yg<-;-eHm)URnVkqe}0z8q<v{4<I0>cOyiex_aBL^~1l1#+0d+Y_N;4K?-e>*ySQ9*GkceKM~#lY2JV!%}L(EZGmv(0~^jbEKA!f%EoV5n|Bw}bYkb5tBEBRM%g%B-q%6sn4PmYy8Ta%FO*G@J~=<^fC{`K)Erk!RzgY=a&1<U(@y+tB%e9ef$Vsy4<6?<kCka>&WfI`x;#bQe@lu%eZ4QNycsPuBnlZ7#Jx;iN6MLF!Ni(DZQ%(S(*OiuBurU0gd7;P+t+aYGlr5C_&}r1zfCBQ%yvOCVm1k`k&w1A-M5x=5~q)Z;!xfw5&oV6R!9bxdX62=7DqbF6S*y!15flH!BYwFqpxDxV7xgDtV|fAQP3#$bI0t;Wez+)0f|eSrQR9IOpg1W?JcK(V=csMGL4ohR{0PX!FUCJ504`uhCnWxE30{zP-I3-2FuGnf`vB@X=Nx$4K=D0nw9aftME)6Z*o3>>g_{u3Gb?NHZ0{5u9cqB1VXjEyIliaYE=JXd~Q!)KxRy3QHmNYu~}pW9{TI2%Z#HZB^=LUS4ujm{=<3|FuNXA0h1K4emb??+G-0k;LtG@{lnj<bgvX_6X#e!x7fL&ppY3BJH}&1py<siD$-YjhDU|xzdk$ub9`SvJuM05s?Ne%O->r-Ir`z8h$B(dy&mE*sbye@XN+v8B*iSH;kr~N3?w8-%{i$&ah`lE+t5zPJnVxkDyt3PlYkekvMcEuIpEp!Oz+$Kg2HA|X9-i-ZIOa>!x+bniiRb;m!3>c=LECUb7x7WWV$t(qHOAg-rRTV?E2mW(RWyAsau?f)NE8?NGLI2`<;Y5!2;a2@I4!_Pt!wO5#_F4gPnp=lAg(#Qdw=Xy3~R2NvV(?qT*S4hxkpPz&Q5%b*0v!D$`@vmrpWvC0~H@r<lg~Y)VwjPW<u%=urpifaI{rJefX83P+WCD+n<5>x+B)txUM5Q1o=>;bR4(+@$INYFviT<#<#uLBHyzCwh=5sb+_3Ln=zIHm9Iq(j-y+D6@?4Me|~=l-Pg|al(n~7Yo@xd@wWnPIzWtiz@PsAw@=5B#Uk476!s2I-dU*qj8O2ka^7OxC5h!eerZmr(aE0d-TMg9n-4f5oRVu1{o2Zvd8`-90K*eFc-d258}E|6+X$RBMG5G;z37;@}}Z;k(p22UX%{mPSTpGN4<5((p15nRD#Ip^0WIcVWOfYndsv71yQ06ye2&@v3v{YA+skGUoQ=4GH_+*pFq7+(nskE|6(~lh`fz7Z?gTz{{7@6yP@0!6H2@~)Gz7cf?l~86phQ-bK9GBbsfZv7$c{1!0ZqgG3By1<=<_jLUbnr6_mTOiWKAl0)v(CJ!NJ8#G;mIynL9F;*86@n$h?yRsd`<g!1gn<U722D%D#&S#ULBN4AZeCQpcYLZij&`W+<}QC76S^F68+B)3tKmh@eU0y(6F(5DVZo=vKn<`cqd!`Vm~O<?slrv2EhiX5lIYmyj@sT$>v|H_S3#8Kj-3h-Hkj|ATe*YQk3O%76Y{d7ptxNg{ug>^IlqF*&B&gDDUC0u!|pm|VO8V>+6b>T;aZI>6lzH`C}9^6$Sc67)yPE{N#R-dqAFwjt>JczVb4EUu<SbkAiT?_<^MRmDL766wN>WL8)vts$;V!1%s8_^rA1hqt!)PqCQN^X+;4=KZP1;ls^0_E5*E3;Glh-e{)j2Na7OO3uLkhUJiJXc7~#HS(rU#jZd48j-2q4RCL49w|LWJSNWBP;C>h2A0(EzfCc$F9n!P1szbB10-K>Qk%HodIsB0q-fUp_gx!*e34XRalDKQu%L}KW#)Oax=1uY^r&RH>8s?Y8+hjY*R1o*^rS|q4EoaAuE`gkoQk~vrqqL4)9|yqyNlHAcUK7$TkCLM4@O1P(@AW$fOa&6`OF?FrKd&2Is$sA&J$hvYQGtOi-bMK@kJX`m;$)?l#AyB4S4Ui3<YITX`5)L^gT?2<zE!i+>?I{R#jUN~t2N=^%mMqcqLqS1zZ?M7tL&CP_R8@T^Q+m7e)ElG~yxPEzd5uh9fqpUtrGbxlr5ZGI~^(q@lu!HYFD0;!NQ9+<pjlRVXn7Q>cSk_;^nsP~vf8}MsQ!YU>>lRHi1{5I{zfj}$eehZRYe#+0?tV|NI#+d8Y9q|yGYig?4igTDd>#@sLF>q*et!7fT9&cZux>U%!EZ{mIE}Aj6wDTlnQq`8#1Y|QnSQ67etryhNW~nJYj~>1F$KWKjN&tYC3;3RQqclf5`Pg*!p5?x2slSAJq<=<2!Q*a0>Q8i(AuA|ig_G$)*M+$q<tE8WV$KI3qNKfw(`IpBoDZA9l)B|iM6+9v5teq#Y7$sPYq~XqxLhqmR?Y#jFgV$(=0+SP4|!=Ni}^|%{@-w(NvR^V;n_09=`NMLU#zT?`56tOMEsKl^q^<8vNOb-j$_A_APz{WNaq}Lz!5`EE!VVI8&ytPlO!i3oL!l4N+7p4osUG`Rutz+E<8J9nT9VU5>+%*d>o*Z{^uvjB{Zah^6hC*{&@(>KQDpyHvH()Q;l_QtAzTiNK7w;I8434c@_~ud*kdb9FM-PaYr{(VG67?4Ac9f%A|lg(C_qv+PtMr$^ri;X0LAx5Wt<q=goNo`gt(}@V5m&RYeJG(u~*rjc2~J`<~pWC_tQs)hjfCMg3*@@aRO2z=j?+fW@WlH%avJ5K%8r>_qNUj5@~YqC#zPAg~y9#UG%IK!@Y+P=|-#l{QGJUn9(|+^z0O116V1VHB(Yzu)iqjSVSI<37J`0ktO+%^q8YPsp?}qdu;t9r?YCYZb&`=;7(r#A%e|Sd%{k+#1mM?uLnn>;p<k8E&uJ0ycqhV#>@mBDVzRnVBYK*WRSlR6vVXl1V+~?Hq;nAbqV7@kMX+VLEBQeiKuuu3~kf=dJ9>hDvmWdgeku>#K@G;l^@aXBtW9SM#zNTG5>I9*u$|1n<dtSek9Tl)RYKi>j?>KT<+?kFZJylubyKHR?64>33Y1B2)tEp$%fck3$vv8(m5`RW=}EIu8I$6^C&S)zz<a?=3bGSs_4Q=|$c>7E|mj;7k@CSYSPr9Co^)p<~W;PW3D1nhvGytNj8N$}}7!7*LV85(SJG?!{Jb9nR0WnKU$qpH;V>ezMpW(-!)pS@%_lFGe};tMqNC@4BsxU!bMbQhy5pur<GG&CMW;9Z;bqi=J7!vxBLr7B1>pVMS`YqOu0o^tie7pZj3>9NzyQz910j')).decode("utf-8"))
+
+
+def _get(value, key, default=None):
+    if isinstance(value, dict):
+        return value.get(key, default)
+    getter = getattr(value, "get", None)
+    if callable(getter):
+        return getter(key, default)
+    return getattr(value, key, default)
+
+
+def agent(obs, configuration=None):
+    try:
+        raw_step = _get(obs, "step", None)
+        if raw_step is None:
+            raw_step = int(_get(obs, "day", 0) or 0) * 24 + int(_get(obs, "hour", 0) or 0)
+        step = min(max(0, int(raw_step)), len(_ACTIONS) - 1)
+        action = copy.deepcopy(_ACTIONS[step] or {})
+        player = 1 if int(_get(obs, "player", 0) or 0) == 1 else 0
+        farms = list(_get(obs, "farms", []) or [])
+        farm = farms[player] if player < len(farms) else {}
+        expected = len(_get(farm, "hands", []) or [])
+        hands = list(action.get("hands") or [])
+        if len(hands) < expected:
+            hands.extend([["PASS"] for _ in range(expected - len(hands))])
+        return {
+            "farmer": list(action.get("farmer") or ["PASS"]),
+            "hands": [list(order or ["PASS"]) for order in hands[:expected]],
+            "market": [list(order) for order in (action.get("market") or [])][:10],
+        }
+    except Exception:
+        return {"farmer": ["PASS"], "hands": [], "market": []}
+
+
+def _kaggle_submission_entrypoint(obs, configuration=None):
+    return agent(obs, configuration)
+
+
+import contextlib
+import io
+
+generated = Path("output/r0_main.py")
+generated_hash = hashlib.sha256(generated.read_bytes()).hexdigest()
+assert generated_hash == '10185cc15bd00f44d6ecf0bf42da1d6e58fc7988b5155900d7805af0fe3b7260'
+
+spec = importlib.util.spec_from_file_location("v15_4q_r0_public", generated)
+r0 = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(r0)
+assert callable(r0.agent) and len(r0._ACTIONS) == 719
+probe = r0.agent({"step": 0, "player": 0, "farms": [{"hands": []}, {"hands": []}]})
+assert set(probe) == {"farmer", "hands", "market"}
+
+from kaggle_environments import make
+with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+    env = make(
+        "kaggriculture",
+        configuration={"episodeSteps": 720, "townCenterSellInterval": 24, "farmHandCostMult": 1},
+        debug=True,
+    )
+    env.run([r0.agent, r0.agent])
+assert len(env.steps) == 720
+assert [state.status for state in env.steps[-1]] == ["DONE", "DONE"]
+print(f"R0 source SHA-256: {generated_hash}")
+print(f"Runtime smoke test: {len(env.steps)} frames, DONE/DONE, rewards {[state.reward for state in env.steps[-1]]}")
+print("No competition submission is created or requested by this notebook.")
+
+ordered = sorted(OPPONENTS, key=lambda row: (row["win_rate"], row["opponent"]))
+fig, ax = plt.subplots(figsize=(11.5, 7.3))
+bars = []
+for idx, row in enumerate(ordered):
+    is_proxy = row["evidence"] == "Replay proxy"
+    bar = ax.barh(idx, row["win_rate"], color=GOLD if is_proxy else BLUE,
+                  edgecolor=INK if is_proxy else BLUE, linewidth=0.8,
+                  hatch="//" if is_proxy else None, alpha=0.90)
+    bars.append(bar[0])
+    ax.text(row["win_rate"] + 0.018, idx, f'{row["wins"]}-{row["losses"]}',
+            va="center", ha="left", fontsize=9, color=INK, fontweight="bold")
+ax.set_yticks(range(len(ordered)), [row["opponent"] for row in ordered])
+ax.set_xlim(0, 1.16)
+ax.xaxis.set_major_formatter(PercentFormatter(1.0))
+ax.axvline(0.5, color=GREY, linestyle="--", linewidth=1)
+ax.grid(axis="x", color=LIGHT_GREY, linewidth=0.8)
+ax.spines[["top", "right", "left"]].set_visible(False)
+ax.tick_params(axis="y", length=0)
+ax.set_xlabel("R0 game win rate")
+ax.set_title("V15-4Q-R0 local win rate by opponent", loc="left", fontsize=15, pad=28)
+ax.text(0, 1.015, "Six seeds, both seats, 12 games per opponent. Replay proxies are hatched.",
+        transform=ax.transAxes, color=GREY, fontsize=10, va="bottom")
+legend = [
+    plt.Rectangle((0, 0), 1, 1, color=BLUE, label="Executable code"),
+    plt.Rectangle((0, 0), 1, 1, facecolor=GOLD, edgecolor=INK, hatch="//", label="Replay proxy"),
+]
+ax.legend(handles=legend, frameon=False, loc="lower right")
+fig.subplots_adjust(left=0.29, right=0.97, top=0.86, bottom=0.10)
+plt.show()
+
+table_rows = []
+for row in sorted(OPPONENTS, key=lambda item: item["opponent"].lower()):
+    table_rows.append(
+        f'| {row["opponent"]} | {row["evidence"]} | {row["wins"]}-{row["losses"]} | '
+        f'{row["win_rate"]:.1%} | {row["paired_positive"]}-{row["paired_negative"]} | '
+        f'{row["mean_margin"]:+,.0f} | {row["worst_margin"]:+,.0f} |'
+    )
+display(Markdown(
+    "| Opponent | Evidence | W-L | Win rate | Paired +/- | Mean margin | Worst margin |\n"
+    "|---|---|---:|---:|---:|---:|---:|\n" + "\n".join(table_rows)
+))
+
+day_labels = ["d0-4", "d5-9", "d10-14", "d15-19", "d20-24", "d25-29"]
+component_labels = ["Farmer", "Hands", "Market", "Whole action"]
+fig, ax = plt.subplots(figsize=(10.6, 4.8))
+image = ax.imshow(CONSENSUS, cmap="Blues", vmin=0, vmax=1, aspect="auto")
+ax.set_xticks(range(len(day_labels)), day_labels)
+ax.set_yticks(range(len(component_labels)), component_labels)
+ax.set_title("Exact action consensus across 11 Seb replays", loc="left", fontsize=15, pad=28)
+ax.text(0, 1.015, "Each cell is the mean modal share for the exact component in that five-day window.",
+        transform=ax.transAxes, color=GREY, fontsize=10, va="bottom")
+for row in range(CONSENSUS.shape[0]):
+    for col in range(CONSENSUS.shape[1]):
+        value = CONSENSUS[row, col]
+        ax.text(col, row, f"{value:.0%}", ha="center", va="center",
+                color="white" if value > 0.55 else INK, fontweight="bold")
+ax.spines[:].set_visible(False)
+colorbar = fig.colorbar(image, ax=ax, fraction=0.025, pad=0.02)
+colorbar.set_label("Modal share")
+fig.subplots_adjust(left=0.14, right=0.93, top=0.80, bottom=0.14)
+plt.show()
+
+diverging = LinearSegmentedColormap.from_list("blue_orange", [BLUE, "#F8FAFC", ORANGE])
+fig, ax = plt.subplots(figsize=(10.8, 6.4))
+shop_values = [row["shop_gap"] for row in LIVESTOCK]
+scatter = ax.scatter(
+    [row["price_gap"] for row in LIVESTOCK],
+    [row["sheep_share"] for row in LIVESTOCK],
+    s=[55 + 10 * (row["peak_animals"] - min(item["peak_animals"] for item in LIVESTOCK)) for row in LIVESTOCK],
+    c=shop_values, cmap=diverging, vmin=-5, vmax=5,
+    edgecolor="white", linewidth=0.9, alpha=0.95,
+)
+for row in LIVESTOCK:
+    ax.annotate(str(row["episode"])[-4:], (row["price_gap"], row["sheep_share"]),
+                xytext=(5, 5), textcoords="offset points", fontsize=8, color=INK)
+ax.axvline(0, color=LIGHT_GREY, linewidth=1)
+ax.axhline(0.5, color=LIGHT_GREY, linewidth=1)
+ax.set_xlabel("Median WOOL price - MILK price, frames 216-410")
+ax.set_ylabel("Sheep share of peak pasture animals")
+ax.set_ylim(0.30, 0.82)
+ax.grid(color=LIGHT_GREY, linewidth=0.7)
+ax.spines[["top", "right"]].set_visible(False)
+ax.set_title("Livestock mix and replay-visible market state", loc="left", fontsize=15, pad=28)
+ax.text(0, 1.015, "Each point is one public replay; labels are episode suffixes. Association is not causation.",
+        transform=ax.transAxes, color=GREY, fontsize=10, va="bottom")
+colorbar = fig.colorbar(scatter, ax=ax, fraction=0.035, pad=0.03)
+colorbar.set_label("WOOL shop demand - MILK shop demand per cycle")
+fig.subplots_adjust(left=0.12, right=0.88, top=0.84, bottom=0.13)
+plt.show()

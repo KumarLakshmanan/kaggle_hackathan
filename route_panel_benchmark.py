@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
-import gzip
 import json
 from pathlib import Path
 from typing import Any
@@ -12,16 +11,19 @@ from typing import Any
 from paired_benchmark import run_game, summarize
 
 
-def _play(job: tuple[str, str, int, int, int | None, dict[str, Any]]) -> dict[str, Any]:
-    candidate, opponent_path, seed, seat, capture_step, candidate_overrides = job
+def _play(job: tuple[str, str, int, int, int | None, str | None, str | None]) -> dict[str, Any]:
+    candidate, opponent_path, seed, seat, capture_step, forced_route, forced_book = job
     row = run_game(
         candidate=candidate,
-        opponent=f"route:{opponent_path}",
+        opponent=f"rawroute:{opponent_path}",
         seed=seed,
         candidate_seat=seat,
         debug=False,
         capture_step=capture_step,
-        candidate_overrides=candidate_overrides,
+        candidate_overrides={
+            **({"_FORCED_ROUTE": forced_route} if forced_route else {}),
+            **({"_FORCE_BOOK": forced_book} if forced_book else {}),
+        },
     )
     row["opponent_path"] = opponent_path
     return row
@@ -30,90 +32,53 @@ def _play(job: tuple[str, str, int, int, int | None, dict[str, Any]]) -> dict[st
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate", required=True)
-    parser.add_argument("--summary", type=Path, nargs="+", required=True)
+    parser.add_argument("--summary", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument(
-        "--seats",
-        type=int,
+        "--seeds",
         nargs="+",
-        choices=(0, 1),
-        default=[0, 1],
-        help="Candidate seats to run (default: both; use one seat for a fast screen)",
+        type=int,
+        default=None,
+        help="Optional deterministic route seeds to benchmark; defaults to the full panel.",
+    )
+    parser.add_argument(
+        "--limit-routes",
+        type=int,
+        default=0,
+        help="Use N evenly spaced routes after action-hash deduplication.",
     )
     parser.add_argument("--capture-step", type=int)
+    parser.add_argument("--forced-route", choices=("hozuma", "qq", "tetsuya"))
     parser.add_argument(
-        "--candidate-override",
-        action="append",
-        default=[],
-        metavar="NAME=JSON",
-        help="Override a candidate module setting after import",
-    )
-    parser.add_argument(
-        "--losses-from",
-        type=Path,
-        help="Restrict the summary to routes with negative pair margins in a prior panel",
-    )
-    parser.add_argument(
-        "--episode-ids",
-        type=int,
-        nargs="+",
-        help="Restrict the panel to the listed replay episode IDs",
-    )
-    parser.add_argument(
-        "--opening-hires",
-        type=int,
-        choices=range(0, 13),
-        help="Restrict opponents to routes buying this many workers on turn zero",
+        "--forced-book",
+        choices=("primary", "alternate", "thunder", "aastik", "seb202", "seb210"),
     )
     parser.add_argument("--json-out", type=Path, required=True)
     args = parser.parse_args()
 
-    candidate_overrides: dict[str, Any] = {}
-    for raw in args.candidate_override:
-        if "=" not in raw:
-            parser.error(f"Invalid override {raw!r}; expected NAME=JSON")
-        name, value = raw.split("=", 1)
-        try:
-            candidate_overrides[name] = json.loads(value)
-        except json.JSONDecodeError:
-            candidate_overrides[name] = value
-
-    entries = []
-    for summary_path in args.summary:
-        entries.extend(json.loads(summary_path.read_text(encoding="utf-8")))
-    if args.episode_ids:
-        episode_ids = set(args.episode_ids)
-        entries = [
-            entry for entry in entries if int(entry["episode_id"]) in episode_ids
-        ]
-    if args.opening_hires is not None:
-        filtered = []
-        for entry in entries:
-            with gzip.open(Path(entry["path"]), "rt", encoding="utf-8") as handle:
-                opening = (json.load(handle).get("actions", [{}]) or [{}])[0]
-            hires = sum(
-                bool(order) and order[0] == "HIRE"
-                for order in opening.get("market", []) or []
-            )
-            if hires == args.opening_hires:
-                filtered.append(entry)
-        entries = filtered
-    if args.losses_from:
-        prior = json.loads(args.losses_from.read_text(encoding="utf-8"))
-        losing_digests = {
-            str(row["action_sha256"])
-            for row in prior["rows"]
-            if float(row["pair_margin"]) < 0
-        }
-        entries = [entry for entry in entries if str(entry["action_sha256"]) in losing_digests]
+    entries = json.loads(args.summary.read_text(encoding="utf-8"))
+    selected_seeds = set(args.seeds or [])
     unique: list[dict[str, Any]] = []
     seen: set[str] = set()
     for entry in entries:
+        if selected_seeds and int(entry["seed"]) not in selected_seeds:
+            continue
         digest = str(entry["action_sha256"])
         if digest in seen:
             continue
         seen.add(digest)
         unique.append(entry)
+
+    if args.limit_routes > 0 and len(unique) > args.limit_routes:
+        if args.limit_routes == 1:
+            unique = [unique[len(unique) // 2]]
+        else:
+            last = len(unique) - 1
+            indices = [
+                round(index * last / (args.limit_routes - 1))
+                for index in range(args.limit_routes)
+            ]
+            unique = [unique[index] for index in indices]
 
     jobs = [
         (
@@ -122,10 +87,11 @@ def main() -> None:
             int(entry["seed"]),
             seat,
             args.capture_step,
-            candidate_overrides,
+            args.forced_route,
+            args.forced_book,
         )
         for entry in unique
-        for seat in args.seats
+        for seat in (0, 1)
     ]
     rows: list[dict[str, Any]] = []
     with concurrent.futures.ProcessPoolExecutor(max_workers=max(1, args.workers)) as pool:
@@ -149,8 +115,8 @@ def main() -> None:
         groups.append(
             {
                 "episode_id": entry["episode_id"],
-                "team": entry.get("team", entry.get("opponent_team", "unknown")),
-                "source_seat": entry.get("source_seat"),
+                "team": entry["team"],
+                "source_seat": entry["source_seat"],
                 "seed": entry["seed"],
                 "action_sha256": entry["action_sha256"],
                 "opponent_path": opponent_path,
@@ -161,7 +127,7 @@ def main() -> None:
 
     payload = {
         "candidate": str(Path(args.candidate).resolve()),
-        "summary_source": [str(path.resolve()) for path in args.summary],
+        "summary_source": str(args.summary.resolve()),
         "unique_routes": len(unique),
         "rows": groups,
         "summary": summarize(rows),

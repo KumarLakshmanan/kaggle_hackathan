@@ -6,6 +6,7 @@ submission practical.  Runtime selection uses live observations only.
 import base64
 import copy
 import json
+import math
 import sys
 import zlib
 from array import array
@@ -60,6 +61,31 @@ _OPENING_HANDS = None
 _ROUTE_ACTION_INDEX = -1
 _ROUTE_ACTIONS = None
 _FORCED_ROUTE = None
+
+# The same module can be exercised for both seats by local evaluators.  Keep
+# route-selection state per seat so one player's step-1 opening cannot
+# overwrite the other player's route.
+_AGENT_STATE = {
+    0: {
+        "last_step": -1,
+        "route": PREFERRED_INDEX,
+        "forced_route": None,
+        "opening_hands": None,
+    },
+    1: {
+        "last_step": -1,
+        "route": PREFERRED_INDEX,
+        "forced_route": None,
+        "opening_hands": None,
+    },
+}
+
+# A stochastic WEED can appear exactly where a replay expects BUILD_PASTURE or
+# PLANT.  Dig once, then replay the intended action on the following turn.
+_WEED_STATE = {
+    0: {"last_step": -1, "active": {}},
+    1: {"last_step": -1, "active": {}},
+}
 
 # Four late five-hire continuations have complementary performance.  Every
 # mapped public town state strictly improved route-win count over the default
@@ -117,6 +143,25 @@ OPENING_MARKET_OVERRIDE = [
     ["BUY_SEED", "WHEAT", 7],
     ["BUY_SEED", "MELON", 12],
 ]
+
+# Official 1.32.x market curves.  These are used only to rank SELL orders
+# already present in the chosen route; no new ordinary-turn sale is invented.
+_PRICE_FLOOR = 1
+_MARKET_PARAMS = {
+    "WHEAT": (25, 10000, 400, "sqrt", 0.8, "log", 0.2),
+    "CARROT": (35, 10000, 450, "log", 0.2, "sqrt", 0.7),
+    "TOMATO": (60, 10000, 200, "linear", 0.4, "sqrt", 0.6),
+    "STRAWBERRY": (120, 10000, 100, "sqrt", 0.7, "linear", 1.6),
+    "MELON": (250, 10000, 300, "log", 0.2, "sq", 3.6),
+    "EGG": (50, 10000, 332, "linear", 0.4, "log", 0.2),
+    "MILK": (160, 10000, 122, "sqrt", 0.6, "linear", 1.6),
+    "WOOL": (200, 10000, 105, "log", 0.2, "sq", 3.2),
+    "FERTILIZER": (100, 10000, 200, "linear", 0.4, "linear", 0.4),
+}
+_TERMINAL_LIQUIDATION_ORDER = (
+    "WOOL", "MILK", "EGG", "MELON", "STRAWBERRY",
+    "TOMATO", "CARROT", "FERTILIZER", "WHEAT",
+)
 
 
 def _features(obs):
@@ -211,7 +256,9 @@ def _features(obs):
     return tuple(round(value, 4) for value in values)
 
 
-def _pick(obs, step):
+def _pick(obs, step, preferred_route=None):
+    if preferred_route is None:
+        preferred_route = _ROUTE
     live = [int(round(value * FEATURE_SCALE)) for value in _features(obs)]
     step_offset = step * TRACE_COUNT * FEATURE_WIDTH
     distances = []
@@ -223,7 +270,12 @@ def _pick(obs, step):
         ))
     return min(
         range(TRACE_COUNT),
-        key=lambda index: (distances[index], index != _ROUTE, index != PREFERRED_INDEX, index),
+        key=lambda index: (
+            distances[index],
+            index != preferred_route,
+            index != PREFERRED_INDEX,
+            index,
+        ),
     )
 
 
@@ -272,6 +324,289 @@ def _route_actions(index):
         )
         _ROUTE_ACTION_INDEX = index
     return _ROUTE_ACTIONS
+
+
+def _tile_at(farm, position):
+    try:
+        x, y = int(position[0]), int(position[1])
+        return (farm.get("tiles", []) or [])[y][x]
+    except (IndexError, TypeError, ValueError):
+        return "LOCKED"
+
+
+def _weed_repair(obs, action, step):
+    """Repair stochastic WEED interruptions without changing the route book."""
+    player = int(obs.get("player", 0) or 0)
+    seat = 1 if player == 1 else 0
+    state = _WEED_STATE[seat]
+    if step == 0 or step < int(state.get("last_step", -1)):
+        state = {"last_step": step, "active": {}}
+        _WEED_STATE[seat] = state
+    state["last_step"] = step
+
+    farms = obs.get("farms", []) or []
+    farm = farms[player] if player < len(farms) else {}
+    positions = [farm.get("farmer", [0, 0]), *list(farm.get("hands", []) or [])]
+    orders = [list(action.get("farmer") or ["PASS"]), *[
+        list(order or ["PASS"]) for order in (action.get("hands") or [])
+    ]]
+    active = state.setdefault("active", {})
+
+    for actor, transaction in list(active.items()):
+        actor = int(actor)
+        if actor >= len(orders) or actor >= len(positions):
+            active.pop(actor, None)
+            continue
+        age = step - int(transaction.get("start", step))
+        if age == 1:
+            orders[actor] = list(transaction.get("intended") or ["PASS"])
+        elif age > 1:
+            active.pop(actor, None)
+
+    for actor, (position, intended) in enumerate(zip(positions, orders)):
+        if actor in active or not isinstance(intended, list) or not intended:
+            continue
+        if intended[0] not in ("BUILD_COOP", "BUILD_PASTURE", "PLANT"):
+            continue
+        if _tile_at(farm, position) == "LOCKED":
+            continue
+        tile = _tile_at(farm, position)
+        if not isinstance(tile, dict) or tile.get("kind") != "WEED":
+            continue
+        active[actor] = {"start": step, "intended": list(intended)}
+        orders[actor] = ["DIG"]
+
+    action["farmer"] = orders[0] if orders else ["PASS"]
+    action["hands"] = orders[1:]
+    return action
+
+
+def _shape(name, value):
+    value = max(0.0, float(value))
+    if name == "linear":
+        return value
+    if name == "sq":
+        return value * value
+    if name == "sqrt":
+        return math.sqrt(value)
+    if name == "log":
+        return math.log1p(value)
+    raise ValueError(name)
+
+
+def _market_price(item, inventory):
+    base, equilibrium, scale, below_func, below_target, above_func, above_target = _MARKET_PARAMS[item]
+    if inventory < equilibrium:
+        amplitude = below_target * base / _shape(below_func, scale)
+        price = base + amplitude * _shape(below_func, equilibrium - inventory)
+    else:
+        amplitude = above_target * base / _shape(above_func, scale)
+        price = base - amplitude * _shape(above_func, inventory - equilibrium)
+    return max(_PRICE_FLOOR, int(round(price)))
+
+
+def _sell_impact(obs, order):
+    if (
+        not isinstance(order, (list, tuple))
+        or len(order) < 3
+        or order[0] != "SELL"
+        or order[1] not in _MARKET_PARAMS
+    ):
+        return float("-inf")
+    try:
+        quantity = max(0, int(order[2]))
+    except (TypeError, ValueError):
+        return 0.0
+    market = obs.get("market", {}) or {}
+    inventory = market.get("inventory", {}) or {}
+    prices = market.get("prices", {}) or {}
+    item = str(order[1])
+    current_inventory = int(inventory.get(item, 10000) or 0)
+    current_quote = float(prices.get(item, _market_price(item, current_inventory)) or 0)
+    later_quote = float(_market_price(item, current_inventory + quantity))
+    return float(quantity) * max(0.0, current_quote - later_quote)
+
+
+def _rank_sell_slots(obs, action):
+    """Front-load the highest-impact existing SELLs, preserving every slot."""
+    market = [list(order) for order in (action.get("market") or [])]
+    sell_positions = [
+        index for index, order in enumerate(market)
+        if _sell_impact(obs, order) != float("-inf")
+    ]
+    if len(sell_positions) < 2:
+        action["market"] = market[:10]
+        return action
+    ranked = sorted(
+        ((market[index], index) for index in sell_positions),
+        key=lambda pair: (-_sell_impact(obs, pair[0]), pair[1]),
+    )
+    for index, (order, _) in zip(sell_positions, ranked):
+        market[index] = list(order)
+    action["market"] = market[:10]
+    return action
+
+
+def _terminal_liquidation(obs, action, step):
+    if step < 700:
+        return action
+    market = [list(order) for order in (action.get("market") or [])]
+    shed = ((obs.get("private", {}) or {}).get("shed", {}) or {})
+    planned = {}
+    for order in market:
+        if (
+            isinstance(order, list)
+            and len(order) >= 3
+            and order[0] == "SELL"
+            and order[1] in _MARKET_PARAMS
+        ):
+            planned[order[1]] = planned.get(order[1], 0) + max(0, int(order[2] or 0))
+    for item in _TERMINAL_LIQUIDATION_ORDER:
+        available = max(0, int(shed.get(item, 0) or 0))
+        extra = max(0, available - planned.get(item, 0))
+        if extra <= 0 or len(market) >= 10:
+            continue
+        market.append(["SELL", item, extra])
+        planned[item] = planned.get(item, 0) + extra
+    action["market"] = market[:10]
+    return action
+
+
+def _recovery_move(position, target):
+    try:
+        x, y = int(position[0]), int(position[1])
+        tx, ty = int(target[0]), int(target[1])
+    except (IndexError, TypeError, ValueError):
+        return ["PASS"]
+    if x < tx:
+        return ["EAST"]
+    if x > tx:
+        return ["WEST"]
+    if y < ty:
+        return ["SOUTH"]
+    if y > ty:
+        return ["NORTH"]
+    return ["PASS"]
+
+
+def _recovery_action(obs, step):
+    """State-driven rescue policy used only when the replay route cannot run.
+
+    The normal agent remains route-based.  This controller is deliberately
+    conservative: it performs only actions justified by the live board, keeps
+    the market within the ten-order limit, and prefers preserving farm
+    production over speculative purchases.
+    """
+    try:
+        player = int(obs.get("player", 0) or 0)
+        farms = obs.get("farms", []) or []
+        farm = farms[player] if 0 <= player < len(farms) else {}
+        tiles = list(farm.get("tiles", []) or [])
+        positions = [farm.get("farmer", [0, 0]), *list(farm.get("hands", []) or [])]
+        private = obs.get("private", {}) or {}
+        inventories = [dict(value or {}) for value in list(private.get("inventories", []) or [])]
+        seeds = {key: max(0, int(value or 0)) for key, value in dict(private.get("seeds", {}) or {}).items()}
+        shed = {key: max(0, int(value or 0)) for key, value in dict(private.get("shed", {}) or {}).items()}
+
+        if step < 600:
+            crop_order = ("MELON", "STRAWBERRY", "WHEAT", "TOMATO", "CARROT")
+        else:
+            crop_order = ("WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON")
+        fallback_seed = next((crop for crop in crop_order if seeds.get(crop, 0) > 0), None)
+
+        targets = []
+        for y, row in enumerate(tiles):
+            for x, tile in enumerate(list(row or [])):
+                if tile == "LOCKED":
+                    continue
+                if not isinstance(tile, dict):
+                    if tile is None and fallback_seed is not None:
+                        targets.append((6, x, y, ["PLANT", fallback_seed]))
+                    continue
+                kind = tile.get("kind")
+                if kind == "WEED":
+                    targets.append((0, x, y, ["DIG"]))
+                    continue
+                if kind == "PLANT":
+                    if int(tile.get("yield_units", 0) or 0) > 0:
+                        targets.append((1, x, y, ["HARVEST"]))
+                    elif not tile.get("watered_today", False):
+                        targets.append((4, x, y, ["WATER"]))
+                    continue
+                if tile.get("animal"):
+                    if not tile.get("fed_today", False):
+                        targets.append((2, x, y, ["FEED"]))
+                    if not tile.get("cared_today", False):
+                        targets.append((3, x, y, ["CARE"]))
+                    if tile.get("fertilizer_available", False):
+                        targets.append((5, x, y, ["COLLECT_FERTILIZER"]))
+
+        orders = []
+        claimed = set()
+        for actor, position in enumerate(positions):
+            inventory = inventories[actor] if actor < len(inventories) else {}
+            candidates = []
+            for priority, x, y, task in targets:
+                if (x, y) in claimed:
+                    continue
+                if task[0] == "FEED" and int(inventory.get("WHEAT", 0) or 0) <= 0:
+                    continue
+                if task[0] == "PLANT" and seeds.get(task[1], 0) <= 0:
+                    continue
+                try:
+                    distance = abs(int(position[0]) - x) + abs(int(position[1]) - y)
+                except (IndexError, TypeError, ValueError):
+                    distance = 10 ** 6
+                candidates.append((priority, distance, y, x, task))
+            if not candidates:
+                orders.append(["PASS"])
+                continue
+            _, _, y, x, task = min(candidates)
+            claimed.add((x, y))
+            if int(position[0]) == x and int(position[1]) == y:
+                orders.append(list(task))
+            else:
+                orders.append(_recovery_move(position, (x, y)))
+
+        market = []
+        if step >= 700:
+            for item in _TERMINAL_LIQUIDATION_ORDER:
+                quantity = shed.get(item, 0)
+                if quantity > 0:
+                    market.append(["SELL", item, quantity])
+                if len(market) >= 10:
+                    break
+        else:
+            market_info = obs.get("market", {}) or {}
+            prices = market_info.get("prices", {}) or {}
+            sale_candidates = []
+            for item, quantity in shed.items():
+                if item not in _MARKET_PARAMS or quantity <= 0:
+                    continue
+                base = _MARKET_PARAMS[item][0]
+                sale_candidates.append((float(prices.get(item, base) or base) / base, item, quantity))
+            for ratio, item, quantity in sorted(sale_candidates, reverse=True):
+                if ratio >= 1.15:
+                    market.append(["SELL", item, quantity])
+                if len(market) >= 10:
+                    break
+            if not market and fallback_seed is None:
+                empty_tiles = any(tile is None for row in tiles for tile in list(row or []))
+                money = float(farm.get("money", 0) or 0)
+                if empty_tiles and money >= 100:
+                    market.append(["BUY_SEED", "WHEAT", 5])
+
+        hand_count = len(farm.get("hands", []) or [])
+        return {
+            "farmer": orders[0] if orders else ["PASS"],
+            "hands": (orders[1:] + [["PASS"] for _ in range(hand_count)])[:hand_count],
+            "market": market[:10],
+        }
+    except Exception:
+        farms = obs.get("farms", []) or []
+        player = int(obs.get("player", 0) or 0)
+        hand_count = len((farms[player] if 0 <= player < len(farms) else {}).get("hands", []) or [])
+        return {"farmer": ["PASS"], "hands": [["PASS"] for _ in range(hand_count)], "market": []}
 
 
 def _clone_profile(farm):
@@ -374,22 +709,39 @@ def _clone_preempt(obs, action, step):
 def agent(obs, config=None):
     global _ROUTE, _FORCED_ROUTE, _OPENING_HANDS
     try:
+        player = int(obs.get("player", 0) or 0)
+        seat = 1 if player == 1 else 0
+        state = _AGENT_STATE[seat]
         clock = int(obs.get("day", 0) or 0) * 24 + int(obs.get("hour", 0) or 0)
-        step = min(int(obs.get("step", clock) or 0), ACTION_STEPS - 1)
+        step = max(0, min(int(obs.get("step", clock) or 0), ACTION_STEPS - 1))
+        if step == 0 or step < int(state.get("last_step", -1)):
+            state = {
+                "last_step": step,
+                "route": PREFERRED_INDEX,
+                "forced_route": None,
+                "opening_hands": None,
+            }
+            _AGENT_STATE[seat] = state
+        else:
+            state["last_step"] = step
+
+        route = int(state.get("route", PREFERRED_INDEX))
+        forced_route = state.get("forced_route")
+        opening_hands = state.get("opening_hands")
+
         if step == 0:
-            _ROUTE = PREFERRED_INDEX
-            _FORCED_ROUTE = None
-            _OPENING_HANDS = None
+            route = PREFERRED_INDEX
+            forced_route = None
+            opening_hands = None
         elif step == 1:
             farms = obs.get("farms", []) or []
-            player = int(obs.get("player", 0) or 0)
             if len(farms) >= 2:
-                _OPENING_HANDS = len(farms[1 - player].get("hands", []) or [])
-            _FORCED_ROUTE = _opening_counter(obs)
+                opening_hands = len(farms[1 - player].get("hands", []) or [])
+            forced_route = _opening_counter(obs)
         elif (
             step == 159
-            and _OPENING_HANDS == 5
-            and _FORCED_ROUTE == FORCED_ROUTE_BY_LABEL.get("health")
+            and opening_hands == 5
+            and forced_route == FORCED_ROUTE_BY_LABEL.get("health")
         ):
             shops = tuple(
                 ((obs.get("town", {}) or {}).get("unlocked_shops", []) or [])[:2]
@@ -399,35 +751,47 @@ def agent(obs, config=None):
             if alternate3 is not None and (
                 FAMILY5_ALT3_ALL or shops in FAMILY5_ALT3_SHOPS
             ):
-                _FORCED_ROUTE = alternate3
+                forced_route = alternate3
             elif alternate2 is not None and (
                 FAMILY5_ALT2_ALL or shops in FAMILY5_ALT2_SHOPS
             ):
-                _FORCED_ROUTE = alternate2
+                forced_route = alternate2
             elif FAMILY5_ALT_ALL or shops in FAMILY5_ALT_SHOPS:
                 alternate = FORCED_ROUTE_BY_LABEL.get("family5_alt")
                 if alternate is not None:
-                    _FORCED_ROUTE = alternate
-        if _FORCED_ROUTE is not None:
-            _ROUTE = _FORCED_ROUTE
+                    forced_route = alternate
+        if forced_route is not None:
+            route = forced_route
         elif step in (0, 1) or step % LOCK_TURNS == 0:
-            _ROUTE = _pick(obs, step)
-        action = copy.deepcopy(_route_actions(_ROUTE)[step])
+            route = _pick(obs, step, route)
+
+        state["route"] = route
+        state["forced_route"] = forced_route
+        state["opening_hands"] = opening_hands
+        # Keep the legacy globals synchronized for helper code and debugging.
+        _ROUTE, _FORCED_ROUTE, _OPENING_HANDS = route, forced_route, opening_hands
+
+        action = copy.deepcopy(_route_actions(route)[step])
         if step == 0 and OPENING_MARKET_OVERRIDE is not None:
             action["market"] = copy.deepcopy(OPENING_MARKET_OVERRIDE)
-        player = int(obs.get("player", 0) or 0)
         farms = obs.get("farms", []) or []
         hand_count = len((farms[player] if player < len(farms) else {}).get("hands", []) or [])
         hands = list(action.get("hands", []) or [])
         if len(hands) < hand_count:
             hands.extend([["PASS"] for _ in range(hand_count - len(hands))])
         action["hands"] = hands[:hand_count]
-        return _clone_preempt(obs, action, step)
+        action = _clone_preempt(obs, action, step)
+        action = _weed_repair(obs, action, step)
+        action = _rank_sell_slots(obs, action)
+        action = _terminal_liquidation(obs, action, step)
+        action["market"] = list(action.get("market") or [])[:10]
+        return action
     except Exception:
-        player = int(obs.get("player", 0) or 0)
-        farms = obs.get("farms", []) or []
-        hand_count = len((farms[player] if player < len(farms) else {}).get("hands", []) or [])
-        return {"farmer": ["PASS"], "hands": [["PASS"] for _ in range(hand_count)], "market": []}
+        try:
+            recovery_step = max(0, int(obs.get("step", 0) or 0))
+        except (AttributeError, TypeError, ValueError):
+            recovery_step = 0
+        return _recovery_action(obs, recovery_step)
 
 
 def _kaggle_submission_entrypoint(obs):
@@ -436,4 +800,3 @@ def _kaggle_submission_entrypoint(obs):
 
 def kaggriculture_e283_agent(obs):
     return agent(obs)
-

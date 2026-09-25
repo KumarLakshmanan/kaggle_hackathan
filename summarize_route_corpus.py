@@ -21,6 +21,10 @@ def main() -> None:
         for path in sorted(directory.glob("*.json.gz")):
             with gzip.open(path, "rt", encoding="utf-8") as handle:
                 metadata = dict(json.load(handle).get("metadata", {}))
+            # Kaggle replay metadata calls this field `seat`; route-panel
+            # summaries use `source_seat`. Preserve both names so reconstructed
+            # corpora are accepted by the same benchmark contract.
+            metadata.setdefault("source_seat", metadata.get("seat"))
             digest = metadata.get("action_sha256")
             if not digest or digest in seen:
                 continue

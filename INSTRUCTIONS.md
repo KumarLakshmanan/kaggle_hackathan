@@ -170,7 +170,7 @@ As the season progresses, new shops unlock at regular intervals (every `townShop
 
 Each unlocked shop consumes one of every product it demands every `townShopSellInterval` turns (default 4). So with the default interval, a shop demanding wheat removes 6 wheat from the market per day. Single-product shops consume 2x.
 
-In addition, the town center consumes one of every product (excluding fertilizer) every `townCenterSellInterval` turns (default 12). After day 10 this is increased to 2 of each, and after day 20 it is increased to 4 of each.
+In addition, the town center consumes one of every product (excluding fertilizer) every `townCenterSellInterval` turns (default 24). With the default `turnsPerDay` of 24, this is one unit per day throughout the season; there is no day-10 or day-20 increase in `kaggle-environments` 1.32.7.
 
 | Shop Type | Increases Demand For |
 | :---- | :---- |
@@ -359,4 +359,3 @@ Per-crop seed costs and per-product base prices are not configurable; they are d
 | townShopSellInterval | 4 | Turns between consumption ticks by every unlocked town shop |
 | townCenterSellInterval | 12 | Turns between consumption ticks by the town center |
 | seed | null | Optional input seed for deterministic episode generation; cleared from config after read so it stays out of agent observations |
-

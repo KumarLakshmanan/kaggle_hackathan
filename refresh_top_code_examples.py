@@ -27,12 +27,44 @@ def _json_from_cli(text: str):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--kaggle", required=True)
-    parser.add_argument("--listing", type=Path, required=True)
+    parser.add_argument("--listing", type=Path)
+    parser.add_argument("--competition")
+    parser.add_argument("--page", type=int, default=1)
+    parser.add_argument("--page-size", type=int, default=20)
+    parser.add_argument("--sort-by", default="scoreDescending")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=100)
     args = parser.parse_args()
 
-    raw = args.listing.read_text(encoding="utf-8-sig")
+    if args.listing is not None:
+        raw = args.listing.read_text(encoding="utf-8-sig")
+    else:
+        if not args.competition:
+            parser.error("provide either --listing or --competition")
+        command = [
+            args.kaggle,
+            "kernels",
+            "list",
+            "--competition",
+            args.competition,
+            "--sort-by",
+            args.sort_by,
+            "--page",
+            str(args.page),
+            "--page-size",
+            str(args.page_size),
+            "--format",
+            "json",
+        ]
+        result = subprocess.run(
+            command,
+            check=True,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        raw = result.stdout
     listing = _json_from_cli(raw)
     rows = listing[: max(1, int(args.limit))]
     args.output.mkdir(parents=True, exist_ok=True)

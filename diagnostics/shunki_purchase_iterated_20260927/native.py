@@ -55,11 +55,12 @@ if __name__ == '__main__':
                runner_sha256=sha(Path(engine_runner.__file__)), script_sha256=sha(Path(__file__)),
                reference_hashes={r: EXPECTED[r] for r in references}, seeds=seeds,
                configuration_seed_masked=True, engine_version=engine_runner.engine_version,
+               workers=4 if phase == 'pilot' else 6,
                complete=False, intended_games=len(jobs), games=[])
     def save():
         target.write_text(json.dumps(out, indent=2), encoding='utf8')
     save()
-    with ProcessPoolExecutor(max_workers=4) as pool:
+    with ProcessPoolExecutor(max_workers=out['workers']) as pool:
         for future in as_completed([pool.submit(play, job) for job in jobs]):
             row = future.result()
             out['games'].append(row)

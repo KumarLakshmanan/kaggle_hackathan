@@ -16,3 +16,10 @@ budget at that step and minimum remaining time; retain the mandatory
 DONE/DONE status and exact action/cash parity checks. Candidate bytes,
 strength gates and seed cohorts are unchanged. This is a specification
 correction to an unrun harness, not a runtime pass or a strength result.
+
+The host has12 logical processors. The completed pilot and running replay
+panel use four workers. Before confirmation starts, configure that next
+stage to use six workers to reduce elapsed time. The plan does not constrain
+worker count; policy bytes, seeds, gates and native timeouts are unchanged.
+Each result records the exact harness hash and worker count. File-loader
+parity runs sequentially after the native worker pool exits.

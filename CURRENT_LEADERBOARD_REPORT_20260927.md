@@ -58,10 +58,14 @@ to that snapshot, not necessarily their submission rating at game time.
 
 ## Candidate research after this assessment
 
-At12:19UTC, new candidate **4eeac9c3** combines purchase ordering and two-pass
-queue search. It has a root backup and a frozen prospective validation plan.
-Native pilot tests are running; it is not yet promoted or uploaded. The
-user has explicitly authorized one upload once a new update qualifies.
+New candidate **4eeac9c3** combines purchase ordering and two-pass queue
+search. It has a root backup and a frozen prospective validation plan.
+The native pilot passed43/48 games, including16/16 against uploadedc68.
+At12:52UTC, all300 replay regressions passed:73/99 recent external sweeps
+and44/50 original sweeps, retaining every baseline win with zero errors.
+Replay win/loss outcomes are unchanged. The256-game independent native
+confirmation is now running. The candidate is not yet promoted or uploaded.
+The user has authorized one upload after qualification.
 [New experiment plan](diagnostics/shunki_purchase_iterated_20260927/PLAN.md).
 
 A separate backed-up candidate, **31ce35e9**, moves existing sales earlier

@@ -1,6 +1,6 @@
 # Kaggriculture agent research memory
 
-Submission status checked: 2026-09-27 12:05 UTC; leaderboard snapshot checked:
+Submission status checked: 2026-09-27 13:10 UTC; leaderboard snapshot checked:
 2026-09-27 12:05 UTC. This is a living research log,
 not a claim that the agent beats every opponent. Update the dated findings below after each
 completed experiment, with the artifact and a clear promotion/rejection decision.
@@ -42,9 +42,10 @@ completed experiment, with the artifact and a clear promotion/rejection decision
   at 2026-09-26 23:38:58 UTC. The newer explicit approval to promote and
   upload c68fa46f was consumed by **56602057** at 2026-09-27 07:25:37 UTC.
   The user's subsequent request, "please check and update it also please",
-  authorizes ONE new upload of a qualified update. This authorization is
-  unconsumed at12:19UTC. The preceding conditional request to upload if
-  not already uploaded did not trigger a duplicate c68 submission.
+  authorized ONE new upload of a qualified update. This authorization was
+  consumed by **56609430** at2026-09-27 13:10:15UTC. Any further upload
+  requires another fresh explicit request. The preceding conditional
+  request to upload if not already uploaded did not trigger a duplicatec68.
 - Preserve the dirty worktree and user-owned files. Make candidate changes in
   separate experimental files first. Do not replace `main.py` based only on a
   hand-picked replay or one-seat improvement.
@@ -57,6 +58,52 @@ completed experiment, with the artifact and a clear promotion/rejection decision
   1.32.7 behavior used in local parity checks.
 
 ## Current authoritative state
+
+- **2026-09-27 13:10 UTC — 4eeac9c3 promoted and uploaded as56609430.**
+  Currentmain SHA-256:
+  `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`.
+  All frozen pilot,300 replay,256 native and both-seat file-loader gates
+  passed. The final callable is`kaggle_purchase_iterated_entrypoint`.
+  File/direct execution matches all719actions of both players and both cash
+  totals in both seats; runtime budgets remain positive. **Accept promotion
+  and this user-authorized upload.** Kaggle status is PENDING; remote
+  validation has not yet completed. Oldmain backup:
+  `main_before_purchase_iterated_20260927_c68fa46f.py`; uploaded backup:
+  `main_uploaded_purchase_iterated_20260927_4eeac9c3.py`.
+  The one-upload authorization is consumed. Top10/all50 goals remain
+  unfinished. Evidence: diagnostics/shunki_purchase_iterated_20260927/
+  promotion_receipt.json,loader_parity.json andRESULTS.md.
+
+- **2026-09-27 13:08 UTC — 4eeac9c3 independent confirmation passed.**
+  All256 native games DONE/720, zero recorded errors. New candidate124W/4L
+  versus old32W/32D/64L across four references. New wins:c68 32/32,
+  purchase43d 32/32,iterated3bd 28/32,1f 32/32; no reference regression.
+  Pooled paired-seed win-point gain95% bootstrap interval[0.546875,0.625].
+  Both included components activate in both seats of all16 seeds against
+  every reference. **Accept the frozen independent confirmation.** File
+  loader verification is running; main remainsc68 until both seats pass.
+  One upload remains authorized. Evidence: diagnostics/
+  shunki_purchase_iterated_20260927/confirmation.json.
+
+- **2026-09-27 12:52 UTC — 4eeac9c3 all300 replay regressions passed.**
+  All300 fresh candidate games DONE/720, zero recorded errors, no lost
+  incumbent winning seat. Recent11:37 external99 remains73sweeps/146wins;
+  recent50 remains36sweeps/72wins; original50 remains44sweeps/88wins.
+  The separate self-control wins both seats. **Accept the frozen regression
+  gate; no replay win-rate improvement is claimed.** The untouched256-game
+  native confirmation has started, old/new versus four reacting policies,
+  with both seats and original shops. Main remainsc68; upload approval
+  unconsumed. Evidence: diagnostics/shunki_purchase_iterated_20260927/
+  RESULTS.md and panels.json.
+
+- **2026-09-27 12:43 UTC — 4eeac9c3 recent100 regression subset complete.**
+  All200 games against the11:37 panel are DONE/720 with zero recorded errors.
+  External results remain73/99 both-seat sweeps,146W/52L; current50 remains
+  36/50. No prior winning seat is lost. The own-team self-control wins both
+  seats and is reported separately. **Accept this regression subset only**;
+  the original50, untouched native confirmation and file-loader checks
+  remain required. No promotion/upload yet; main remainsc68. Evidence:
+  diagnostics/shunki_purchase_iterated_20260927/panels.json (still running).
 
 - **2026-09-27 12:24 UTC — 4eeac9c3 native development pilot passed.**
   Fresh2712000–7, both seats:16W/0L versus uploadedc68,15W/1L versus43d,

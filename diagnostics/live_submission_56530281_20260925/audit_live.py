@@ -48,12 +48,18 @@ def episode_ids(limit: int) -> list[int]:
     return [int(row["id"]) for row in public[:limit]]
 
 
-def download(episode_id: int) -> Path:
+def download(episode_id: int) -> Path | None:
     path = HERE / f"episode-{episode_id}-replay.json"
+    # Kaggle can mark an episode complete before its replay payload is ready.
+    # A zero-byte placeholder must be retried on the next audit.
+    if path.is_file() and path.stat().st_size == 0:
+        path.unlink()
     if not path.is_file():
         cli("replay", str(episode_id), "-p", str(HERE), "-q")
     if not path.is_file():
         raise FileNotFoundError(path)
+    if path.stat().st_size == 0:
+        return None
     return path
 
 
@@ -127,13 +133,19 @@ def main() -> None:
         parser.error("--limit and --workers must be positive")
     ids = episode_ids(args.limit)
     print(f"Downloading/checking {len(ids)} latest public episodes", flush=True)
+    ready_ids = set()
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futures = {pool.submit(download, episode_id): episode_id for episode_id in ids}
         for future in as_completed(futures):
             path = future.result()
-            print(f"ready {futures[future]} {path.stat().st_size} bytes", flush=True)
-    summaries = [summarize(HERE / f"episode-{episode_id}-replay.json") for episode_id in ids]
-    output = HERE / f"audit_latest_{len(ids)}.json"
+            if path is None:
+                print(f"pending replay {futures[future]}", flush=True)
+            else:
+                ready_ids.add(futures[future])
+                print(f"ready {futures[future]} {path.stat().st_size} bytes", flush=True)
+    summaries = [summarize(HERE / f"episode-{episode_id}-replay.json")
+                 for episode_id in ids if episode_id in ready_ids]
+    output = HERE / f"audit_latest_{len(summaries)}.json"
     with output.open("w", encoding="utf-8") as stream:
         json.dump({"submission": SUBMISSION, "episodes": summaries}, stream, indent=2)
         stream.write("\n")

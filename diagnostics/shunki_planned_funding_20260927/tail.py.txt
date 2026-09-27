@@ -1,0 +1,114 @@
+
+
+"""Fund already requested productive purchases by advancing existing sales."""
+_PLANNED_FUNDING_PARENT = agent
+_PLANNED_FUNDING_STATS = {
+    "planned_funding_turns": 0,
+    "planned_funding_proposals": 0,
+    "planned_funding_capital": 0,
+    "planned_funding_errors": 0,
+}
+
+
+def _planned_funding_gain(before, after):
+    # Signatures contain shed, seeds, workers, land, and daily hire count.
+    if before[2:] != after[2:]:
+        return None
+    old_shed, new_shed = dict(before[0]), dict(after[0])
+    old_seeds, new_seeds = dict(before[1]), dict(after[1])
+    gain, capital = [], 0
+    for item in sorted(set(old_shed) | set(new_shed)):
+        delta = new_shed.get(item, 0) - old_shed.get(item, 0)
+        if item in _QUEUE_ENGINE["ANIMALS"]:
+            if delta < 0:
+                return None
+            if delta:
+                gain.append(("BUY_ANIMAL", item, delta))
+                capital += delta * _QUEUE_ENGINE["ANIMALS"][item]["cost"]
+        elif delta:
+            return None
+    for crop in sorted(set(old_seeds) | set(new_seeds)):
+        delta = new_seeds.get(crop, 0) - old_seeds.get(crop, 0)
+        if delta < 0 or (delta and crop not in _QUEUE_ENGINE["CROPS"]):
+            return None
+        if delta:
+            gain.append(("BUY_SEED", crop, delta))
+            capital += delta * _QUEUE_ENGINE["CROPS"][crop]["seed"]
+    return (tuple(gain), capital) if capital > 0 else None
+
+
+def _planned_funding_apply(obs, action, configuration):
+    cfg = configuration or {}
+    orders = action.get("market", [])
+    if not 2 <= len(orders) <= int(cfg.get("maxMarketOrdersPerTurn", 10)):
+        return action
+    if not any(o and o[0] in ("BUY_ANIMAL", "BUY_SEED") for o in orders):
+        return action
+    proposals, seen = [], {tuple(tuple(o) for o in orders)}
+    for index, order in enumerate(orders):
+        if not index or not order or order[0] != "SELL":
+            continue
+        for earlier in range(index):
+            q = orders[:earlier] + [order] + orders[earlier:index] + orders[index+1:]
+            key = tuple(tuple(o) for o in q)
+            if key not in seen:
+                seen.add(key)
+                proposals.append(q)
+            if len(proposals) >= 24:
+                break
+        if len(proposals) >= 24:
+            break
+    if not proposals:
+        return action
+    stock = _queue_stock(obs, action, cfg)
+    base_idle = _queue_simulate(obs, orders, [], stock, cfg)
+    base_mirror = _queue_simulate(obs, orders, orders, stock, cfg)
+    best_orders, best_score = orders, None
+    for q in proposals:
+        _PLANNED_FUNDING_STATS["planned_funding_proposals"] += 1
+        idle = _queue_simulate(obs, q, [], stock, cfg)
+        gained = _planned_funding_gain(base_idle[2], idle[2])
+        if gained is None:
+            continue
+        capital = gained[1]
+        if idle[0] + capital < base_idle[0]:
+            continue
+        mirror = _queue_simulate(obs, q, orders, stock, cfg)
+        if mirror[3] != base_mirror[3]:
+            continue
+        if _planned_funding_gain(base_mirror[2], mirror[2]) != gained:
+            continue
+        if mirror[0] + capital < base_mirror[0]:
+            continue
+        relative = (mirror[0] - mirror[1] + capital) - (base_mirror[0] - base_mirror[1])
+        if relative < 0:
+            continue
+        score = (capital, relative, idle[0] + capital - base_idle[0])
+        if best_score is None or score > best_score:
+            best_score, best_orders = score, q
+    if best_orders is not orders:
+        action["market"] = best_orders
+        _PLANNED_FUNDING_STATS["planned_funding_turns"] += 1
+        _PLANNED_FUNDING_STATS["planned_funding_capital"] += best_score[0]
+    return action
+
+
+def agent(observation, configuration=None):
+    if int(observation["step"]) == 0:
+        for key in _PLANNED_FUNDING_STATS:
+            _PLANNED_FUNDING_STATS[key] = 0
+    action = _PLANNED_FUNDING_PARENT(observation, configuration)
+    try:
+        result = _planned_funding_apply(observation, action, configuration)
+    except Exception:
+        _PLANNED_FUNDING_STATS["planned_funding_errors"] += 1
+        result = action
+    agent.telemetry.update(_PLANNED_FUNDING_STATS)
+    return result
+
+
+agent.telemetry = {}
+
+
+def kaggle_planned_funding_entrypoint(observation, configuration=None):
+    return agent(observation, configuration)

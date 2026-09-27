@@ -1,0 +1,104 @@
+
+
+"""Use one existing idle turn to complete a weed-blocked strawberry planting."""
+_WEED_PARENT = agent
+_WEED_PENDING = {}
+_WEED_STATS = {'weed_window_started': 0, 'weed_window_completed': 0,
+               'weed_window_errors': 0}
+
+
+def _weed_command(action, actor):
+    if actor == 0:
+        return action.get('farmer') or ['PASS']
+    hands = action.get('hands') or []
+    return hands[actor-1] if actor <= len(hands) else ['PASS']
+
+
+def _weed_set(action, actor, command):
+    if actor == 0:
+        action['farmer'] = command
+    else:
+        action['hands'][actor-1] = command
+
+
+def _weed_apply(obs, action):
+    step, seat = int(obs['step']), int(obs['player'])
+    farm = obs['farms'][seat]
+    positions = [farm['farmer']] + farm['hands']
+    private = obs['private']
+    for actor, plan in list(_WEED_PENDING.items()):
+        start, position = plan['start'], plan['position']
+        elapsed = step - start
+        if actor >= len(positions) or list(positions[actor]) != position:
+            _WEED_STATS['weed_window_errors'] += 1
+            del _WEED_PENDING[actor]
+            continue
+        tile = farm['tiles'][position[1]][position[0]]
+        valid = True
+        if elapsed == 1:
+            valid = tile is None and int(private['seeds'].get('STRAWBERRY',0)) >= 1
+            if valid:
+                _weed_set(action,actor,['PLANT','STRAWBERRY'])
+        elif elapsed in (2,3):
+            valid = (isinstance(tile,dict) and tile.get('crop') == 'STRAWBERRY'
+                     and tile.get('planted_day') == start//24)
+            if elapsed == 2 and valid:
+                _weed_set(action,actor,['WATER'])
+            elif elapsed == 3:
+                valid = valid and bool(tile.get('watered_today'))
+                if valid:
+                    _WEED_STATS['weed_window_completed'] += 1
+                del _WEED_PENDING[actor]
+        else:
+            valid = False
+        if not valid:
+            _WEED_STATS['weed_window_errors'] += 1
+            _WEED_PENDING.pop(actor,None)
+
+    if (step+3)//24 != step//24 or step+3 >= 719:
+        return action
+    tape = _TAPES[_ACTIVE]
+    for actor, position in enumerate(positions):
+        if actor in _WEED_PENDING or _weed_command(action,actor) != ['PLANT','STRAWBERRY']:
+            continue
+        tile = farm['tiles'][position[1]][position[0]]
+        if not isinstance(tile,dict) or tile.get('kind') != 'WEED':
+            continue
+        if int(private['seeds'].get('STRAWBERRY',0)) < 1:
+            continue
+        if _weed_command(tape[step+1],actor) != ['WATER'] or _weed_command(tape[step+2],actor) != ['PASS']:
+            continue
+        competing = False
+        for future in (action,tape[step+1],tape[step+2]):
+            commands = [future.get('farmer') or ['PASS']] + (future.get('hands') or [])
+            for other, command in enumerate(commands):
+                if other != actor and command and (command[0] == 'PLANT' or command[0].startswith('BUILD')):
+                    competing = True
+        if competing:
+            continue
+        _weed_set(action,actor,['DIG'])
+        _WEED_PENDING[actor] = {'start':step,'position':list(position)}
+        _WEED_STATS['weed_window_started'] += 1
+    return action
+
+
+def agent(observation, configuration=None):
+    if int(observation['step']) == 0:
+        _WEED_PENDING.clear()
+        for key in _WEED_STATS:
+            _WEED_STATS[key] = 0
+    action = _WEED_PARENT(observation,configuration)
+    try:
+        action = _weed_apply(observation,action)
+    except Exception:
+        _WEED_STATS['weed_window_errors'] += 1
+    agent.telemetry.update(_STATS)
+    agent.telemetry.update(_WEED_STATS)
+    return action
+
+
+agent.telemetry = {}
+
+
+def kaggle_dsm_weed_window_entrypoint(observation,configuration=None):
+    return agent(observation,configuration)

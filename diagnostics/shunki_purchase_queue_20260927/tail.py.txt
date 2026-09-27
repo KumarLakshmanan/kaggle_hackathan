@@ -1,0 +1,78 @@
+
+
+"""Evaluate existing purchase ordering after the incumbent sale ordering."""
+_SELL_QUEUE_OPTIMIZE = _queue_optimize
+_PURCHASE_QUEUE_STATS = {"purchase_queue_turns": 0, "purchase_queue_proposals": 0,
+                         "purchase_queue_errors": 0, "purchase_predicted_margin_gain": 0.0}
+
+
+def _purchase_queue_apply(obs, action, configuration):
+    cfg = configuration or {}
+    orders = action.get("market", [])
+    if len(orders) < 2 or len(orders) > int(cfg.get("maxMarketOrdersPerTurn", 10)):
+        return action
+    proposals, seen = [], {tuple(tuple(order) for order in orders)}
+    for index, order in enumerate(orders):
+        if index == 0 or not order or order[0] != "BUY_PRODUCT":
+            continue
+        for earlier in range(index):
+            proposed = orders[:earlier] + [order] + orders[earlier:index] + orders[index+1:]
+            key = tuple(tuple(item) for item in proposed)
+            if key not in seen:
+                seen.add(key)
+                proposals.append(proposed)
+            if len(proposals) >= 24:
+                break
+        if len(proposals) >= 24:
+            break
+    if not proposals:
+        return action
+    stock = _queue_stock(obs, action, cfg)
+    idle_control = _queue_simulate(obs, orders, [], stock, cfg)
+    mirror_control = _queue_simulate(obs, orders, orders, stock, cfg)
+    baseline = (mirror_control[0] - mirror_control[1], mirror_control[0])
+    best, chosen = baseline, orders
+    for proposed in proposals:
+        _PURCHASE_QUEUE_STATS["purchase_queue_proposals"] += 1
+        idle = _queue_simulate(obs, proposed, [], stock, cfg)
+        if idle[2] != idle_control[2] or idle[0] < idle_control[0]:
+            continue
+        mirror = _queue_simulate(obs, proposed, orders, stock, cfg)
+        if mirror[2:] != mirror_control[2:] or mirror[0] < mirror_control[0]:
+            continue
+        score = (mirror[0] - mirror[1], mirror[0])
+        if score > best and score[0] > baseline[0]:
+            best, chosen = score, proposed
+    if chosen is not orders:
+        action["market"] = chosen
+        _PURCHASE_QUEUE_STATS["purchase_queue_turns"] += 1
+        _PURCHASE_QUEUE_STATS["purchase_predicted_margin_gain"] += best[0] - baseline[0]
+    return action
+
+
+def _queue_optimize(obs, action, configuration):
+    incumbent = _SELL_QUEUE_OPTIMIZE(obs, action, configuration)
+    try:
+        return _purchase_queue_apply(obs, incumbent, configuration)
+    except Exception:
+        _PURCHASE_QUEUE_STATS["purchase_queue_errors"] += 1
+        return incumbent
+
+
+_PURCHASE_QUEUE_PARENT = agent
+
+
+def agent(observation, configuration=None):
+    if int(observation["step"]) == 0:
+        for key in _PURCHASE_QUEUE_STATS:
+            _PURCHASE_QUEUE_STATS[key] = 0
+    result = _PURCHASE_QUEUE_PARENT(observation, configuration)
+    agent.telemetry.update(_PURCHASE_QUEUE_STATS)
+    return result
+
+
+agent.telemetry = {}
+
+
+def kaggle_purchase_queue_entrypoint(observation, configuration=None):
+    return agent(observation, configuration)

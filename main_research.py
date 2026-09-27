@@ -21,14 +21,17 @@ sys.modules[_SPEC.name] = _MAIN
 _SPEC.loader.exec_module(_MAIN)
 _BASE_AGENT = _MAIN.agent
 
-MODE = "baseline"
+MODE = "spare_yield"
 _STATS = {
     "research_calls": 0, "research_changes": 0, "research_errors": 0,
     "shadow_exposures": 0, "shadow_units": 0,
+    "spare_yield_exposures": 0, "spare_yield_units": 0,
 }
 _BASE_PRICE = {"CARROT": 35, "TOMATO": 60, "STRAWBERRY": 120,
                "MELON": 250, "EGG": 50, "MILK": 160, "WOOL": 200}
 _ANIMAL_OUTPUT = {"GOOSE": "EGG", "COW": "MILK", "SHEEP": "WOOL"}
+_ANIMAL_CLOCK = {"GOOSE": (4, 1, 4), "COW": (8, 2, 6),
+                 "SHEEP": (6, 3, 6)}
 
 
 def _rival_ready(observation):
@@ -108,6 +111,79 @@ def _rival_shadow_sale(observation, action, configuration):
     return action
 
 
+def _spare_yield_rescue(observation, action, configuration):
+    """Use an otherwise idle unit to avoid guaranteed next-day animal clipping.
+
+    The baseline may already have a future harvest, so this remains a
+    counterfactual hypothesis. The intervention never preempts a productive
+    unit action, and it applies only to physically visible, full animal tiles.
+    """
+    if not isinstance(observation, dict) or not isinstance(action, dict):
+        return action
+    cfg = configuration if isinstance(configuration, dict) else {}
+    if any(cfg.get(k, v) != v for k, v in (("turnsPerDay", 24),
+                                           ("boardSize", 10),
+                                           ("shedCapacity", 100))):
+        return action
+    step = int(observation.get("step", -1))
+    if step < 0 or step >= 696:
+        return action
+    # Market purchases land directly in the shed after unit actions. Their
+    # committed quantities can consume the room reserved for this harvest.
+    if any(o and o[0] in ("BUY_PRODUCT", "BUY_ANIMAL")
+           for o in (action.get("market") or [])):
+        return action
+    player = int(observation["player"])
+    farm = observation["farms"][player]
+    positions = [farm["farmer"], *(farm.get("hands") or [])]
+    commands = [action.get("farmer") or ["PASS"], *(action.get("hands") or [])]
+    private = observation["private"]
+    occupied = sum(max(0, int(q)) for q in (private.get("shed") or {}).values())
+    occupied += sum(max(0, int(q)) for inv in (private.get("inventories") or [])
+                    for q in inv.values())
+    for pos, command in zip(positions, commands):
+        if not command:
+            continue
+        x, y = int(pos[0]), int(pos[1])
+        tile = farm["tiles"][y][x]
+        if command[0] == "HARVEST" and isinstance(tile, dict):
+            occupied += max(0, int(tile.get("yield_units", 0) or 0))
+        elif command[0] == "COLLECT_FERTILIZER":
+            occupied += 1
+    claimed = set()
+    new_commands = [list(c) if c else ["PASS"] for c in commands]
+    for index, (pos, command) in enumerate(zip(positions, commands)):
+        if command != ["PASS"]:
+            continue
+        x, y = int(pos[0]), int(pos[1])
+        if (x, y) in claimed:
+            continue
+        tile = farm["tiles"][y][x]
+        if not isinstance(tile, dict) or tile.get("animal") not in _ANIMAL_CLOCK:
+            continue
+        first, interval, cap = _ANIMAL_CLOCK[tile["animal"]]
+        age = step//24+1-int(tile.get("placed_day", 0))-first
+        units = max(0, int(tile.get("yield_units", 0) or 0))
+        if age < 0 or age % interval != 0 or units < cap:
+            continue
+        if any(
+            j != index and tuple(other) == (x, y) and other_cmd == ["HARVEST"]
+            for j, (other, other_cmd) in enumerate(zip(positions, commands))
+        ):
+            continue
+        _STATS["spare_yield_exposures"] += 1
+        if occupied+units > int(cfg.get("shedCapacity", 100)):
+            continue
+        occupied += units
+        claimed.add((x, y))
+        new_commands[index] = ["HARVEST"]
+        _STATS["spare_yield_units"] += units
+        _STATS["research_changes"] += 1
+    if not claimed:
+        return action
+    return dict(action, farmer=new_commands[0], hands=new_commands[1:])
+
+
 def agent(observation, configuration=None):
     """Return a valid action; experimental overlays may alter only a copy."""
     step = int(observation.get("step", -1)) if isinstance(observation, dict) else -1
@@ -121,6 +197,12 @@ def agent(observation, configuration=None):
     if MODE == "rival_shadow":
         try:
             return _rival_shadow_sale(observation, action, configuration)
+        except Exception:
+            _STATS["research_errors"] += 1
+            return action
+    if MODE == "spare_yield":
+        try:
+            return _spare_yield_rescue(observation, action, configuration)
         except Exception:
             _STATS["research_errors"] += 1
             return action

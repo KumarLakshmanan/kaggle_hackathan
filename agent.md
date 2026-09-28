@@ -1,12 +1,51 @@
 # Kaggriculture agent research memory
 
-Submission status checked: 2026-09-27 13:10 UTC; leaderboard snapshot checked:
-2026-09-27 12:05 UTC. This is a living research log,
+Submission status checked: 2026-09-28 03:54:18 UTC (56628152 PENDING).
+Leaderboard last checked: 2026-09-27 18:09:54 UTC.
+This is a living research log,
 not a claim that the agent beats every opponent. Update the dated findings below after each
 completed experiment, with the artifact and a clear promotion/rejection decision.
 `AGENTS.md` points future workspace work to this file.
 
 ## Mission and operating constraints
+
+- **2026-09-28 07:22 UTC — fresh experimental upload requested, pending.**
+  The user explicitly asked to upload the new changed main.py to Kaggle.
+  This authorizes one upload of the combined observed-hire recovery
+  candidate **367d2e76**, staged as main.py, after its full saved-panel and
+  actual file-loader checks. Reacting qualification remains pending.
+  Preserve root main 4ee while existing research uses that exact baseline.
+  Verify the new submission through the submission listing only; do not
+  refresh the frozen leaderboard or replay corpus. This request is not
+  consumed until the one upload attempt is recorded.
+
+- **2026-09-28 03:54 UTC — exact 06803086 uploaded by explicit request.**
+  The user's annotation “upload it to online”, followed by “to kaggle
+  submissions”, authorized one upload of the backed-up partial-planting
+  candidate. That authorization was consumed by **56628152**. Both-seat
+  file-loader parity passed first. Reacting qualification is incomplete,
+  so this is an experimental submission, not a research-qualified
+  promotion. Local main remains 4ee. Only submission listings were read;
+  the frozen leaderboard/replay corpus is unchanged. Any additional
+  upload requires another fresh explicit request.
+
+- **2026-09-28 01:54 UTC — one explicit experimental upload completed.**
+  The user's annotation on “New candidate”, “can you please upload it to
+  the kaggle please”, authorized the exact root-folder fb6c5413 candidate.
+  This authorization was consumed by submission **56625741**. The later
+  native rejection was disclosed before uploading. This was a user-requested
+  experimental submission, not a research-qualified promotion. Main remains
+  4ee as the local research baseline. Only the submission listing was read
+  to verify the upload; the leaderboard and replay corpus were not refreshed.
+  Any further upload requires another fresh explicit request.
+
+- **2026-09-27 ~18:20 UTC — user froze the local evaluation corpus.** Do not
+  check Kaggle or download further episodes/leaderboard data. Focus on the 30
+  losses in the saved `cohort_180951.json` from uploaded 4ee and the already
+  downloaded current top-20 panel in
+  `diagnostics/current_top20_20260927_172258/`. Count both-seat wins against
+  those recorded replies; use separate local reactive native games to guard
+  against overfitting fixed action tapes. No further upload is authorized.
 
 - **2026-09-27 01:46 UTC — crop conversion feasibility rejected.** Filtering
   the passive crop audit by maturity and the actual replacement coordinates
@@ -59,15 +98,1059 @@ completed experiment, with the artifact and a clear promotion/rejection decision
 
 ## Current authoritative state
 
+- **2026-09-28 07:05 UTC — observed recovery native parity passes.** All
+  24 games match fast rewards and full telemetry exactly, clean
+  DONE/DONE/720. **Advance both exact arms to full saved-panel validation,
+  not promotion.** Full session 13956 evaluates 200 games with 24 reused.
+  Mechanism traces show 15/15 animals fed instead of 11/15, and 29
+  strawberries at day 9 instead of 21. Fresh 296xxxx panels and the
+  independent four-arm plan are frozen; ten synthetic gate checks pass.
+  No new reacting outcomes exist under that plan yet. Root main remains
+  4ee; parent 8dde's pilot stays separate. See
+  `diagnostics/observed_hire_recovery_20260928/RESULTS.md`.
+
+- **2026-09-28 06:59 UTC — observed-hire recovery passes development.**
+  The new feedback rule retries two actual missing hires, delays their
+  work one turn and catches each up by omitting one CARE. All 24 games
+  are clean; both main-parent 467a9dfe and integrated-parent 367d2e76
+  newly win Junliang Ye in both seats at **+2,957**, preserving the other
+  tested outcomes. Per-seat paired gain is +15,891 versus 4ee and +19,012
+  versus 8dde; own/rival changes are separately recorded. **Advance to
+  original-native parity, not promotion.** Session 35044 runs 24 games;
+  full panels, fresh reacting qualification, public wins and loader checks
+  remain required. Both exact candidates are backed up at the root.
+  The earlier preemptive guard remains rejected; the parent's 8dde pilot
+  82556 continues separately. Main stays 4ee; no Kaggle access. See
+  `diagnostics/observed_hire_recovery_20260928/RESULTS.md`.
+
+- **2026-09-28 06:52 UTC — preemptive hire-funding rule rejected.** All
+  24 games are clean but neither 2537b11b nor 2325138d activates; final
+  cash pairs equal their respective parents, with zero rescues. **Reject
+  both exact arms, no native escalation or loosening of this rule.** At
+  Junliang step 192 the idle forecast predicts 2/4 hires before/after,
+  but mirror forecasts predict 4/4. The frozen strict-all-scenarios guard
+  therefore refuses the state. A new actual-feedback repair would need
+  to detect the failed hire, fund a retry and reconcile delayed worker
+  actions; it is not an engineering relabeling of this rejection.
+  Evidence: `diagnostics/scheduled_hire_funding_20260928/RESULTS.md`.
+  Session 58054 is terminal; 8dde native pilot 82556 continues unchanged.
+
+- **2026-09-28 — residual 8dde execution audit identifies unfunded hires.**
+  All 42 repeated games (19 unresolved targets plus Boey/Majkel, both
+  seats) match native rewards and complete telemetry exactly. Fifteen
+  unresolved fixtures have no no-ops among present workers. Explicit
+  absent-worker accounting isolates Junliang Ye: four scheduled hires at
+  step 192 fund only two, leaving 45 commands without a worker; eight
+  strawberries die unwatered at 215. **Accept the mechanism for a bounded
+  separate test, no promotion.** Existing wheat buys precede those hires.
+  The frozen scheduled_hire_funding plan tests one guarded reorder on
+  4ee and 8dde parents, six fixtures/both seats each, 24 fast games in
+  session 58054. Both candidates are backed up at the root (2537b11b and
+  2325138d); neither changes main or the running 8dde native pilot 82556.
+  Evidence: `diagnostics/residual_execution_20260928/RESULTS.md` and
+  `diagnostics/scheduled_hire_funding_20260928/PLAN.md`. No Kaggle access.
+
+- **2026-09-28 06:36 UTC — full 8dde995d panel passes; native pilot starts.**
+  All 100 original-native games are clean DONE/DONE/720, with exact
+  affected-case parity and every main/source winning seat retained:
+  **12/30 public-loss sweeps + 19/20 top-team sweeps = 31/50**.
+  Eighteen public-loss fixtures and DECEM remain unresolved. **Advance to
+  the frozen independent whole-policy pilot, not promotion.** Session
+  82556 runs 384 games on the preselected 32 seeds, both references,
+  all three arms and both seats. Confirmation, all 54 public wins and
+  actual loader checks remain conditional gates. Full receipt SHA:
+  `a01df893b3e032aa9aa017360fecc2039308bc58e7dd12595852e6bcfc21de89`.
+  Root main stays 4ee; latest authorized upload remains 56628152/06803086.
+  No further Kaggle access. See
+  `diagnostics/public_loss_route_pool_20260928/RESULTS.md`.
+
+- **2026-09-28 06:36 UTC — direct Farm/Ice controller family rejected.**
+  All 180 development games finish cleanly, with 575 actual controller
+  turns per game. None of the 15 exact-prefix-compatible schedules wins
+  either Ebi or boominginging in both seats; all target games are losses.
+  **Reject at the frozen target-win gate.** No selected candidate, native
+  qualification or integration follows. This corrects the earlier inert
+  base-map experiment by testing the active controller itself. Selection
+  SHA `ce99a47c3de260609b1974344f39c8a556b6974c298f4a1fb27632e156f4c850`.
+  See `diagnostics/farmice_controller_pool_20260928/RESULTS.md`.
+
+- **2026-09-28 06:22 UTC — 8dde995d native parity passes.** All 42
+  affected-case games match fast rewards and full telemetry exactly;
+  clean DONE/DONE/720 and all prior winning seats retained. Eleven
+  additional public-loss pairs are native-confirmed on these development
+  fixtures. **Advance to the full 50-target panel, not promotion.**
+  Parity session 36073 is terminal. The full run reuses 36 target rows;
+  the six public-win rows remain separate. Independent whole-policy
+  gates, all 54 public wins and loader checks remain pending. Main stays
+  4ee; no Kaggle access. Evidence:
+  `diagnostics/public_loss_route_pool_20260928/native_parity.json`.
+
+- **2026-09-28 06:17 UTC — broad pool selects 8dde995d.** All 1,026
+  variant games plus 52 prior controls complete cleanly. Ten selected
+  shop-pair changes add **11 public-loss both-seat wins**, preserving all
+  affected main/source winning seats. **Pass development and advance to
+  native parity, not promotion.** Combined candidate SHA
+  `8dde995de6430dcdb7c3dae57bc7a42885ea1b230583c9b0eaf062d1361d3432`
+  is backed up as `main_candidate_public_loss_routes_20260928_8dde995d.py`.
+  Session 36073 runs its 42 affected-case original-native games; the full
+  50-target panel and whole-policy gates remain mandatory. G07 is not
+  selected: its base-map changes were preempted by the old Farm/Ice
+  controller. A separately frozen direct-controller pool now runs 180
+  games in session 59500, with 15 exact-prefix-compatible tapes and all
+  six affected fixtures. Main and Kaggle remain unchanged. Evidence:
+  `diagnostics/public_loss_route_pool_20260928/selection.json` and both
+  experiment RUN_STATE files.
+
+- **2026-09-28 05:45 UTC — Farm/Ice base-map substitutions are preempted.**
+  The broad G07 rows keep the existing melon-triggered `_FARMICE_TAPE`;
+  all 154 inspected games have that controller active. Their route-map
+  telemetry does not prove an actual schedule change. **Accept the static
+  diagnosis and a separate controller-tape feasibility path, no promotion.**
+  Fifteen distinct embedded schedules match the controller's exact first
+  144 actions and can be investigated directly under a new plan. Both
+  failed fixtures (Ebi/boominginging) and all four winning controls remain
+  required. No new controller candidate or game exists. Do not change the
+  running broad pool or relabel its inert rows as independent evidence.
+  See `diagnostics/farmice_controller_pool_20260928/FEASIBILITY.md` and
+  `diagnostics/public_loss_route_pool_20260928/PREEMPTION_FINDING.md`.
+
+- **2026-09-28 05:39 UTC — 2dd39764 reacting pilot fails to improve.**
+  All 96 native games are clean. Main and source each score 18W/12D/2L;
+  new scores 24W/0D/8L. Each arm has **24 win points from 32 games**
+  (draw=0.5). All per-reference/branch nonregression gates pass, but the
+  frozen strict pooled improvement gate fails against both controls.
+  **Reject exact 2dd for promotion; do not run confirmation.** The
+  -48,384 paired-margin diagnostic is not the rejection criterion.
+  Its 19/20 top-team + 1/30 public-loss saved sweeps remain development
+  evidence. Source 068's missing coverage remains a separate finding.
+  Main stays 4ee; no Kaggle access. Only the broader new-policy pool
+  continues, with its distinct whole-policy gates frozen before these
+  outcomes. Evidence: `diagnostics/guarded_route_pool_20260928/native_pilot.json`
+  SHA `c4273be786c060731ab315764892a93124007514b786213d0cf839bbacb75d24`.
+
+- **2026-09-28 05:38 UTC — earlier first-BRUNCH family rejected.** All
+  182 games (91 complete compatible schedules, both seats) finish cleanly
+  but lose to the saved DECEM reply. Best margins are -5,114 in both seats
+  for routes 113365392/113437157/113529057, versus source 2dd's -9,085.
+  **Reject at the frozen both-seat win gate.** No shortlist, retention,
+  native qualification, root candidate or promotion follows. The 24
+  controls passed; all candidate bytes, outcomes and unused independent
+  seed panels remain preserved. Main stays 4ee; no Kaggle access. Evidence:
+  `diagnostics/early_brunch_route_20260928/{target.json,shortlist.json,RESULTS.md}`.
+
+- **2026-09-28 05:24 UTC — earlier BRUNCH controls pass.** All 24
+  source/main games reproduce the required first-shop coverage and public
+  original-seat cash, with clean DONE/DONE/720. **Advance to the frozen
+  91-route DECEM screen, no promotion.** Target stage is session 45057.
+  Its completed control stage 52680 is terminal. A progress paragraph
+  accidentally appended to the frozen plan was removed by restoring its
+  exact original hash; rules, candidates, seeds and jobs are unchanged.
+  See `diagnostics/early_brunch_route_20260928/RESULTS.md`.
+
+- **2026-09-28 05:11 UTC — remaining-loss controls pass.** All 52 games
+  are clean DONE/DONE/720; original public cash and source shop coverage
+  agree. **Advance the frozen pool to development screening, no promotion.**
+  Session 23766 runs 1,026 variant games over 21 branches. Whole-policy
+  native helper/gate checks are frozen separately before their outcomes.
+  The 2dd A/C native prefixes passed 32/32 at 05:09 UTC, so its original
+  96-game reacting pilot now runs in session 63515. Separately a static
+  inventory found 91 complete schedules compatible through action 71 for
+  the remaining DECEM case. Its first-shop experiment is frozen in
+  `diagnostics/early_brunch_route_20260928/PLAN.md`: 24 winning controls,
+  182 DECEM games, at most five finalists, then all affected controls.
+  Main stays 4ee; no Kaggle access and no new qualified candidate.
+
+- **2026-09-28 05:02 UTC — 2dd39764 changed-branch coverage passes.**
+  The finite scan completed 784 prefixes with four both-seat seeds per
+  changed A/C branch and reacting reference. **Advance to original-engine
+  prefix verification, not promotion.** No terminal reacting results yet.
+  Session 15096 is terminal; verification now runs in session 19905.
+  Separately, the complete remaining-loss pool is frozen: 21 branches,
+  222 variants, 1,026 candidate games and 52 affected-public-win controls.
+  Its 32/64 whole-policy seed panels were frozen before any development
+  outcomes. Control stage runs in session 73859; variants are gated on
+  fresh source shop coverage and original public cash parity. Main remains
+  4ee; Kaggle is untouched. See the guarded/public_loss route-pool folders.
+
+- **2026-09-28 04:44 UTC — 2dd39764 passes the full saved target panel.**
+  All 100 native games are clean DONE/DONE/720; exact affected-case parity
+  and all original/source winning seats are retained. Results: **19/20**
+  top-team sweeps and **1/30** public-loss sweeps, **20/50** total. Vadim
+  and leave you 114289228 are rescued; DECEM and 29 public losses remain.
+  **Pass replay regression; no promotion.** The frozen changed-branch
+  native scan now runs in session 15096. Its new helper is hash-bound;
+  synthetic gate checks passed without running strategy outcomes. Source
+  qualification remains insufficient, so this branch evidence cannot
+  authorize overall promotion by itself. Main is exact 4ee and Kaggle
+  remains untouched. See
+  `diagnostics/guarded_route_pool_20260928/{native_full.json,RESULTS.md}`.
+
+- **2026-09-28 04:42 UTC — 06803086 bounded coverage is insufficient.**
+  The 2,606-prefix pilot scan completed, with both route quotas and the
+  4ee other-guard quota filled, but zero market other-guard seeds through
+  2922047. **Do not advance or promote under that plan.** No terminal
+  strength outcomes were run; this is not a measured win-rate failure.
+  Session 40895 is terminal. Preserve the frozen range and missing-stratum
+  finding; any different integrated qualification needs a new plan and
+  fresh evidence. Main remains 4ee, uploaded source remains experimental.
+  Evidence: `diagnostics/partial_planting_20260928/pilot_eligibility.json`.
+
+- **2026-09-28 04:30 UTC — 2dd39764 native parity passes.** All twelve
+  combined-candidate games exactly match development cash and full
+  telemetry, DONE/DONE/720 and zero recorded errors. **Advance to the
+  full 50-target panel, not promotion.** Session 74172 is running those
+  100 native games with three workers, reusing eight target parity rows
+  and keeping four public-win controls separate. Source 06803086's own
+  frozen qualification scan remains live in session 40895 through block
+  2921535; market other-guard coverage remains zero, so no terminal
+  strength tests have run. Main stays 4ee; no Kaggle access. Evidence:
+  `diagnostics/guarded_route_pool_20260928/{native_parity.json,RUN_STATE.md}`.
+
+- **2026-09-28 04:27 UTC — guarded route pool selects 2dd39764.**
+  All 144 development games are clean DONE/DONE/720. Frozen selection
+  chooses A113373693 and C113453388 on source 06803086. Both-seat margins:
+  leave you +3,256; Vadim +16,140; DECEM still -9,085. Yizhou/Orest/Rio
+  remain wins, including the recovered opposite-seat Rio control (-705
+  to +1,472). C's win points rise 5 to 8 despite a -18,395 aggregate
+  margin change; apply the predeclared win gate. Earlier C113377257 loses
+  Rio -16,242 both and is now excluded by the expanded affected controls.
+  **Pass development, not promotion.** Combined SHA
+  `2dd397645df739ee41e73a0d91f9e749863068b18bf31319ab338c980094ba34`
+  is preserved in the experiment and as root backup
+  `main_candidate_guarded_routes_20260928_2dd39764.py`. Twelve original
+  native parity games run in session 46566; full 50-target and independent
+  gates remain outstanding. Main remains 4ee; no Kaggle. Evidence:
+  `diagnostics/guarded_route_pool_20260928/{selection.json,RESULTS.md,RUN_STATE.md}`.
+
+- **2026-09-28 04:13 UTC — complete source-prefix coverage accepted.**
+  All 208 prefixes (50 target fixtures plus 54 saved wins, both seats)
+  finish ACTIVE/ACTIVE at observation 144, with zero errors and no early
+  partial-plant activation. Source 06803086's 40 top-team shop captures
+  match the original 4ee counterfactual captures. Sixteen archived
+  community games have different shop pairs, so raw replay shops cannot
+  classify a replacement policy's trajectory. The assertion caught this
+  before new candidate outcomes. **Accept corrected coverage; proceed
+  with development, not promotion.** A separately frozen 22-route A/C
+  pool now tests DECEM/leave you and Vadim/Yizhou/Orest Myth/Rio, both
+  seats, while retaining the source's planting repair. Its 144-game screen
+  runs in session 74890; no selection yet. A static inventory maps all
+  32 unresolved targets to 23 shop-pair branches with 4–15 compatible
+  schedules each, including affected saved wins. This supports the full
+  30-loss objective, without claiming those schedules win. Root main
+  and uploaded source are unchanged; no Kaggle. See
+  `diagnostics/guarded_route_pool_20260928/{RESULTS.md,RUN_STATE.md}`.
+
+- **2026-09-28 03:54 UTC — newest submitted artifact is 06803086.**
+  Kaggle accepted `main_candidate_partial_planting_20260928_06803086.py`
+  as **56628152** at **03:54:13 UTC (09:24:13 IST)**. The listing was
+  verified **PENDING** at 03:54:18 UTC, with no score yet. Exact SHA-256:
+  `068030868689db5eb1e9a4a4427bededa8fbc13cae14e1003eb6be5440a6da42`.
+  Four local native direct/file games reproduce all 719 action pairs and
+  final rewards in both seats against saved Boey, with the new guard
+  active, no recorded errors, DONE/DONE/720 and full overage remaining.
+  The loader selects `kaggle_partial_planting_entrypoint`. **Accept the
+  packaging check and user-requested experimental upload; strength
+  promotion remains pending.** Saved-panel results remain 18/20 top-team
+  sweeps and 0/30 public-loss sweeps. Root main is still exact 4ee; the
+  active local research scan is preserved. Byte-identical upload backup,
+  evidence hashes, authorization and official receipt are saved under
+  `diagnostics/upload_partial_planting_20260928_06803086/`.
+
+- **2026-09-28 — historical 06803086 qualification checkpoint, superseded
+  by the 04:42 UTC insufficient-coverage result above.** The
+  outcome-blind pilot scan is running in unified session 40895, PID 10212;
+  do not duplicate it. At completed block 2921799, route-stratum eligible
+  pairs are 4ee=2/2, market=2/2; other guard pairs are 4ee=2/2,
+  market=0/2. No terminal strength outcomes have run. This is
+  a sparse-activation checkpoint, not a rejection or promotion. All 54
+  saved public-win fixtures are also hash-verified and prospectively
+  frozen for later preservation checks; no new results on them. Exact
+  main and root candidate backup hashes reverify. See
+  `diagnostics/partial_planting_20260928/RUN_STATE.md` for resumption.
+
+- **2026-09-28 03:31 UTC — 06803086 passes all 100 saved-panel games.**
+  All DONE/DONE/720 and error-free; all 34 incumbent winning seats remain
+  wins. Result: **18/20** top-team sweeps, **0/30** public-loss sweeps,
+  **18/50** combined; only Boey is rescued. **Advance to the separately
+  frozen reacting plan, not promotion.** New outcome-blind prefixes use
+  pilot 2920000–2922047 and confirmation 2923000–2927095, with both
+  route-branch and other guard-activation strata. Compare new against
+  current main and route-only, versus 4ee and market references. Main
+  remains exact 4ee; no Kaggle. Evidence:
+  `diagnostics/partial_planting_20260928/{native_full.json,NATIVE_PLAN.md}`.
+
+- **2026-09-28 03:28 UTC — faster reacting harness matches eight known
+  native games.** Exact terminal cash/status/telemetry parity covers both
+  seats of 4ee/b6eb against 4ee and the market reference; initial state
+  also matches fresh native initialization. **Accept for development and
+  outcome-blind prefix selection only.** Framework strength, runtime and
+  file loading remain separate mandatory gates. No new strength evidence
+  comes from these repeated games. Evidence:
+  `diagnostics/physical_route_rollout_20260928/reactive_parity.json`.
+
+- **2026-09-28 03:23 UTC — 06803086 native development parity passes.**
+  All ten original-framework games match fast cash and telemetry exactly,
+  DONE/DONE/720 and zero errors, including Boey +4,935 in both seats.
+  Its repeated mechanism trace confirms three successful WHEAT plants
+  using existing seeds; four excess commands become PASS. Future shops
+  first differ from route-only at observation 288, so the margin gain is
+  not simply crop receipts. **Advance to all 50 saved fixtures/both seats;
+  no promotion or reacting-strength claim.** Main remains 4ee. Evidence:
+  `diagnostics/partial_planting_20260928/{native_parity.json,boey_mechanism.json}`.
+
+- **2026-09-28 03:21 UTC — partial planting plus a complete route rescues
+  Boey in development.** All 20 fast games are clean. Main-plus-guard
+  57f41f1e rescues none and is rejected. Route 113349962 plus the same
+  guard, exact 06803086, changes three turns per Boey seat and improves
+  route-only -1,577 to +4,935 (main -20,873). Kaggledew stays a win +4,877;
+  Majkel stays a win +13,889, with Yaroslav/DECEM still losses. **Advance
+  only the route arm to original native parity and full-panel gates.**
+  This is development, not independent strength. Main remains exact 4ee.
+  Evidence: `diagnostics/partial_planting_20260928/{RESULTS.md,fast_screen.json}`.
+
+- **2026-09-28 03:15 UTC — scheduled sheep funding rejected.** Exact
+  7fad3c80 on route 113349962 completes all four fast diagnostic games
+  cleanly. Moving the existing sale before the sheep order recovers one
+  sheep but leaves only 27 coins, preventing the next wheat purchases.
+  Boey worsens -1,577 to -5,419 in both seats; Kaggledew stays +4,877.
+  Own cash falls 18,442 versus rival -14,600, paired margin -3,842.
+  **Reject at the frozen rescue gate; no native escalation/promotion.**
+  The whole existing feed/seed commitment still has to be funded. Main
+  remains 4ee. Evidence:
+  `diagnostics/scheduled_animal_funding_20260928/{RESULTS.md,fast_screen.json}`.
+
+- **2026-09-28 — complete-route execution audit isolates a missed sheep.**
+  Six repeated development traces reproduce known native rewards exactly:
+  DECEM -10,636 on 113373693, Boey -1,577 and Kaggledew +4,877 on
+  113349962, both seats. Boey has 495 coins before a scheduled 500-coin
+  SHEEP order and 527 after the later WHEAT sale; its pickup/placement
+  then fail, leaving scheduled care work on empty pasture. Kaggledew has
+  462 coins and no sellable wheat, so the same funding opportunity is
+  absent. **Accept the diagnosis only.** Later feed/cash and shared-market
+  effects require a separately frozen policy test. The old generic seed
+  prefund and procurement rejections remain valid. Main stays 4ee.
+  Evidence: `diagnostics/route_execution_gap_20260928/{RESULTS.md,audit.json}`.
+
+- **2026-09-28 03:07 UTC — Bakery/Pizza coverage gate incomplete; no
+  promotion.** The bounded scan finishes 512 4ee prefixes with only three
+  eligible both-seat activations (four required); market finds four in
+  416 prefixes, 935 prefix games overall. No terminal strength outcomes
+  ran. Preserve a823911f's two fixed-loss rescues as development evidence;
+  reject advancement under this frozen gate, without claiming a measured
+  win-rate failure. The repeated mhw traces exactly reproduce native
+  results: own private state is identical across seats for all 719 steps,
+  with no failed worker commands or land purchases. Rival WHEAT planting
+  at (1,8) fails on a weed in one seat, followed by market/cash divergence.
+  This does not justify an own-worker patch. Main remains 4ee. Evidence:
+  `diagnostics/bakery_pizza_pool_20260928/{RESULTS.md,pilot_eligibility.json,mhw_analysis.json}`.
+
+- **2026-09-28 02:55 UTC — observable-history balanced quantities rejected.**
+  Exact `96e965b8…3efbf8` finishes all 12 fast diagnostic games cleanly,
+  retaining both controls but rescuing no target. All final rewards/margins
+  equal incumbent outcomes, despite 1–2 accepted changes per game in three
+  fixtures. **Reject at the frozen rescue gate; no native escalation.**
+  Ranges 2914200–2914203 and 2914300–2914307 remain unused. Main stays 4ee;
+  Bakery/Pizza's separate native activation scan continues. Evidence:
+  `diagnostics/observable_quantity_20260928/{RESULTS.md,fast_screen.json}`.
+
+- **2026-09-28 02:47 UTC — observable-history queue reorder rejected.**
+  Candidate `10452303…ca712` completes all 12 fast diagnostic games cleanly
+  and preserves Majkel/Kaggledew wins, but rescues none of four close loss
+  fixtures. Yaroslav improves -324 to -167, Kucing -2,857 to -2,825, leave
+  you -2,999 to -2,919; Vadim stays -400. It activates 1–9 queue changes
+  per game. **Reject at its frozen rescue gate; no native escalation.**
+  The feature's past-flow parity does not imply useful future forecasts.
+  Reserved 2914000–2914003 and 2914100–2914107 remain unused. Main stays 4ee.
+  Evidence: `diagnostics/observable_queue_20260928/{RESULTS.md,fast_screen.json}`.
+
+- **2026-09-28 02:40 UTC — full-policy fast diagnostic harness matches native.**
+  All six selected a823911f games across the three Bakery/Pizza tapes and
+  both seats exactly match native rewards, DONE/DONE/720 and telemetry.
+  Runtime is 6.35–7.34 s per game; max callback 0.267–0.326 s. **Accept for
+  development diagnostics only.** It omits framework schema/timeout/file
+  loading, so original native gates stay mandatory. This repeats known
+  games and adds no independent strength evidence. Main remains 4ee; the
+  outcome-blind Bakery/Pizza native activation scan continues separately.
+  Evidence: `diagnostics/physical_route_rollout_20260928/fast_agent_parity.json`.
+
+- **2026-09-28 02:34 UTC — Bakery/Pizza integration passes; reacting scan
+  starts.** Exact `a823911f` completes all 100 fixed games DONE/DONE/720
+  without recorded errors. All component and unaffected-incumbent rewards
+  match exactly; no existing winning seat is lost. Result: 2/30 public-loss
+  sweeps and 17/20 top-team sweeps, 19/50 overall. **Advance to its frozen
+  reacting qualification; no promotion.** The new prefix-only scan uses
+  2911000–2911511 and has no final-outcome selection. Main stays exact 4ee.
+  Evidence: `diagnostics/bakery_pizza_pool_20260928/full_panel.json`.
+
+- **2026-09-28 02:33 UTC — observable past rival net-flow feature passes
+  after price-floor correction.** Initial full-product inversion failed
+  because price-1 sales do not add market supply. Original artifacts are
+  preserved. With explicit unknowns at midnight/possible floor-priced
+  products, legal-observation inference matches independent accounting on
+  48,698/49,680 product-transitions (98.02%) across all 5,520 non-midnight
+  seat-transitions; zero known-value mismatches. **Accept as a measured
+  historical feature, not a forecast or policy.** No rival private data or
+  action enters the feature; those appear only in the test's ground truth.
+  Evidence: `diagnostics/physical_route_rollout_20260928/{FLOW_CORRECTION.md,flow_parity.json,RESULTS.md}`.
+
+- **2026-09-28 02:29 UTC — fast native physical rollout prerequisite passes.**
+  A separate pure transition module extracted from engine 1.32.7 reproduces
+  2,300 consecutive transitions across four frozen replay continuations,
+  with exact farms, market/town, both private states and terminal rewards.
+  Each 575-step continuation plus parity comparisons takes 0.139–0.181 s
+  locally. **Accept the engineering prerequisite, not a policy.** Known
+  seed, both private states and future recorded actions are harness-only;
+  any deployed chooser still needs legal-observation forecasts for hidden
+  information and separate runtime/reacting gates. No alternative route
+  outcomes or candidate were generated by this audit. Main remains 4ee.
+  Evidence: `diagnostics/physical_route_rollout_20260928/{RESULTS.md,parity.json,native_core.py}`.
+
+- **2026-09-28 02:24 UTC — Bakery/Pizza development selects route113615383.**
+  All 66 immutable-pool games finish DONE/DONE/720 with no recorded errors;
+  both seats show the intended first-two-shop branch. The frozen win-first
+  rule selects two rescued public-loss fixtures: high frequency farming
+  +17,170/+16,639 and Navier-stokes +26,065/+26,065. mhw remains a loss
+  (-9,646/-29,166), including a seat-1 cash regression. **Advance to full
+  saved-panel integration, not promotion.** Candidate SHA `a823911f…8134be`
+  is separately backed up as `main_candidate_bakery_pizza_20260928_a823911f.py`.
+  It changes only Bakery/Pizza and does not include rejected candidates.
+  The 100-game panel is running; fresh reacting qualification remains
+  required. Main stays exact 4ee; no Kaggle request. Evidence:
+  `diagnostics/bakery_pizza_pool_20260928/{RESULTS.md,selection.json,PLAN.md}`.
+
+- **2026-09-28 02:18 UTC — compatible-route candidate rejected by its
+  reacting pilot.** All 32 full games complete DONE/DONE/720 without
+  recorded errors; every candidate game activates. Against 4ee, incumbent
+  1W/6D/1L becomes candidate 7W/0D/1L (+3 win points). Against the distinct
+  market policy, incumbent 6W/2L becomes candidate 4W/4L (-2 points). The
+  pooled +1 does not pass the frozen requirement of no reference-specific
+  regression. **Reject exact b6ebf9ad; no confirmation or promotion.**
+  Its 19/50 saved sweeps remain development evidence only. The outcome-blind
+  scan used 240 prefixes, selecting four both-seat activations per reference;
+  pilot seeds are now spent. Main remains exact 4ee. The separately frozen
+  66-game Bakery/Pizza pool is now running. No Kaggle request was made.
+  Evidence: `diagnostics/compatible_route_pool_20260928/{RESULTS.md,native_pilot.json,pilot_eligibility.json}`.
+
+- **2026-09-28 02:12 UTC — remaining-loss coverage identifies a separate
+  Bakery/Pizza route pool.** The 30 saved losses span 22 first-two-shop pairs;
+  the largest pair covers mhw, high frequency farming and Navier-stokes.
+  Eleven unique existing complete routes share its actual first 144 raw
+  actions. No saved public win or current top-20 entry has that pair in the
+  recorded prefix. **Accept a separate finite development search, not a
+  promotion.** Its 66-game pool, win-first selection, full-panel check and
+  new reacting seed ranges are frozen before candidate outcomes. Keep the
+  pending b6ebf9ad qualification separate. Main stays exact 4ee. Evidence:
+  `diagnostics/compatible_route_coverage_20260928/{coverage.json,RESULTS.md}`
+  and `diagnostics/bakery_pizza_pool_20260928/PLAN.md`.
+
+- **2026-09-28 02:07 UTC — compatible-route combined integration passed.**
+  Exact `b6ebf9ad` completes all 100 frozen games DONE/DONE/720 without
+  recorded errors and exactly matches selected route components plus every
+  unaffected incumbent outcome. It improves the saved target from 17/50 to
+  **19/50 both-seat sweeps**: 1/30 public losses (2W/58L) and 18/20 top teams
+  (36W/4L), preserving every incumbent winning seat. **Advance to the frozen
+  native reacting pilot; do not promote yet.** The prefix-only activation
+  scan is running on new bounded seed ranges, without final-outcome seed
+  selection. Main remains exact 4ee; this research made no Kaggle request.
+  Evidence: `diagnostics/compatible_route_pool_20260928/{full_panel.json,NATIVE_PLAN.md}`.
+
+- **2026-09-28 01:59 UTC — complete compatible-route development selection
+  rescues Vadim and one saved public loss.** All 172 retained games finish
+  DONE/DONE/720 with no recorded errors; corrected grouping selects from
+  128 relevant games across all 32 immutable routes. The frozen rule chooses
+  BRUNCH/BRUNCH route113373693 (leave you +3,256 both seats; DECEM -10,636)
+  and SMOOTHIE/ICE route113377257 (Vadim +3,771 both; Yizhou +102,559 both).
+  No YARN/FARMERS alternative rescues Boey, so that mapping stays incumbent.
+  **Pass development only.** Combined candidate SHA `b6ebf9ad…6147c` is
+  backed up as `main_candidate_compatible_routes_20260928_b6ebf9ad.py` and
+  is running the full 50-fixture both-seat integration/regression panel.
+  Native activation ranges, two reacting references and win-point gates are
+  frozen separately before those outcomes. Do not combine with rejected
+  fb6c5413 or promote on tapes. Main stays exact 4ee; no Kaggle activity.
+  Evidence: `diagnostics/compatible_route_pool_20260928/{RESULTS.md,selection.json,NATIVE_PLAN.md}`.
+
+- **2026-09-28 01:54 UTC — exact fb6c5413 uploaded by explicit request.**
+  Kaggle accepted `main_candidate_observable_opening_20260928_fb6c5413.py`
+  as submission **56625741**, dated 01:54:52 UTC (07:24:52 IST), with status
+  **PENDING** when verified at 01:54:57 UTC; there is no score or remote
+  validation pass yet. SHA-256 is
+  `fb6c54136017eccc9df2652d2826a14346520c6c0d51ce855321ff51be6693f2`.
+  Local callable selection and the earlier 100-game integration pass verify
+  the exact selected artifact. Its native qualification remains rejected:
+  user authorization to upload does not turn it into a strength improvement.
+  Main remains SHA `4eeac9c3…783ed` and was not replaced, preserving ongoing
+  local experiments. Candidate bytes are separately backed up with the
+  upload receipt. No leaderboard/replay download was performed. Evidence:
+  `diagnostics/upload_observable_opening_20260928_fb6c5413/upload_receipt.json`.
+
+- **2026-09-28 01:52 UTC — native opening failure traced; route control
+  coverage corrected before selection.** Passive seed2908000/seat0 traces
+  exactly reproduce current 4ee's +21,597 and rejected selector's -21,317.
+  Selector buys both additional land quadrants, loses no animals, and sells
+  more MILK (264 versus 138 units) for less money (3,202 versus 7,538).
+  Current earns 80,810 WOOL versus selector 6,099, under different native
+  shop paths. **Accept diagnosis; no generic feed/land patch is justified.**
+  During the finite route-pool screen, exact baseline captures exposed my
+  incorrect grouping of winning controls: Yizhou belongs to SMOOTHIE/ICE
+  (C), Kaggledew to YARN/FARMERS (B). The original plan/results are preserved;
+  `CONTROL_FIX.md` freezes 44 missing affected-control games and excludes
+  44 unaffected-control games from selection. Strategies and selection gates
+  stay fixed; no route is selected before complete corrected coverage. Main
+  remains exact 4ee and Kaggle is untouched. Evidence:
+  `diagnostics/opening_probe_v2_20260928/native_failure_ledger.json` and
+  `diagnostics/compatible_route_pool_20260928/CONTROL_FIX.md`.
+
+- **2026-09-28 01:36 UTC — opening selector rejected by reacting evidence.**
+  Exact `fb6c5413` keeps its 24/50 saved-reply development result, but loses
+  all ten completed native games to the public market policy while current
+  4ee wins all ten. It selects V43 for that reference. Other completed
+  paired blocks match the incumbent: 1W/10D/1L each against 4ee and 12W each
+  against V43. After 68 distinct games the pilot was stopped: the candidate
+  can earn at most six remaining points against market, below the ten the
+  incumbent already holds, so its frozen nonregression gate is impossible.
+  All completed games are DONE/DONE/720 with no recorded errors. The raw
+  checkpoint also has 32 duplicated keys with identical semantic outcomes;
+  the audit retains them but counts each key once. Duplicate execution
+  provenance is unconfirmed. **Reject fb6c5413; no confirmation or promotion.**
+  Main remains exact 4ee (0/30 loss sweeps, 17/20 top-team sweeps). A separate
+  frozen 32-route, 128-game compatible-schedule development search is running
+  in `diagnostics/compatible_route_pool_20260928/`; no outcome from it is
+  independently validating. No Kaggle activity. Evidence:
+  `diagnostics/opening_probe_v2_20260928/{RESULTS.md,pilot.json,audit_pilot_rejection.py}`.
+
+- **2026-09-28 01:31 UTC — separate comparison review, not an upload.**
+  `MAIN_COMPARISON_20260928.md` compares current 4ee with the standalone
+  root-folder `main_candidate_observable_opening_20260928_fb6c5413.py` and
+  summarizes retained, rejected and unfinished research. Readiness is
+  **not ready**: 24/50 saved both-seat sweeps, still 17/20 top teams, with
+  independent qualification incomplete. Local callable selection verifies
+  the intended `kaggle_observable_portfolio_entrypoint`; this is not a full
+  file-loader game pass. This review chat briefly duplicated the native
+  pilot already launched in the research chat. The review's own process
+  was stopped, leaving the original pilot running. At the audit there were
+  72 raw checkpoint rows but only 40 unique jobs; all 32 duplicate pairs
+  agree on every field except runtime measurements. Raw rows are preserved.
+  The resume reader now deduplicates exact jobs and rejects conflicting
+  outcomes; duplicate runs receive no extra statistical weight. Candidate
+  bytes and qualification criteria did not change. Evidence:
+  `diagnostics/opening_probe_v2_20260928/duplicate_execution_audit.json`.
+
+- **2026-09-28 01:24 UTC — complete-route reassessment rejected; opening
+  candidate integration passed.** Candidate `61a1dcd6…2b263` changed three
+  exact-prefix-compatible second-shop commitments with all descendant
+  transitions fixed. All ten saved top-20 pilot games completed cleanly,
+  but no failed fixture became a win: DECEM improves -62,163 to -5,114 per
+  seat, Boey -20,873 to -19,039, and Vadim worsens -400 to -3,903. Yizhou
+  and Kaggledew remain both-seat wins. **Reject this candidate at its
+  frozen rescue gate; no conditional wider/native run.** Separately, the
+  packaged opening selector `fb6c5413…693f2` completed all 100 integration
+  games with exact selected-arm rewards/results, zero errors and all
+  incumbent winning seats preserved. Its fresh 96-game native pilot has
+  started. A root-folder copy is
+  `main_candidate_observable_opening_20260928_fb6c5413.py`; main remains
+  exact 4ee. The user now requests a consolidated comparison and upload
+  readiness verdict; this is not upload authorization. Evidence:
+  `diagnostics/compatible_route_reassessment_20260928/RESULTS.md` and
+  `diagnostics/opening_probe_v2_20260928/integration.json`.
+
+- **2026-09-28 01:23 UTC — opening selector integration passed; compatible
+  three-route pilot rejected.** Packaged `fb6c5413` completed all 100
+  integration games with exact selected-arm/reward parity, DONE/DONE/720
+  and zero recorded errors. The frozen 96-game native reacting pilot is
+  running; no strength or promotion claim yet. A separate exact-prefix
+  compatible complete-route candidate `61a1dcd6` finished ten diagnostic
+  games cleanly but rescued none of DECEM, Boey or Vadim. DECEM improved
+  from -62,163 to -5,114 per seat, Boey to -19,039, Vadim worsened to
+  -3,903; Yizhou and Kaggledew remained wins. **Reject 61a1dcd6 at its
+  pilot gate.** Main remains exact 4ee; no Kaggle activity. Evidence:
+  `diagnostics/opening_probe_v2_20260928/integration.json` and
+  `diagnostics/compatible_route_reassessment_20260928/RESULTS.md`.
+
+- **2026-09-28 01:18 UTC — revised common opening passed its development
+  gate.** All 110 prefix checks passed; the 4ee arm matches the complete
+  turn-3 state and all 100 full-game incumbent outcomes exactly. All 200
+  both-arm development games finished DONE/DONE/720. A bounded rule using
+  only rival first-turn cash and net WHEAT buying recovers **7/30** saved
+  public-loss replies in both seats while retaining **17/20** top-team
+  sweeps (49W/0D/51L across 100 seats), versus 17/50 total incumbent sweeps.
+  Its total margin delta is -258,954 but win points are primary. The more
+  aggressive 29/50 rule loses two incumbent winning seats and is rejected.
+  **Pass the preserving 24/50 rule into separate qualification, not
+  promotion.** Packaged candidate SHA `fb6c5413…693f2` is now undergoing
+  exact integration checks; native pilot and confirmation criteria were
+  frozen before candidate outcomes. DECEM, Boey and Vadim are still lost.
+  Main remains exact 4ee; no Kaggle check, download or upload. Evidence:
+  `diagnostics/opening_probe_v2_20260928/{RESULTS.md,arms.json,selection.json,NATIVE_PLAN.md}`.
+
+- **2026-09-28 00:58 UTC — first observable-opening fork completed; market
+  parity revision in progress.** Its 200 local fixed-tape games all finished
+  DONE/DONE/720. The 4ee arm rescued three public-loss pairs and Vadim
+  (+3,655 per seat), but lost M & M & P & Q and Unknown Mother-Goose, ending
+  3/30 public-loss sweeps and 16/20 top-team sweeps. V43 arm scored 13/30
+  and 12/20. The small visible-state selector's best development result was
+  28/50 sweeps, with three old top-team wins lost; no allowed rule preserved
+  all incumbent wins. **Reject these exact arms for promotion.** The new
+  `opening_probe_v2_20260928` revision preserves incumbent trade indices and
+  reconstructs the parent observation while commuting two early farmer
+  actions. Its first verification process ended without a completed file;
+  the harness now frees dynamic modules and checkpoints bounded batches.
+  Revised candidate bytes are unchanged during recovery; no full-game v2
+  outcome has been read. Main remains exact 4ee; no Kaggle access or upload.
+  Evidence: `diagnostics/opening_probe_20260928/RESULTS.md` and
+  `diagnostics/opening_probe_v2_20260928/PLAN.md`.
+
+- **2026-09-27 20:03 UTC — V43 full saved-loss screen establishes a
+  useful opening basis.** The previously started benchmark completed 60/60
+  DONE/DONE/720 games: 26 wins, 34 losses, zero draws; 13/30 both-seat
+  sweeps versus current 4ee's 0/30. Summed seat margin improves 944,525
+  coins (+236,280 versus −708,245). Exact candidate/manifest hashes verify.
+  **Pass its ten-sweep basis gate, not promotion:** the prior top-20 pilot
+  still loses all three targets and regresses Majkel. A separate common
+  first-investment fork now passes 20/20 first-three-turn physical checks,
+  preserving each parent farm/private state except two inert V43 hands,
+  and gives both arms identical public step-1 observations. Full 50-entry
+  both-arm testing is pending. Evidence:
+  `diagnostics/v43_loss_screen_20260928/RESULTS.md` and
+  `diagnostics/opening_probe_20260928/{PLAN.md,physical.json}`.
+
+- **2026-09-27 19:34 UTC — broad WHEAT purchase cap rejected at
+  feasibility.** Exact successful market-event accounting across the 30
+  saved public losses finds 90,882 BUY_PRODUCT WHEAT fills costing
+  3,315,483 and 97,981 WHEAT sales receiving 3,577,635, a positive
+  262,152 net trade book (positive in every loss). A narrower same-step
+  bought-then-resold subset loses 114,824 directly, but also occurs in the
+  current Majkel winning control. DECEM's corresponding −6,858 direct
+  loss is far below its −62,163 game gap. These flows do not predict the
+  rival market response to a cap. **Reject a broad or untested narrow cap;
+  no candidate outcomes, main edit or upload.** Evidence:
+  `diagnostics/wheat_roundtrip_20260928/FEASIBILITY.md`.
+
+- **2026-09-27 19:25 UTC — early MELON opening rejected as a bounded
+  patch.** The current policy first plants MELON on day 6/7/8/9/13/16 in
+  4/6/1/14/2/3 of the 30 saved losses, and day 9/10/10 in the DECEM/Boey/
+  Vadim top-20 failures. Read-only scan of all 145 complete routes and the
+  common 72-step opening found no MELON planting on days 0–5; the earliest
+  is step 152/day 6 in five routes. At day 6 the three top-20 failure
+  captures fill all 25 NW tiles, hold no MELON seed, and have only 357–860
+  cash; the day-0 market queue already uses all ten slots. A day 0–5
+  planting requires a new funded whole-opening schedule with displaced
+  crop/pasture work, not an additive order. Prior day-six swaps failed
+  their margin gates. **Reject an early-MELON overlay; no candidate, main
+  edit or upload.** Evidence:
+  `diagnostics/early_melon_opening_20260928/FEASIBILITY.md`.
+
+- **2026-09-27 19:24 UTC — single-day MELON harvest/delivery planner
+  rejected at feasibility.** Across 30 saved-loss traces and four top-20
+  traces, 492 MELON batches reached maturity; only 19 waited more than 24
+  turns before harvest (114 eventual units), in nine loss traces and none
+  of the four top-20 traces. Only two batches (at most 12 units) have a
+  contiguous PASS-only route/harvest/shed/return window without displacing
+  scheduled work. No harvested MELON unit waited more than 24 turns before
+  shed delivery (maximum 19 turns). Sale attribution had 691 unmatched units,
+  so no cash-effect claim was made. **Reject a generic extra harvest-worker
+  or single-day planner; no candidate, main edit or upload.** Evidence:
+  `diagnostics/melon_harvest_lag_20260928/RESULTS.md`.
+
+- **2026-09-27 19:19 UTC — V43 DECEM mechanism confirms an incompatible
+  opening, not a late transplant.** Four exact both-seat fixed-route trace
+  reruns reproduced current 4ee margin −62,163 and V43 margin −14,744.
+  Opening orders differ at step 0; observations differ at step 1; by day 3
+  shops, crop/animal inventory and 22 of 23 overlapping tile records differ.
+  By day 18 V43 owns three quadrants versus 4ee's two. V43 makes more
+  state-changing harvests (384/420 versus 293/453) and far fewer worker
+  non-PASS no-ops (199/6,006 versus 1,149/5,339), but its own market net
+  rises 68,589 while the fixed rival's rises 21,170, leaving a loss. The
+  earlier five-fixture screen had zero target-seat wins and regressed both
+  Majkel control seats. **Reject V43 branch/suffix; no candidate, main edit
+  or upload.** Evidence: `diagnostics/v43_decem_mechanism_20260928/RESULTS.md`.
+
+- **2026-09-27 19:11 UTC — current-4ee land retry rejected on saved top-20
+  failures.** The frozen conservative candidate (SHA `675893ed…e51`) was
+  screened in both seats against DECEM, Boey and Vadim plus winning DSM and
+  Majkel controls, ten DONE/DONE/720 native-engine games on exact saved
+  action tapes. DECEM's margin improved from −62,163 to −15,338 in both
+  seats, but stayed a loss. Boey/Vadim were unchanged losses; both controls
+  remained wins. **Zero target seats flipped**, so the predeclared wider
+  panel gate failed. Reacting native eligibility in the separate plan was
+  previously absent in its first 64 seed scan; there is no promotion basis.
+  Reject the retry as a top-20 fix; `main.py` and Kaggle status unchanged.
+  Evidence: `diagnostics/land_retry_top20_20260928/{PLAN.md,RESULTS.md,screen.json}`.
+
+- **2026-09-27 19:00 UTC — blanket earlier MELON/MILK sale rejected at
+  feasibility.** The 30 exact loss traces contain 3,594 MILK and 332
+  MELON turns with positive shed stock and no sale; four current top-20
+  traces contain 317 and 12. At the first held turn, historical quoted
+  prices imply only 2,179 MILK and 2,880 MELON aggregate gross coins from
+  selling earlier across all 30 losses, before shared-market response;
+  MILK favors earlier sale in only 17/30 episodes. Some held turns have a
+  full 10-order queue (293 MILK turns) or scheduled purchases (1,755 held
+  turns). An older movement-based timing patch improved 211–379 coins but
+  rescued no saved loss. **Reject a blanket timing overlay; no candidate
+  outcomes, main edit or upload.** Evidence:
+  `diagnostics/sale_timing_20260928/FEASIBILITY.md`.
+
+- **2026-09-27 18:55 UTC — three historical complete policies rejected on
+  frozen top-20 failures.** Saved standalone decoded V43, full V48 and
+  search-v2 were each run in both seats against DECEM, Boey and Vadim plus
+  DSM/Majkel winning controls (30 local games, all DONE/DONE/720). None won
+  or drew any of the six target seats. V43/V48 gave identical panel results,
+  narrowed DECEM from −62,163 to −14,744 per seat but worsened Boey/Vadim
+  and lost both Majkel control seats. Search-v2 lost all ten seats. **Reject
+  these complete-policy replacements; no new trigger, main edit or upload.**
+  These fixed tapes do not validate reacting strength. Evidence:
+  `diagnostics/historical_policy_screen_20260928/{PLAN.md,RESULTS.md,screen.json}`.
+
+- **2026-09-27 18:54 UTC — broad melon/milk or early-sale patch rejected
+  at feasibility.** Across the 30 local losses, own MELON units sold are
+  greater/equal/fewer than the rival in 15/2/13 games and MILK in 16/1/13,
+  yet MELON cash trails in 26/30 and MILK in 25/30. In 34 exact traces,
+  own first MELON sale is essentially the first shed-stock day; the average
+  sale day trails rivals by 13.3 days, pointing to late production rather
+  than held stock. Only one strict actionable earlier MELON sale window
+  appears, at quote 221 versus the actual next-day 223. Nine comparable
+  MILK windows have next-day prices usually higher. Same-turn queue
+  position differences are too small to explain the gap. **Reject a
+  blanket volume or timing overlay; no candidate outcome test, main edit or
+  upload.** A new state-aware physical planner would need verified funding,
+  travel, harvest, delivery, feed and market execution. Evidence:
+  `diagnostics/dynamic_portfolio_20260928/FEASIBILITY_20260928.md`.
+
+- **2026-09-27 18:42 UTC — compatible day-six melon route screen rejected
+  at feasibility.** The exact first-two-shop branches shared the incumbent's
+  full action prefix through step 143 and matched all three saved current
+  top-20 failures, but occurred in only **1/30** local live losses and
+  **3/54** live wins; they also occurred in two winning top-20 controls.
+  Compatible replacement routes request only +1/+4/+3 additional MELON
+  plants after the switch, with other schedule changes. A generic visible
+  melon gap marks 30/30 losses but also 53/54 wins, so it is not a
+  selective trigger. Earlier route switches failed their fixed-tape gain
+  or native paired-margin gates. **Reject before candidate outcome games;
+  no main edit or upload.** Evidence:
+  `diagnostics/portfolio_research_20260927/FEASIBILITY.md`.
+
+- **2026-09-27 18:38 UTC — frozen local target baseline complete.** The
+  downloaded 30 public-loss replies were replayed with exact 4ee in both
+  native seats: **0W/0D/60L**, all DONE/DONE/720. All 30 original-seat
+  rewards/margins reproduce the saved public episodes exactly; the opposite
+  seat also loses all 30. Only two episodes have seat-dependent margins
+  (114252835: −5,282/−3,023; 114274897: −42,560/−41,698). The local
+  manifest records these 30 fixtures plus 20 already downloaded current
+  top-team entries (17/20 both-seat wins), 50 entries from 48 distinct
+  episodes. These are fixed-action regression targets, not reacting-policy
+  validation. **Accept baseline audit; no promotion decision or main edit.**
+  Evidence: `diagnostics/loss_class_20260927/{RESULTS.md,local_target_manifest_180951.json,live_loss_tape_baseline_180951.json}`.
+
+- **2026-09-27 18:38 UTC — terminal market cleanup rejected at feasibility.**
+  In the current Vadim top-20 loss (−400), the final market sells all
+  marketable stock; no worker actions fail to change state. In 20 live
+  losses under 10,000 coins, 18 also end with no sellable stock. The two
+  remaining residual holdings could recover at most 71 and 161 coins,
+  below their respective loss margins. **No repeated liquidation defect,
+  candidate, main edit or upload.** Evidence:
+  `diagnostics/near_margin_20260927/FEASIBILITY_20260928.md`.
+
+- **2026-09-27 18:27 UTC — early worker watering bundle rejected at
+  feasibility.** A separate candidate hired four workers for 7 coins on
+  day 1 and made 58 valid moves and 20 state-changing WATER actions on 19
+  wheat and one strawberry tile in each saved DECEM/Majkel source trace.
+  Wheat at crop age 1 gained no yield; the next planned delivery remained
+  21 wheat in shed and `SELL WHEAT 18`, with the same 12 wheat plots
+  harvested/replanted. Fixed-tape margin changes were **−1,242** and **−7**
+  coins. **Reject before native strength testing; no main edit or upload.**
+  Reserved seeds 2721000–2721031 remain unused. Evidence:
+  `diagnostics/early_workers_20260927/RESULTS.md` and
+  `source_tape_replay.json`.
+
+- **2026-09-27 18:16 UTC — same-turn funded land-order candidate rejected.**
+  On 16 fresh native seeds in both seats with original shops and reacting
+  references, moving an already scheduled `BUY_LAND` after sales activated
+  on 12/16 seed pairs versus current main but scored **0W/8D/8L** paired
+  outcomes against it, versus 16 draws for self-control (paired margin
+  −250). Against the public-market reference it dropped from the incumbent's
+  16/16 paired wins to **14/16**, with paired-margin delta **−225,318**;
+  candidate cash fell 126,870 while rival cash rose 98,448. Both files
+  swept c68 with only +28 candidate paired-margin coins. All 160 games
+  across five development blocks completed cleanly. **Reject; no
+  confirmation, main edit or upload.** Fixed top-20 tapes did not rescue
+  DECEM, Boey or Vadim and were diagnostics only. Evidence:
+  `diagnostics/production_bundle_20260927/{PLAN.md,RESULTS.md}` and five
+  keyed development JSON files.
+
+- **2026-09-27 18:09:54 UTC — latest official 4ee live snapshot.** Kaggle
+  submission 56609430 remains COMPLETE with publicScore **2551.5**,
+  uploaded 13:10:15 UTC. The team leaderboard is rank **136**, Score
+  **2572.1**; rank 10 Score **2847.2**. The team score currently equals
+  the older c68 submission 56602057's publicScore (2572.1), which exceeds
+  the new 4ee submission's 2551.5; the team rank must not be attributed to
+  a score gain from 4ee. Eight more public games were
+  downloaded without outcome filtering (4W/4L), making the complete
+  **84-game cohort 54W/30L/0D**. All 85 raw replay hashes including
+  validation verify, with zero failed paths; remote validation parity remains
+  PASS. New losses were Yaroslav −324, Ghost Rule −4,243, leave you −7,748,
+  and Navier-stokes −7,764. No new upload or main edit. Evidence:
+  `diagnostics/new_live_56609430_20260927/snapshot_180951/summary.json`,
+  `cohort_180951.json`, `delta_180951.json`, and `RESULTS.md`.
+
+- **2026-09-27 17:47:25 UTC — latest official 4ee live snapshot.** Kaggle
+  submission 56609430 remains COMPLETE with publicScore **2554.6**,
+  uploaded 13:10:15 UTC. The team leaderboard is rank **137**, Score
+  **2568.5**; rank 10 Score **2852.4**. Nine additional public games were
+  downloaded without outcome filtering (5W/4L), making the complete
+  **76-game cohort 50W/26L/0D**. All 77 raw replay hashes including
+  validation verify, zero failed paths; remote validation parity remains
+  PASS. New losses: THIRD FARM CLUB −42,560, leave you −2,999,
+  boominginging −26,613, and fuxi −14,244. No new upload or main edit.
+  Evidence: `diagnostics/new_live_56609430_20260927/snapshot_174722/summary.json`,
+  `cohort_174722.json`, `delta_174722.json`, and `RESULTS.md`.
+
+- **2026-09-27 17:46 UTC — early hire-only intervention rejected at
+  feasibility.** In the fresh DECEM/Majkel source-seed traces, our policy
+  has 96–98 coins and only one market order at step 24, while the rival
+  hires three or four workers for 4–7 coins. Cash and queue slots permit
+  those hires, but our route emits **zero hand commands on steps 25–47**;
+  later command lists are sized to existing hires. Rival worker actions
+  cannot be transplanted because only 12/25 and 10/25 exact tile states
+  match at step 24, falling to 5/25 and 6/25 by step 72. **Reject adding
+  HIRE orders without a new state-aware task, feed, crop, harvest and sale
+  schedule.** No candidate, native test, main edit or upload. Evidence:
+  `diagnostics/market_portfolio_20260927/HIRE_FEASIBILITY.md`.
+
+- **2026-09-27 17:32 UTC — newer official top-20 replies fully checked.**
+  A new 17:23–17:25 UTC leaderboard snapshot has 20 current teams,
+  including new rank-18 Kaggledew Valley 🏆. Their latest completed public
+  episodes were created 16:37–17:17 UTC today; all 20 raw replay and action
+  hashes verify, and the 18 distinct episodes have **zero overlap** with
+  the earlier 16:35 panel. Exact uploaded 4ee won both native original-shop
+  seats against **17/20** teams and **7/10** current top-ten teams (34W/6L
+  seats), all 40 DONE/DONE/720. Current two-seat failures: DECEM rank 1
+  −62,163, Boey rank 3 −20,873, Vadim Vasilenko rank 5 −400. Majkel1337
+  became a win on a *different episode*; this does not show a policy gain.
+  Native shops at turn 144 differ from the source replay for 16/20 teams;
+  fixed tapes remain diagnostic only. **Accept the complete fresh panel;
+  reject an all-top-20 or top-10 claim.** No main edit or upload. See
+  `diagnostics/current_top20_20260927_172258/RESULTS.md`, `summary.json`,
+  `manifest.json`, and `assessment.json`. A paired c68 counterfactual on the
+  exact three current failing tapes also loses all six seats: DECEM −62,163,
+  Boey −18,260, Vadim −363 per seat. **Reject simple c68 reversion** as a
+  rescue for these new replies; see `prior_top3.json`.
+
+- **2026-09-27 17:23:00 UTC — latest read-only Kaggle check.** Submission
+  56609430 is still COMPLETE, uploaded 13:10:15 UTC, with publicScore
+  **2551.6**. The team leaderboard is rank **145**, Score **2563.4**, versus
+  rank-10 Score **2867.7**. One new public episode, 114271958 versus
+  offhand, was downloaded and SHA-256 verified: loss by 7,539 coins. The
+  complete 67-game public cohort is **45W/22L/0D**, all 68 raw hashes
+  including validation verified, zero failed paths, and remote validation
+  parity remains PASS. The current `main.py` still hashes to 4eeac9c3;
+  no new upload occurred. Evidence:
+  `diagnostics/new_live_56609430_20260927/snapshot_172258/summary.json`,
+  `cohort_172258.json`, `delta_172258.json`, and `RESULTS.md`.
+
+- **2026-09-27 17:22 UTC — same-item queue guard rejected.** Candidate
+  `f8ba6524...24b873c` retained the purchase-queue order whenever an action
+  simultaneously bought and sold the same product; it activated 74–116 turns
+  in each of the five targeted fresh top-20 tapes. All ten both-seat native
+  original-shop games finished DONE/DONE/720. It still lost both seats to
+  DECEM, Boey, Vadim Vasilenko and Majkel1337; Yizhou stayed a win but did
+  not recover its earlier c68 margin. **Reject at the frozen targeted gate;**
+  do not run the conditional full top-20 or reacting native panels. The
+  uploaded `main.py` and Kaggle status remain unchanged. See
+  `diagnostics/same_item_queue_guard_20260927/PLAN.md`, `RESULTS.md` and
+  `targeted.json`.
+
+- **2026-09-27 17:12:01 UTC — final 4ee live cutoff extended.** Kaggle
+  submission 56609430 remains COMPLETE with publicScore **2557.4**; its
+  LastSubmissionDate is still 13:10:15 UTC. Team leaderboard rank is **139**,
+  team Score **2567.3**; rank 10 Score **2872.8**. Five newly completed
+  public games were downloaded without outcome filtering (3W/2L), making
+  **66 games: 45W/21L/0D** at this cutoff, all 67 replay hashes including
+  validation verified, zero failed paths. Exact current `main.py` and the
+  uploaded backup both hash to 4eeac9c3...f783ed; remote validation parity
+  still passes. This is the final read-only status check, not a new upload.
+  Evidence: `diagnostics/new_live_56609430_20260927/snapshot_171158/summary.json`,
+  `delta_171158.json`, `cohort_171158.json`, and `RESULTS.md` there.
+
+- **2026-09-27 17:12 UTC — day-10 third-land response infeasible from the
+  saved route library.** The observable rival-installation/cash warning fires
+  in 8 live losses and 4 live wins. All 12 already buy our third quadrant
+  successfully at steps 241/242/266; by step 312, eight have 25/25 SW
+  installations, two have 23/25, and two losses on route 113784024 have
+  11/25. Those sparse cases have 14 unbuilt SW tiles, but their existing
+  seed, hire, animal care, harvest and delivery schedule lacks a compatible
+  saved replacement. Across 145 embedded routes, no *distinct* continuation
+  matches any flagged game's first-240 worker actions and investment orders;
+  matching IDs are full 719-turn duplicates. The four step-266 land cases
+  split 2 wins/2 losses, and the two losing BAKERY/PIZZA cases have only
+  1,642/1,541 cash at step 240 before the incumbent's wheat and hire bundle.
+  **Reject a blind land order, partial overlay or generic route splice; no
+  candidate or independent experiment plan is justified yet.** No main edit
+  or upload. Evidence: `diagnostics/third_land_response_20260927/RESULTS.md`,
+  `route_and_execution.json` and the hash-verified 4ee live replays.
+
+- **2026-09-27 17:09 UTC — live day-6/day-10 structural trigger rejected
+  for policy change.** All 61 hash-verified public replays (42W/19L) show
+  day-10 median own installations 50 in both losses and wins, versus rival
+  61 in losses and 50 in wins. An observable day-10 rule (rival ≥8 plots
+  ahead and rival cash no higher) catches 8/19 losses but also 4/42 wins,
+  including rank-100 and rank-105 opponents. The narrower post-hoc Pizza
+  plus rival-third-land marker catches 6/19 losses and 0/42 wins against
+  five teams, but all six already buy our third land at steps 241/242/266;
+  five fill its 25 southwest plots by step 312. A generic extra land or
+  simple worker action is not an executable rescue. Preserve the signal as
+  exploratory; **reject a candidate/promotion from this audit** pending a
+  full funded production and market-response schedule with fresh reactive
+  both-seat validation. No `main.py` edit or upload occurred. See
+  `diagnostics/new_live_56609430_20260927/structural_audit/RESULTS.md`.
+
+- **2026-09-27 17:01 UTC — guarded 4ee seed-prefund candidate rejected.**
+  Exact uploaded 4ee plus a final, simulator-guarded adjacent SELL-before-
+  BUY_SEED swap is preserved as isolated `d8b8c293...`; main stays exact
+  4ee and no upload occurred. Fresh16:35 top20 replay development completed
+  40/40 DONE/DONE/720, zero errors, six activated games, 16/20 both-seat
+  sweeps unchanged. Boey worsened -2,819→-6,510 and Vadim -5,821→-7,355
+  per seat; neither required loss flipped. DECEM improved -63,151→-11,602
+  but still lost. Matched traces show one added seed and identical worker
+  action lists, then changed tile occupancy and third native shops. **Reject
+  at the frozen first win gate; skip the conditional 300 replays and native
+  confirmation.** The previous 7673 funding coverage rejection remains.
+  See `diagnostics/seed_prefund_20260927/RESULTS.md` and the independent
+  diagnosis in `diagnostics/new_main_failure_diagnosis_20260927/RESULTS.md`.
+
+- **2026-09-27 16:53:09 UTC — 4ee live cohort extended.** Submission
+  56609430 remains COMPLETE with publicScore **2550.1**. Four new completed
+  public games since 16:41 were downloaded and hash-checked (3W/1L), making
+  the cutoff **61 games: 42 wins, 19 losses, no draws**, zero failed paths.
+  Team leaderboard: rank **138**, Score **2567.3**, LastSubmissionDate
+  13:10:15 UTC; rank 10 Score 2872.5. The leaderboard score continues to
+  equal the prior c68 submission's score, not this new submission score.
+  Validation parity still passed. No new upload or main edit occurred.
+  Evidence: `diagnostics/new_live_56609430_20260927/snapshot_165306/summary.json`,
+  `diagnostics/new_live_56609430_20260927/cohort_165306.json`.
+- **2026-09-27 16:52 UTC — old c68 does not rescue the 18 new live losses.**
+  On the fixed opponent action tapes of all 18 current 4ee live losses,
+  c68 and 4ee each lose all 18 original-seat and all 18 swapped-seat games.
+  72/72 native games DONE/DONE/720 with zero errors. Exact 4ee reproduces
+  both live cash totals in every original-seat loss. Across 36 paired seats,
+  4ee has +8,201 total relative margin over c68 (mean +227.8), with mean
+  own cash -317.0 and rival cash -544.8. These losses were selected after
+  observing 4ee; saved actions are not independent reactive validation.
+  **Reject reverting to c68 as a fix for these 18 failures.** Evidence:
+  `diagnostics/new_live_56609430_20260927/c68_loss_counterfactual/RESULTS.md`.
+- **2026-09-27 16:41:44 UTC — latest 4ee public cohort.** Kaggle
+  submission 56609430 remains COMPLETE. Its displayed publicScore is
+  **2537.3** after 57 completed public episodes; all 57 replays are
+  downloaded and hash-checked: **39 wins, 18 losses, no draws**, zero failed
+  replay paths. The final two new episodes since 16:35 both lost: -19,196
+  versus pensukesan and -9,211 versus keiz. The team leaderboard still shows
+  rank **137**, Score **2572.2** (equal to the earlier c68 submission's
+  current score), LastSubmissionDate 13:10:15 UTC; rank 10 is 2872.5.
+  Remote validation parity passed. This upload did not meet the top-10 or
+  all-opponent goals. Preserve 4ee while diagnosing current live and top-20
+  losses; no second upload was made.
+  Evidence: `diagnostics/new_live_56609430_20260927/snapshot_164140/summary.json`,
+  `diagnostics/new_live_56609430_20260927/cohort_164140.json`, and
+  `diagnostics/new_live_56609430_20260927/validation_parity.json`.
+- **2026-09-27 16:35:22 UTC — fresh top-20 recorded-action assessment.**
+  The official snapshot's 20 teams and latest completed public replays were
+  newly downloaded. Source games were created 2026-09-27 15:45:33–16:29:24
+  UTC, with zero episode overlap with yesterday's top-20 or today's 11:37
+  top-100 panel. Exact uploaded 4ee won both seats against **16/20**,
+  including **6/10** top-ten teams; 40/40 games DONE/DONE/720, 32W/8L,
+  zero recorded errors. Four current top-ten losses in both seats: DECEM
+  (rank 1, -63,151), Boey (rank 3, -2,819), Vadim Vasilenko (rank 5,
+  -5,821), Majkel1337 (rank 6, -77,373). Prior uploaded c68 on exactly
+  the same tapes and both seats also went 16/20 and 32W/8L, with no outcome
+  change; 4ee's total seat cash margin was 40,477 lower. Native shops at
+  turn 144 differed from the source recording for 16/20 teams, and none
+  of these source episodes overlaps submission 56609430's live episodes,
+  so no direct live cash parity case is available in this panel. **Accept
+  the complete assessment; reject an all-top-20 sweep or replay-only policy
+  promotion claim.** Fixed action tapes do not independently validate
+  outcomes against reacting private policies. The Yizhou mechanism audit is
+  recorded below; no policy edit or upload. Evidence:
+  `diagnostics/current_top20_20260927_163500/RESULTS.md`, `MATCHUPS.md`,
+  `summary.json`, and `manifest.json`.
+- **2026-09-27 16:49 UTC — Yizhou queue-order regression diagnosed, no fix
+  promoted.** On the fresh rank-15 tape, 4ee still wins both seats but loses
+  31,655/30,648 margin versus c68: own cash falls 13,787/13,011 and rival
+  cash rises 17,868/17,637. Seat-0 traces have identical physical actions
+  and market-order multisets for all 719 turns; 75 queue orders differ. The
+  first cash effect is day-7 step 170, then a 6-coin rival cash difference
+  at day-10 step 251 lets it buy 4,000-coin SE land in 4ee's game while
+  c68's rival misses that purchase. A one-turn override restoring c68's
+  step-170 queue **did not** prevent that land purchase and reduced 4ee's
+  margin by 10 more coins. **Accept the mechanism diagnosis; reject a
+  step-170-only fix and any promotion from one fixed tape.** A broader
+  same-item buy/sell ordering guard remains untested. Main and Kaggle are
+  unchanged. See
+  `diagnostics/current_top20_20260927_163500/YIZHOU_MECHANISM.md`.
+- **2026-09-27 17:05 UTC — fresh DECEM/Majkel production gap and complete
+  tape pilots rejected.** In exact 4ee native seat-0 loss traces, both
+  rivals have three land quadrants by the end of day 18 versus our two.
+  Through that day, their worker non-PASS no-change counts are 8/59 versus
+  our 375/424; terminal counts are 43/65 versus our 1,149/1,043.
+  Successful market sale-minus-purchase cash at terminal is 136,444 versus
+  our 71,892 against DECEM and 158,772 versus our 78,272 against Majkel.
+  Our WHEAT buy/sell recycling spends 145,804/114,695 on product purchases
+  with little net gain, while the rivals' crops and animals earn high
+  receipts. A frozen native pilot of both complete rival action tapes on
+  three fresh original-shop seeds in both seats finished DONE/720 but lost
+  **all 12 games** to reacting 4ee. DECEM's tape retained three land and
+  productive worker execution, yet its strawberry receipts fell sharply
+  under different shops; Majkel's tape lost a land quadrant on two seeds
+  and had 1,027 no-change worker commands on the audited new seed. A
+  passive 145-route screen found no distinct day-18-to-end suffix
+  compatible with either incumbent day-6-to-17 schedule. **Accept the
+  funded-production/worker gap as a diagnosis; reject both fixed complete
+  tapes and an existing late-route switch for promotion.** Keep main and
+  Kaggle unchanged. See
+  `diagnostics/current_top20_20260927_163500/STRUCTURAL_AUDIT.md` and
+  `diagnostics/current_top20_20260927_163500/FULL_TAPE_PILOT_RESULTS.md`.
+- **2026-09-27 17:11 UTC — DECEM/Majkel shop-reveal suffix splices rejected.**
+  On each tape's source seed, the first two public shops match the original
+  recording, but the 4ee incumbent and taped rival differ from action step 0
+  through all 144 pre-second-reveal actions. At first reveal step 72, only
+  9/25 DECEM and 11/25 Majkel occupied tile coordinates match our crop or
+  animal type; at second reveal step 144, only 8/25 and 5/25 match. Our
+  opening has wheat/strawberries and fewer cows, while the rival tapes
+  require established melon plots and different pastures. Cash is higher
+  for us at both reveals, but does not reconcile tile and worker schedules;
+  preceding step-143 hand positions have zero overlap for both opponents.
+  Recorded-source and native-replayed target layouts agree. **Reject
+  direct shop-conditional tape suffix transplant; no candidate, untouched
+  activation panel, main edit or upload.** Evidence:
+  `diagnostics/current_top20_20260927_163500/TRANSPLANT_COMPATIBILITY.md`
+  and `transplant_compatibility.json`.
+- **2026-09-27 16:35:53 UTC — submitted 4eeac9c3 confirmed COMPLETE.**
+  Kaggle submission **56609430** was received at 13:10:15 UTC and its
+  validation episode **114183268** completed at 13:15:09 UTC. The submission
+  page publicScore is **2550.2**. The contemporaneous team leaderboard row
+  reports rank **137**, Score **2572.2**, and LastSubmissionDate
+  **2026-09-27 13:10:15 UTC**; rank 10 is 2869.5. The leaderboard score
+  equals the older c68 submission's current 2572.2, while the new file's
+  publicScore is 2550.2. The upload did not improve the displayed rank.
+  The screenshot showing c68 from five hours earlier predates this
+  upload. The current `main.py` SHA-256 still matches the uploaded 4ee backup.
+  All 55 public episodes in the snapshot and the validation replay have been
+  downloaded with exact raw hashes. The public outcomes are 39 wins, 16
+  losses, no draws; every replay is DONE/DONE over 720 frames with 719
+  actions per seat. The remote validation replay exactly matches the uploaded
+  4ee backup loaded as `kaggle_purchase_iterated_entrypoint`: both players'
+  719 actions and final cash [104134, 104134] agree with local native
+  execution, DONE/DONE. No duplicate upload is needed.
+  Evidence: `diagnostics/new_live_56609430_20260927/snapshot_163551/summary.json`,
+  `diagnostics/new_live_56609430_20260927/cohort_163551.json`,
+  `diagnostics/new_live_56609430_20260927/validation_parity.json`, and
+  `diagnostics/shunki_purchase_iterated_20260927/promotion_receipt.json`.
 - **2026-09-27 13:10 UTC — 4eeac9c3 promoted and uploaded as56609430.**
   Currentmain SHA-256:
   `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`.
   All frozen pilot,300 replay,256 native and both-seat file-loader gates
   passed. The final callable is`kaggle_purchase_iterated_entrypoint`.
-  File/direct execution matches all719actions of both players and both cash
-  totals in both seats; runtime budgets remain positive. **Accept promotion
-  and this user-authorized upload.** Kaggle status is PENDING; remote
-  validation has not yet completed. Oldmain backup:
+  Local file/direct execution matches all719actions of both players and both
+  cash totals in both seats; runtime budgets remain positive. **Accept promotion
+  and this user-authorized upload.** The then-current PENDING status has since
+  resolved to COMPLETE, as recorded above. Oldmain backup:
   `main_before_purchase_iterated_20260927_c68fa46f.py`; uploaded backup:
   `main_uploaded_purchase_iterated_20260927_4eeac9c3.py`.
   The one-upload authorization is consumed. Top10/all50 goals remain

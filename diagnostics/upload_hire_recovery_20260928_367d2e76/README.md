@@ -1,5 +1,16 @@
 # User-requested experimental Kaggle upload — 28 September 2026
 
+## Completed outcome
+
+Kaggle accepted **submission 56633591**, file **main.py**, at **13:05:56 IST
+(07:35:56 UTC)** on 28 September. The submission listing verified PENDING
+at 07:35:59 UTC, with no score yet. The one authorization is consumed.
+Full native validation and all eight file-loader checks passed. Exact
+367d2e76 wins **13/30 saved public-loss matchups and 19/20 saved top-team
+matchups in both seats**, preserving prior wins. Independent reacting
+qualification is incomplete. See `upload_receipt.json` for the accepted
+submission and hash-bound evidence. Do not submit this request again.
+
 The user's fresh request, "can you upload the new changed main.py file and
 etc we have done to the kaggle submissions", authorizes one upload of the
 latest complete combined candidate, **367d2e76**. The immutable copy here is

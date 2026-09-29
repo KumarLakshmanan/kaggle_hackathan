@@ -68,3 +68,28 @@ Full session 9917 is terminal. Native pilot session 82556 started at
 06:36 UTC with three workers; 384 games under NATIVE_PLAN.md. Confirmation,
 54-public-win regression and both-seat loader parity remain required.
 No promotion or upload; root main remains 4ee.
+
+## 2026-09-28 07:36 UTC — independent pilot rejected
+
+The frozen early-stop gate ends the pilot after **368/384** planned games.
+Every completed game is clean DONE/DONE/720 with no policy errors.
+Activation passes; competitive nonregression is impossible.
+
+Against reacting 4ee, main has **3W/56D/3L = 31 points from 62 games**;
+new 8dde has **8W/40D/14L = 28 points from 62**. Even winning both of its
+remaining games yields 30, below main's already recorded 31. The other
+reference cannot repair a failed per-reference gate.
+
+**Reject promotion of exact 8dde995d. Do not run confirmation or final
+public-win/loader stages for this file.** Preserve the 31/50 saved sweeps
+as development evidence only. The phase is intentionally incomplete:
+main has 124 games and source/new 122 each; do not compare these unequal
+pooled counts as if all 384 planned games ran. Session 82556 is terminal.
+Receipt SHA:
+`370e7e26acc0e77f8eb130a74a06ee829f092f1d7c9c8180253ac863f5585efa`.
+
+Root main remains 4ee. The separate observed-hire repair file 367d2e76
+was uploaded by fresh explicit request as experimental submission 56633591
+at 07:35:56 UTC, before this result completed at 07:36:45 UTC. Its own
+frozen independent study is separate and now running; no parent pass is
+inherited, and no improvement in live ranking has been established.

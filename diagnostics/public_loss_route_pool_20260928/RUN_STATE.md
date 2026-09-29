@@ -1,5 +1,22 @@
 # Resume — all remaining public-loss route branches
 
+## Terminal checkpoint — 2026-09-28 07:36 UTC
+
+Independent pilot **82556** is terminal/rejected after **368/384** planned
+games, all clean. Against reacting 4ee, new 8dde has 28 points from 62 games
+(8W/40D/14L); main already has 31 from 62 (3W/56D/3L). The two remaining
+new games can yield at most 30 total, so the frozen nonregression gate is
+impossible. **No confirmation or final preservation run for exact 8dde.**
+Keep the incomplete receipt and all evidence. Native pilot SHA:
+`370e7e26acc0e77f8eb130a74a06ee829f092f1d7c9c8180253ac863f5585efa`.
+
+This experiment has no active process. Its saved 31/50 sweeps remain
+diagnostic evidence, not a strength pass. The distinct observed-hire
+recovery study now runs in session **82809** under its own frozen plan;
+its combined file 367d2e76 was explicitly uploaded as experimental
+submission 56633591 before this parent rejection was available. Root main
+remains 4ee. All prior running/pending paragraphs below are historical.
+
 ## Authoritative checkpoint — 2026-09-28 06:36 UTC
 
 Selected **8dde995d** passes full original-native target validation:

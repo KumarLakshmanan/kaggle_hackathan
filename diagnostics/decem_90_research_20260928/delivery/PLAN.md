@@ -1,0 +1,15 @@
+# Advance fertilizer delivery to recover one seed — frozen 28 September 2026
+
+This independent mechanism uses source367d2e76, never rejected joint-market b78fc7fb. The latter's outcomes remain rejected. Inspecting source DECEM reveals an executable timing gap: farmer COLLECT_FERTILIZER188/SOUTH189/DROP190 with three already carried fertilizer; a seed shortage blocks one PLANT189; the affected worker then has WATER190/PASS191 while remaining on the same tile.
+
+## Single fixed policy
+
+Only the main farmer may start this repair, at turn144 or later, with four remaining same-day turns and no active hire-recovery queue. Current command must COLLECT_FERTILIZER, next command a single move into a shed access cell, and following command DROP. At least one fertilizer must already be carried, with conservative quoted proceeds (quantity times max(1, current quote minus quantity)) at least the missing seed cost. Move now, drop next turn: skip only the current fertilizer collection. The normal schedule resumes on the original DROP turn.
+
+Require a current positive BUY_SEED and a one-seed deficit against next turn's scheduled PLANT count under each current idle/current-queue/raw-queue market forecast. The first removed planting in ordinary worker order must be a hand whose next two commands are WATER then PASS, so it can plant one turn late and water before midnight without altering travel or other scheduled work. All forecasts must identify the same crop and worker. No episode/team/seed checks.
+
+On the actual next observation, require the farmer reached the shed and that exact hand's intended PLANT is now PASS because one seed is missing. Append SELL of the actually carried fertilizer after existing orders, then BUY_SEED of exactly one missing seed, within the market-order limit. Verify under idle/current/raw forecasts that all existing nonfertilizer resources and seed commitments are preserved, exactly one extra target seed exists, and cash is at least the baseline cash. If not, finish the early drop without adding orders and abort repair. On the following observation, plant only if the hand stays on its empty target tile, the parent command is WATER, and a target seed is actually available. Replace its next PASS with WATER only if that target crop is present. Abort on any observed inconsistency; count aborts/errors separately. No threshold or action retuning after outcomes.
+
+## Gate and escalation
+
+Same fixed six fixtures as the separate joint-market experiment, source367 native controls: DECEM; leave you114289228; Boey114266440; Vadim114265033; Majkel114263239; Junliang114254310. One worker, twelve complete fast games and traces. Require clean DONE/DONE/720, zero policy errors, every prior source winning seat retained, and DECEM won in both seats. Reject at any failure, regardless of margin gains. On pass, original-native parity, complete50-target/54-public-win retention and a separately frozen independent reacting protocol are required before promotion. These tapes are development evidence. No main edit or Kaggle access.

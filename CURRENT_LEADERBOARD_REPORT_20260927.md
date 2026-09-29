@@ -6,7 +6,7 @@ The user requested no further leaderboard checks or replay downloads;
 separately authorized experimental uploads are recorded below. All future replay
 results below should be read as tests against these recorded actions; separate
 local reacting games are needed to judge whether a change generalizes.
-The current file loses **both seats in all 30** saved public-loss replays
+The frozen 4ee research baseline loses **both seats in all 30** saved public-loss replays
 (0W/0D/60L), while it wins both seats against **17/20** saved top-team replies.
 All 60 live-loss tape games complete DONE/DONE/720; the 30 original-seat cash
 results match the saved episodes exactly.
@@ -18,6 +18,51 @@ The candidate failed its frozen top-20 rescue gate and was rejected.
 [Local retry diagnostic](diagnostics/land_retry_top20_20260928/RESULTS.md).
 
 ## Local work on 28 September
+
+**17:12 UTC checkpoint:** backed-up candidate **32e299fe** now has a
+completed native saved-panel result of **19/20 top teams (95%)** and
+**14/30 public losses (46.7%)**, with no previous winning-seat regressions.
+The public-loss target still needs13 additional both-seat wins. Exact
+uploaded367 remains13/30; root main remains4ee. No Kaggle check or upload
+occurred. Independent qualification is pending. Earlier commitment and
+whole-opening studies continue separately; their alternative route wins
+are not added to this candidate's count.
+[Current progress](H:/hackathan/diagnostics/goal90_20260928/PROGRESS.md).
+
+**16:22 UTC checkpoint:** the user's offline priorities are at least
+18/20 saved top-team sweeps, then 27/30 saved public-loss sweeps, then larger
+per-opponent margins while retaining wins. Exact uploaded 367d2e76 has
+**19/20 (95%) and 13/30 (43.3%)**; fourteen additional public-loss sweeps
+are needed. This uses the latest downloaded top20 and the original frozen
+30-loss cohort, not new Kaggle data. Independent qualification stopped
+during interruption after 61 games; its process was confirmed absent and
+the unchanged checkpoint was resumed with two workers in session 31417.
+[Current target ledger](H:/hackathan/diagnostics/goal90_20260928/BASELINE.md).
+
+**07:35 UTC checkpoint:** the new combined **367d2e76** passes its full
+native saved-target panel: **13/30 public-loss sweeps and 19/20 top-team
+sweeps**, **32/50 combined**, 64W/0D/36L, with every prior winning seat
+retained. All 200 games across the two recovery candidates complete cleanly;
+the main-parent recovery arm separately achieves 18/50 sweeps. Independent
+reacting qualification remains incomplete, so these are saved-tape results.
+[Recovery research](H:/hackathan/diagnostics/observed_hire_recovery_20260928/RESULTS.md).
+
+At the user's fresh explicit request, **367d2e76 was uploaded as main.py**:
+**submission 56633591**, **13:05:56 IST (07:35:56 UTC)**, 28 September.
+Kaggle verified PENDING at 07:35:59 UTC; no score was available. All eight
+file-loader checks passed before upload. The exact uploaded file is in
+`diagnostics/upload_hire_recovery_20260928_367d2e76/main.py`; root main
+remains the 4ee research baseline. The root candidate backup is preserved.
+The authorization is consumed. No leaderboard/replay refresh occurred.
+[Upload receipt](H:/hackathan/diagnostics/upload_hire_recovery_20260928_367d2e76/upload_receipt.json).
+
+At **07:36 UTC**, the separate **8dde parent** pilot stopped/rejected after
+368 of 384 planned games. Against reacting 4ee, its maximum possible final
+points were 30, below main's already recorded 31. All completed games were
+clean. No confirmation follows for 8dde. This result arrived after the
+explicit 367d2e76 experimental upload; the new recovery file has its own
+frozen independent pilot, now running. No live-strength or rank gain is
+established by either file's saved-replay results.
 
 **06:36 UTC checkpoint:** backed-up **8dde995d** passes all 100 original-
 native saved-target games: **12/30 public-loss sweeps and 19/20 top-team

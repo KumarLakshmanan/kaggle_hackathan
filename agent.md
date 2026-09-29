@@ -1,7 +1,7 @@
 # Kaggriculture agent research memory
 
-Submission status checked: 2026-09-28 03:54:18 UTC (56628152 PENDING).
-Leaderboard last checked: 2026-09-27 18:09:54 UTC.
+Submission status checked: 2026-09-29 12:06:59 UTC. Latest 56668607 is COMPLETE at 1836.8; byte-identical 56666114 is COMPLETE at 1767.8. Older 56662188 is COMPLETE at 1249.9, and 56609430 (`4eeac9c3`) is COMPLETE at 2577.6. These are time-specific public scores; no new upload occurred in the top-100 comparison.
+Leaderboard last checked: 2026-09-29 11:03:38 UTC (frozen 100-team snapshot; current leading score 3058.6). See `diagnostics/submission_top100_compare_20260929_1104/RESULTS.md`.
 This is a living research log,
 not a claim that the agent beats every opponent. Update the dated findings below after each
 completed experiment, with the artifact and a clear promotion/rejection decision.
@@ -9,15 +9,237 @@ completed experiment, with the artifact and a clear promotion/rejection decision
 
 ## Mission and operating constraints
 
-- **2026-09-28 07:22 UTC — fresh experimental upload requested, pending.**
-  The user explicitly asked to upload the new changed main.py to Kaggle.
-  This authorizes one upload of the combined observed-hire recovery
-  candidate **367d2e76**, staged as main.py, after its full saved-panel and
-  actual file-loader checks. Reacting qualification remains pending.
-  Preserve root main 4ee while existing research uses that exact baseline.
-  Verify the new submission through the submission listing only; do not
-  refresh the frozen leaderboard or replay corpus. This request is not
-  consumed until the one upload attempt is recorded.
+- **2026-09-29 — V2 rollback also rejected on fresh reacting games.** Exact `6cd6ff9eed407f3c31c2b432c37da8b3ece8f703a2932d5293f9b93b7e060df3` additionally restores Yarn/Farmers and Farmers/Pizza mappings. It won 145/200 current saved seats (72 team sweeps), retained every 4ee win, and rescued all nine measured regression teams. Its selected development reacting block won 44/18/2 versus 4ee 32/18/14; all 14 native parity and four loader runs passed. Untouched native seeds 12929201-12929216 gave **60/60/8 versus 66/60/2**, -4.6875 win-point percentage points, whole-seed 95% bootstrap [-9.375,0]. All 256 games were clean. V35 alone lost six prior wins under newer IceCream/Ghost and Smoothie source-leaf behavior; the other three opponents tied 4ee exactly. **Decision: reject V2 for promotion.** A process interruption after 71 clean rows was recovered by validating all job/source hashes and resuming missing jobs unchanged; see `confirmation_interruption_20260929.json`. Its completed archive diagnostic won 22/30 loss pairs and 18/20 top20 pairs, versus uploaded ae349 at 27/30 and 19/20; all 102 archive games were clean. Full receipts and RESULTS_V2.md are in `diagnostics/top100_regression_repair_20260929/`. Root main.py remains 4ee; no Kaggle access or upload. V3 is frozen separately in `PLAN_V3.md`: exact 4ee plus three prefix-compatible complete routes and the existing executable planting repair, without later donor/source-leaf controllers; its larger fresh 32-seed block is fixed before outcomes to account for sparse route activation.
+
+- **2026-09-29 — V1 regression repair rejected after native confirmation.** Candidate `2c02f9f9` passed its current saved top100 panel (147/200 wins, all nine regressed teams recovered, no lost 4ee wins), 14 native parity games, and four both-seat direct/file-loader games. Its eight-seed reacting screen improved from 30/24/10 to 36/24/4 W/D/L, but the untouched 16-seed native confirmation reversed the result: candidate 70/48/10 versus 4ee 72/48/8, paired win-point change -1.5625 percentage points, whole-seed 95% bootstrap [-7.8125,+4.6875]. All 256 games were clean. The worsened outcomes used Yarn/Farmers route 113349962 or Farmers/Pizza route 113372534; Brunch/Brunch supplied the C95 rescues. The earlier 102-case archive remained 19/20 top20 sweeps but fell from 27/30 to 23/30 loss sweeps. **Decision: reject V1 for promotion; keep exact source and outcomes as research.** Root main.py remains 4ee and no Kaggle access/upload occurred. Full report: `diagnostics/top100_regression_repair_20260929/RESULTS.md`; per-team results: `TOP100_CASES.md`. The earlier pending entry below is superseded by this completed decision. V2 removes the two implicated route overrides under separately frozen `PLAN_V2.md`; all V1 seeds are development data for V2.
+
+- **2026-09-29 — source-opening repair recovered every measured top-100 regression.** Candidate `2c02f9f9898dc393f8798f1d51a3a4c26a4bf1ddf862770ef66be159d61d6e13` starts from ae349, restores the original source opening and always uses its source controller, and removes the Brunch/Pizza loss-pool override. All 200 development replay games completed DONE/DONE/720 without candidate errors. It won 147/200 seats and swept 73/100 teams, versus 4ee's 141/200 and 70/100 and ae349's 131/200 and 65/100. It recovered all nine regressed team pairs with zero lost 4ee wins, retained the three non-donor rescues, and lost the donor-only Attention Is All You Seed rescue. **Decision: retain as a promising separate candidate pending fresh reacting and loader checks; do not promote yet.** Exact root-folder copy: `main_candidate_regression_repair_20260929_2c02f9f9.py`; current 4ee backup: `main_before_regression_repair_20260929_4eeac9c3.py`. Evidence: `diagnostics/top100_regression_repair_20260929/PLAN.md`, `manifest_v1.json`, `saved_v1_full_receipt.json`, and results SHA-256 `f4ec056bd66b87ab502a06bec60e165d22706ea9dcb22327bb5f1304d4c17fb4`. The top-100 set informed this fix and is development evidence, not independent validation. Root `main.py` remains 4ee; no Kaggle access or upload occurred.
+
+- **2026-09-29 — derived top-100 regression audit explains the older file's edge.** From the 600 clean matched games in `diagnostics/submission_top100_compare_20260929_1104/`, 18 newer-policy seats flip old wins to losses and 8 flip old losses to wins. Eight of the nine regressed team pairs selected the new day-one `shared151` donor bridge; the ninth selected the `BRUNCH_SPOT|PIZZA_SHOP` loss-pool route. Boey fell from +101,543 in both old seats to about -33,400 in both new seats under the donor branch; Anton Tikhonov fell from +514 to -7,481 in both seats under the loss-pool route. Four team pairs were rescued, so the new rules have some local value but a net -10 seat wins on this held-out replay snapshot. `ae349d83`'s Pizza melon fallback did not fire in any of its 200 cases and its rewards exactly matched `257f941d`. This is branch-associated fixed-tape evidence, not single-feature causal ablation or reactive proof. **Decision: keep root `4eeac9c3`; do not promote the newer files.** Evidence: `diagnostics/submission_top100_compare_20260929_1104/RESULTS.md`, `delta_explanation.json`, `explain_deltas.py`, and SHA-bound `local_results.jsonl`.
+
+- **2026-09-29 12:06 UTC — exact downloaded submitted files compared with today's top 100.** Authenticated Kaggle download bound four `main.py` submissions to their local source hashes: 56668607 (08:11:57 UTC, `ae349d83`, score 1836.8 at the final listing), 56666114 (06:55:03 UTC, identical `ae349d83`, 1767.8), 56662188 (04:09:22 UTC, `257f941d`, 1249.9), and 56609430 (2026-09-27 13:10:15 UTC, `4eeac9c3`, 2577.6). The current leaderboard's 100 teams were frozen at 11:03:38 UTC; their latest completed public replay actions were downloaded without outcome filtering. All 600 native engine1.32.7 games against these fixed tapes completed DONE/DONE/720. In both seats for each top-100 team, `4eeac9c3` won 141/200 seats and swept 70/100 teams, versus 131/200 and 65/100 for each newer policy. Top10 was 11/20 and 5/10 sweeps for `4eeac9c3`, versus 7/20 and 3/10 for each newer one. `ae349d83` and `257f941d` had identical reward and outcome in every matched game. **Decision: retain root `main.py` (`4eeac9c3`); reject promoting the newer submitted files on this panel.** This is fixed replay evidence only, not independent reactive validation or a predicted live score. No policy file changed and no Kaggle upload occurred. Evidence: `diagnostics/submission_top100_compare_20260929_1104/RESULTS.md`, `assessment.json`, downloaded source receipt, and native run receipt (result SHA-256 `7ba72ea62b9b399ccc8dc1099a2d86c09ec9e8670b0a63b068d58fd309596832`).
+
+- **2026-09-29 — no evidence-supported next margin candidate after cross-target review.** Luna Max audits of the current ae349 panel and remaining weak fixtures found no safe, material new change. The only saved paired-margin delta remains Pensukesan (+45,291/seat, still losing), with own cash down 12,316 and rival cash down 57,607; the 24-case reactive panel ties uploaded257 exactly with zero margin delta. Fish's tempting shared166 opening loses 19 prior winners; Roman's broad openings damage controls and the 91-route/production-leaf options did not rescue it; DECEM's remaining terminal sale is worth only 44. A separate close-win delivery trial failed its Unknown Mother-Goose control by -565/seat. Decision: keep ae349 unchanged and do not launch another unsupported candidate; fixed-panel thresholds remain 27/30 loss and 19/20 top20, not a live leaderboard guarantee. Root `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; Kaggle was not checked or contacted. Review: `diagnostics/ae349_decem_trace_audit_20260929/REMAINING_MARGIN_REVIEW.md` and `RESULTS.md`.
+
+- **2026-09-29 — exact ae349 DECEM terminal-market rescue lead rejected.** Replayed the exact candidate against both saved DECEM seats and regenerated all 719 candidate actions exactly; both rows matched the hash-bound result at 86,464 vs 95,549, DONE/DONE/720, margin -9,085. On action 718 the agent already sells all requested terminal stock, earning +7,301 margin from a pre-market -16,386. Two fertilizer remain in the shed; the exact market curve prices the next two at $22 each, only +44 and an estimated -9,041 terminal margin. No strategy change can rescue DECEM through final liquidation. Two Luna Max reviews agreed to stop this lane; the prior separate 18-turn sale timing test gained only 59 paired-margin coins. **Reject as a DECEM rescue; keep ae349 unchanged and target an earlier material production/investment mechanism.** Current fixed-panel counts remain 27/30 loss sweeps and 19/20 top20 sweeps; this fixed-tape audit is not reactive validation. Root `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; Kaggle was not checked or contacted. Evidence: `diagnostics/ae349_decem_trace_audit_20260929/RESULTS.md`, analysis SHA-256 `e9e7d6c598656d1558463268740f27f1e7f2a3c2d15c2a8594cbd85062263ff3`; runner receipt is under the same folder.
+
+- **2026-09-29 — ae349d83 margin profile shows a saved-only Pensukesan repair.** An offline audit of the completed 102-row saved panel and 24 matched native reactive scenarios found the fixed goals at 27/30 loss sweeps and 19/20 top20 sweeps. The only saved paired-margin change is the two Pensukesan seats (+45,291 each, still losses); the other 98 goal seats and two public-win controls are unchanged. Against the three reacting policies, ae349 ties uploaded257 in every paired reward and outcome (8W/14D/2L for each arm across 24 scenarios), with zero margin delta and zero activation of its Pizza melon fallback. The narrowest saved wins include live-114267572 (+244/+6,475), forever young (+313/+313), offhand (+670/+670), and top20 Majkel1337 (+2,867). Decision: do not describe the saved margin repair as reactive strength; direct future margin work to a measurable paired own-minus-rival objective and require activation in fresh reacting games before claiming generalization. This is a derived audit of existing receipts, not new game evidence. Root `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; no Kaggle access or upload occurred. Evidence: `diagnostics/margin_profile_ae349_20260929/RESULTS.md`; saved receipt SHA-256 `218297125b45a782f903b2a7aaa178597b708a53f0ffac4f196b404f7b95ce2d`; reactive receipt SHA-256 `53e0968303b1e26c4ec6dfc0681edb2f939d156b9635c5a1aaca5fb99233479e`.
+
+- **2026-09-29 — 257f melon-delivery candidate rejected by its frozen 102-row outcome panel.** Candidate SHA-256 `a8174509cd2679578869b3090a9137d136e22a4e752c2bc9dc822b86a1aade25` was tested against exact 257f parent `257f941d06fcd6dd9185ca58bc98d1af83dc4c3fafc24e275a1bf057b61bad55`. All 102 fixed-tape rows completed cleanly at DONE/DONE/720; action parity, prior results, prior telemetry, same-observation parent telemetry, and non-target rewards all passed. The loss30 and top20 preservation panels remained 27/30 and 19/20. On target `live-114271958`, both seats stayed wins and paired margin rose from +670 to +2,307 (+1,637 per seat; our reward +834 and rival reward -803). On control `top20-08-Unknown Mother-Goose-114272024`, both seats stayed wins but margin fell from +4,471 to +3,906 (-565 per seat; our reward -566, rival reward -1), failing the predeclared nonnegative-margin gate. The receipt records `all_rows_pass=false` and `unknown_mother_goose_margin_gate=false`. **Reject this candidate and do not run the conditional reactive confirmation; do not promote it.** This is fixed-tape diagnostic evidence, not a rating or leaderboard estimate. Root research `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; Kaggle was not checked or contacted. Candidate, plan, and evidence are under `diagnostics/melon_delivery_257f_20260929/`. Outcome receipt SHA-256 `aaaa2ed29245e0dcdcb6ca70d993cc91150608543f36f9b8eaf1aa9bba9d6dfe`; outcomes SHA-256 `31d5908c25f4444b0c552d983e77a7e54eb0a9278c177e46fd0f14e4bce754fa`; panel SHA-256 `fee3b1d5f93cd295c28dd8d0c04ea672806dbb55e2b59999853a9f969c0fb90d`; frozen manifest SHA-256 `9e2eec1c6ceef83cd92b1102b2013eab39a95871c390878c79b283d9a06994eb`; plan SHA-256 `5266a9ad965bdb736d3e5839beb3055ef0c8aaff3d56483377b00b903c3f0628`.
+
+- **2026-09-29 06:55 UTC — tested ae349d83 candidate uploaded once by the user's fresh request.** Kaggle accepted exact SHA-256 `ae349d83276976906626f7b59bc6bd3c41d286bc51854c26a6a8b25caf999abb` as `main.py`, submission **56666114**, at 06:55:03 UTC / 12:25:03 IST; the listing verified PENDING with no score at 06:55:10 UTC. The request "ok can you upload the new candidate to the kaggle please" is consumed. The package verified the candidate bytes and seven bound pilot/saved/reactive/loader evidence files before its single upload. Saved outcomes retain 27/30 loss and 19/20 top20 sweeps in both seats, with Pensukesan margins improved by 45,291 per seat; fresh reacting outcomes remain 8W/14D/2L, identical to uploaded257, with zero new-guard activations. All eight operational native/file-loader games passed. Decision: fulfill the requested experimental upload; no research promotion or proven score/top10 improvement. Root research `main.py` remains exact `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`. Exact uploaded file and receipt: `diagnostics/upload_pizza_guard_20260929_ae349d83/main.py` and `upload_receipt.json`. Leaderboard and replays were not refreshed.
+
+- **2026-09-29 — 257f melon-route selector census and native prefixes passed preflight.** The hash-bound incumbent-only census completed 102 saved rows and found the four frozen activations: both seats of `live-114271958` and both seats of `top20-08-Unknown Mother-Goose-114272024`. Both target native prefixes passed through step 716 with the frozen candidate and exact 257f parent bound. These checks support target coverage and execution only; the completed outcome decision is recorded in the finding above. Census receipt SHA-256 `5e9d1ad7533e5c8b2b884ab8c05271f94a541d6ddcc72a1f4213cb2546457bf0`; prefix receipt SHA-256 `d812bc49464921706f61a721081859ee1a6633ef2f12cf2007391f4331bd7f88`; plan: `diagnostics/melon_delivery_257f_20260929/PLAN.md`.
+
+- **2026-09-29 04:53 UTC — step-1 hire-only rescue rejected before full games.** Frozen candidate `b78f593938db50bb5118fc8af4b0736f3bb20ad7da01c80e7a6a96f982a95cbf` appended one HIRE to the exact 6a parent action on both `live-114270587` target seats. The two-seat native prefix passed the opening, order, $5 cost, state-delta, and source-hash checks, but stopped at `native_prefix_gate`; `outcome_receipt.json` records `game_count=0`, no baseline/candidate games, and a failed `step2_and3_parent_actions_match_five_hand_state` check in both seats. The traces show five observed hands and only the parent's four hand commands at steps 2 and 3. Luna Max reviewers checked the bound native core and installed Kaggle parser: both iterate only over commands supplied, so the fifth hand receives no action; it is idle for the rest of the day and is cleared at day end. This is a real worker-utilization gap, not an invalid action-list schema. **Reject the productive-hire hypothesis; do not waive the gate or pad with PASS.** Any follow-up needs a separately frozen, source-bound fifth-hand schedule and a passing two-seat prefix before full games. This did not produce win/loss or margin evidence. Root `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; Kaggle was not checked or contacted. Evidence: `diagnostics/roman_step1_hire_ablation_20260929/RESULTS.md`, `outcome_receipt.json`, and both `prefix_candidate_target*.jsonl.gz` traces.
+
+- **2026-09-29 04:09 UTC — reviewed guarded candidate uploaded once by the user's fresh request.** Kaggle accepted exact `257f941d06fcd6dd9185ca58bc98d1af83dc4c3fafc24e275a1bf057b61bad55` as `main.py`, submission **56662188**, at 04:09:22 UTC / 09:39:22 IST. Listing verified PENDING at 04:09:25 UTC. The request to review and submit the new code is now consumed; do not repeat the uploader. Candidate passed 102 preservation checks and all 12 native direct/file-loader games: correct callable, DONE/DONE/720, 719 calls per player, full action/reward parity, no native or policy errors, minimum remaining overage 59.770622 seconds. Earlier verifier-only `sort` keyword and initialization-log-count defects are preserved in the package's `revisions/` folders; neither changed the candidate or waived a policy failure. Operational receipt SHA-256 `a90a5adf1a943f0434e61ef63cbcbc4985783679c00eb2609e762cbeb6c1f1d5`. Saved results improve a44's 17/30 loss sweeps to 27/30, retain 19/20 top20 and recover 20 losing seats without W/D/L regression. The parent reactive pilot showed identical results to a44 and failed its promotion gates; **this is an experimental upload, not research promotion or evidence of a rating/top10 gain**. Root main remains exact 4ee, with both old and new backups in the root folder. Evidence and exact uploaded file: `diagnostics/upload_pet_source_guard_20260929_257f941d/REVIEW.md`, `loader_parity.json`, and `upload_receipt.json`.
+
+- **2026-09-29 — Roman shared166 rescue rejected after fallback repair.** The first V3 full-game pilot (`86c9d10c…`) lost both target seats by -133,800/-135,802 because its five-worker donor schedule failed at the step-24 day boundary and returned PASS for all 695 later actions; all four controls exactly matched 6a. The V8 fallback candidate (`25461e7595dd2bfb3a53b7303ff0e697f60df7807e9d895783415c9833d1cf4c`, adapter `424c57ec…`) correctly fell back once at step 24 after 23 donor calls, had zero errors, and matched the exact 6a parent on every post-fallback action for both seats. Still, its margins were -130,648/-132,643 versus 6a’s -18,815/-18,815 (paired deterioration -111,833/-113,828). The day-boundary state had only $53 and no animals after the donor’s melon/wheat/pasture commitments. All four controls remained exact wins and all 12 games finished DONE/DONE/720. **Reject; do not promote or upload.** This fixed-tape diagnostic is not independent or reactive validation. Root `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; Kaggle was not checked or contacted. Freeze panel SHA-256 `e3024efdca9e28960e3f7ff021e07a3c60c28b0468b2aaa8fafeb6fdfaddb0c4`; receipt SHA-256 `69eff82fe4a632389b130673f884e72db2eda243c421519e392cb3569cc82021`; outcomes SHA-256 `7058df79c31a76bc5bb86e7bd87600585be935b43f7d0ab11ac586010900d61d`. Evidence: `diagnostics/roman_bridge_shared166_8f_20260929/OUTCOME_PILOT_V3_RESULTS.md` and `diagnostics/roman_bridge_shared166_8f_20260929/6a_outcome_pilot_v8_source_only_20260929/PLAN.md`, `outcome_receipt.json`, and target trace files.
+
+- **2026-09-29 — guarded Pet candidate preserved all 102 saved-replay checks.** Candidate `257f941d06fcd6dd9185ca58bc98d1af83dc4c3fafc24e275a1bf057b61bad55` adds a source-branch guard and actual-branch telemetry to ebf's Pet route selector. All 102 games completed DONE/DONE/720, with zero candidate errors and exact preservation of prior results, rewards, margins and prior telemetry. The 100-seat goal panel remains **27/30 loss sweeps and 19/20 top20 sweeps (92W/0D/8L)**; both public-win control seats remain wins. Against last-uploaded a44's matched saved panel, 20 seats change loss to win, none regress in W/D/L, and mean paired margin improves 2,822.7 coins. These are fixed-tape results, not reactive validation. The old ebf receipt and failed reactive pilot remain unchanged. Decision: accept the reporting/branch correction and proceed to operational file-loader checks for the explicitly requested experimental upload; do not grant research promotion. Root `main.py` remains exact 4ee. Evidence: `diagnostics/pet_source_guard_20260929/RESULTS.md`; preservation receipt SHA-256 `4086a1ebd23431efedcbd178a7e5367cc1e84d8999b1843a4e62d891aa5f2997`.
+
+- **2026-09-29 — fresh three-policy reactive pilot finished with no improvement; research promotion rejected.** All 96 predeclared original-shop games completed DONE/DONE/720 with zero candidate/opponent errors. Uploaded a44, parent 6a and ebf each scored **16 wins / 10 draws / 6 losses** in 32 matched scenarios; results and both rewards were identical in every paired scenario. Each policy earned 21 points, with zero whole-seed deltas and no per-opponent regression. The Pet gate activated in zero of the 32 candidate games (`inconclusive_no_activation`). The frozen strict-gain gate and all-calls-under-1-second gate failed; the largest call was 16,369 ms in old a44, and all games still finished under native execution. Do not relabel these as timeout failures or waive the original screen. Decision: reject research promotion and do not run the conditional 256-game confirmation. The fresh explicit upload request may be fulfilled only as an operationally checked experiment, with the saved-panel/reactive distinction disclosed. The separate source-guard candidate `257f941d` is undergoing preservation and file-loader checks; it is not the exact file tested in this pilot. Root `main.py` remains exact 4ee. Evidence: `diagnostics/a44_ghost_kwa_piice_petmarket114260_reactive_20260929/RESULTS.md`; receipt SHA-256 `86d70abbf809baf29c6227141036624131856bed40b7f04664f13ba7093693c9`.
+
+- **2026-09-29 — requested upload review found the latest a44 public rating far below the older research main.** The user explicitly requested review and one new working, stronger Kaggle upload. That authorization is still unused. A submission-list check for this request found a44 submission `56649310` COMPLETE at **1005.2**, prior 367d submission `56633591` COMPLETE at **2253.5**, and older 4ee submission `56609430` COMPLETE at **2577.6**. Do not keep describing a44 as PENDING or give it the older file's score. This is a submission-status check, not a new leaderboard snapshot. Receipt: `diagnostics/submission_review_20260929/submissions_20260929T033028Z.json`. The 96-game ebf/6a/a44 reactive pilot remains in progress and its original frozen gates remain unchanged. The complete own-submission review included every one of the 44 listed public episodes without outcome filtering: **31 wins, 13 losses, zero draws, zero ERROR/TIMEOUT/INVALID games**, all DONE/DONE at 720 frames. The validation game also completed with positive overage. Evidence: `diagnostics/submission_review_20260929/public_cohort_review.json`, which binds each downloaded replay. The low reported rating is not explained by an observed loading or timeout failure in this cohort; differing opponents and rating histories prevent a causal comparison to the older 4ee score. Decision: finish corrected-candidate preservation and native/file-loader checks before the user-requested experimental upload; do not infer an online gain or research promotion from fitted saved-panel wins. No new upload has occurred and root `main.py` remains exact 4ee.
+
+- **2026-09-29 — 6a + Pet Cafe reached both saved win-rate goals; the strict receipt failed two stale telemetry expectations.** Candidate `ebfbe6e91008cf39d1929d52a60e3cb140d2b1cffdd3fac8e06c122eb9876bbe` is exact pasture parent `6a0a3b38782ba21a4933827888b503dae00fe73182599bc8c801302f959372dc` plus the frozen route-113517834 Pet gate. The completed 104-run panel had 100 loss/top20 seats and two paired public-win controls. All runs finished DONE/DONE/720; all 100 panel seats had no W/D/L regressions versus exact 6a. `live-114260122` changed from loss to win in both seats at +22,524 (baseline -32,028), raising loss sweeps from 26/30 to **27/30 (90%)**. Top20 stayed **19/20 (95%)**. Both `public-win-114192390` controls remained wins, but margins fell by 21,106 and 21,699; these reductions are reported, not gated, under the frozen win-rate objective. The sole receipt failure is `public_wheat72` telemetry on both `live-114274897` seats: the historical static census expected 9,975 WHEAT, but the actual exact-6a game state was 9,980; the Pet gate correctly remained inactive and both margins exactly matched 6a (+5,983/+2,235). Target/control telemetry, including 647 active calls, passed. Thus the outcome objectives passed, but the frozen receipt is `passed: false`; this is fixed-tape evidence only and does not qualify the candidate for promotion. Decision: keep as the strongest offline win-rate candidate; before promotion, verify the corrected live-state accounting and run fresh reactive games. Root `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; no Kaggle check/upload occurred. Candidate `ebfbe6e9`; panel SHA-256 `fee3b1d5f93cd295c28dd8d0c04ea672806dbb55e2b59999853a9f969c0fb90d`; receipt SHA-256 `ec2f45acfa6a7988868bb13e657a639e546ced46d148c15456e78679b0d7dcb5`; outcomes SHA-256 `bb1ae8bd2f3a9b892508ce77f101397596fd4d73868791425e6d667fb0bff97a`; baseline receipt `f5b962c853b8812f231c85af41a608e6df1b1ede99dd14c22a2bcaebb10bc8b2`. Evidence: `diagnostics/a44_ghost_kwa_piice_petmarket114260_on6a_20260929/PLAN.md` and `outcome_receipt.json`.
+
+- **2026-09-29 — Pet Cafe route 113517834 won its target but failed the frozen diagnostic gate.** Exact parent `8f939ada634f8c1ab57991a6903c731f86551a5bd1e22766987abab752db0c62`; candidate `8d97d7297f2f7c6a550b3397d98825e2a96da76c5ea060cbdf9a94defda5efb9`. All eight native runs finished DONE/DONE at frame 720. Both `live-114260122` target seats improved from -32,028 to +22,524 (delta +54,552 each). Both `public-win-114192390` controls remained wins, but margins fell from +31,142 to +10,036 (-21,106) and +9,443 (-21,699), so the frozen exact-control-preservation gate failed. All candidate gate checks passed except `active_calls`; the runner expected 648, although `fast_game_cached.play` calls policy steps 0–718 and a step-72-through-718 counter spans 647 calls. The runner receipt stores only the boolean, not the raw count, so this is a likely off-by-one and must be checked explicitly on a fresh run. The 100-panel trigger census had zero top20 hits. Decision: reject this exact diagnostic as configured; do not promote. Because both controls stayed wins and the target loss becomes a win, a separate frozen 6a-plus-Pet 100-seat experiment was run against the loss/top20 win-rate objectives; results are recorded in the next finding. This remains fixed-tape evidence, not reactive qualification. Receipt SHA-256 `19dea82c0bb20e4d496c7bd74eb3818dcea8ab3e315518968cf12c78a9553cd9`; outcomes SHA-256 `c5d85dd1b08c52da8ec66668b77d1b67a44210fc3a585e72efce0d06140a2580`; panel SHA-256 `384d20a18c34e56e0415ac26d6059531632917bb558b92d312dd1c67ec32c694`. Evidence: `diagnostics/a44_ghost_kwa_piice_petmarket114260_fourseat_diagnostic_20260929/PLAN.md` and `outcome_receipt.json`. Root `main.py` remains `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; no Kaggle check/upload occurred.
+
+- **2026-09-29 — Luna Max static ranking staged the next Roman and Pet Cafe checks.** The latest complete frozen panel is the isolated pasture candidate `6a0a3b38782ba21a4933827888b503dae00fe73182599bc8c801302f959372dc`: 26/30 loss sweeps and 19/20 top20 sweeps, with only four of the original five loss fixtures still unresolved. Static review ranked Roman `live-114270587` as the strongest new lead: at step 1, rival hands = 3 and farmer = `[4,3]` select only its two seats in the 208-row census; nearby three-hand controls have `[4,4]`. At the time of that ranking, exact 8f post-HIRE state and market still needed a bounded check; that check passed both seats, as recorded below. The separate Pet Cafe route 113517834 plan is frozen against exact parent `8f939ada634f8c1ab57991a6903c731f86551a5bd1e22766987abab752db0c62`, candidate `8d97d7297f2f7c6a550b3397d98825e2a96da76c5ea060cbdf9a94defda5efb9`, and route schedule SHA-256 `a1a8034b190fc1b2a18af82c5ac4a800f31657e7bd52600eb8a542ce35b578e8`. Its public-state gate activates on both `live-114260122` target seats and both historical `public-win-114192390` control seats, with zero triggers in top20. The control replay tape matches the archived replay’s 719 actions, but its observation traces are historical prefixes, so the paired diagnostic must verify runtime gate telemetry and exact-parent outcomes. Preflight passed; the eight-game fixed-tape diagnostic has now run and failed its strict exact-control and telemetry gates, as recorded in the finding below. Decision: keep both leads diagnostic-only; do not promote or upload. Root `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`. Evidence: `diagnostics/a44_ghost_kwa_piice_petmarket114260_fourseat_diagnostic_20260929/PLAN.md`; the independent static loss ranking is in this task’s Luna Max review.
+
+- **2026-09-29 — Roman shared166 step-2 prefix bridge passed both seats.** Against the frozen `live-114270587` action tape, the exact V5 parent reproduced both historical seat prefixes. The adapter HIRE then matched the complete predicted own farm/private state, including the independent rival-farm and shared-market snapshots, in both seats. On fresh replays, all seat, replay, tape, opponent-action and adapter-action provenance checks passed before injection; the own-state and public merge guards passed before the donor call. The raw shared166 action remapped as expected, and the native step-2 transition credited two COW units to the intended worker slots in each seat; both game states stayed ACTIVE. Both seats passed the bounded probe. This is fixed-tape prefix evidence only, not a full-game win or reactive validation. Decision: proceed only to a small target/control outcome pilot; do not promote or upload. Root `main.py` was not read or edited, and Kaggle was not contacted. Freeze SHA-256 `c4373d03310495d2a4cdfc3c861c24345dac8dd44f0baa102aa68d68e9838214`; receipt SHA-256 `86508e558d08e4c38143c949fb6e36a56ec459a3b941f6841bc7ee510084c406`. Full evidence: `diagnostics/roman_bridge_shared166_8f_20260929/v5_prefix_probe_20260929/RESULTS.md`.
+
+- **2026-09-29 — isolated THIRD pasture route passes top20 and reaches 26/30 losses, below the 27/30 target.**
+  Candidate `6a0a3b38782ba21a4933827888b503dae00fe73182599bc8c801302f959372dc`
+  completed all 100 rows against the exact V5 parent
+  `8f939ada634f8c1ab57991a6903c731f86551a5bd1e22766987abab752db0c62`.
+  All games were DONE/DONE/720 with telemetry passing; both THIRD
+  `live-114274897` seats changed from losses to wins (+5,983 and +2,235).
+  The 98 non-trigger rows matched V5 outcomes, rewards, margins, statuses,
+  frames, and prior-policy telemetry. Loss sweeps rose from 25/30 to 26/30
+  (86.7%); top20 remained 19/20 (95%). Paired margin increased by 43,077
+  across the two rescued seats, with the other 98 seat margins unchanged.
+  Decision: keep offline, do not promote;
+  at least one further both-seat loss rescue is needed. The first run stopped
+  after 93 rows on a cp1252 console-print error; its partial ledger is
+  preserved, and a clean 100-row retry used ASCII-escaped logs. This evidence
+  is fixed-tape only, not reactive validation. Root `main.py` remains
+  `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; no
+  Kaggle check or upload occurred. Receipt SHA-256
+  `f5b962c853b8812f231c85af41a608e6df1b1ede99dd14c22a2bcaeb10bc8b2`;
+  full result: `diagnostics/a44_ghost_kwa_piice_pasture_isolation_20260929/goalpanel_100_retry_20260929/RESULTS.md`.
+
+- **2026-09-29 — isolated THIRD pasture route passed its focused V5 pilot.**
+  Candidate `6a0a3b38782ba21a4933827888b503dae00fe73182599bc8c801302f959372dc`
+  is rooted in exact V5 `8f939ada634f8c1ab57991a6903c731f86551a5bd1e22766987abab752db0c62`.
+  Across eight full fixed-tape native games, both `live-114274897` seats
+  changed from losses (-17,760 and -17,099) to wins (+5,983 and +2,235).
+  Both `public-win-114193811` ChrisTu controls exactly matched V5 at +1,226.
+  All games completed DONE/DONE/720; telemetry passed. The narrowed public
+  trigger (five rival hands and one rival pasture) matched only THIRD's two
+  seats in the frozen 208-seat census; its Brunch route `113332529` ran for
+  647 calls. Decision: retain for a complete saved 30-loss/top20 run, not
+  promotion. This is fixed-tape evidence, not reactive validation. Root
+  `main.py` remains `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`;
+  no Kaggle check or upload occurred. Evidence:
+  `diagnostics/a44_ghost_kwa_piice_pasture_isolation_20260929/outcome_pilot/RESULTS.md`
+  (receipt SHA-256
+  `3df0ce00b77b635aea8318c2d5f41c608f98bb73bb50507e4b3476c6c09a9777`).
+
+- **2026-09-29 — V5 passed top20 but remained below the loss30 goal on the full 100-seat panel.**
+  Candidate `8f939ada634f8c1ab57991a6903c731f86551a5bd1e22766987abab752db0c62`
+  ran all 60 loss seats and all 40 top20 seats. All 100 games were clean
+  DONE/DONE/720 with telemetry passing. The 98 rows outside the Civitas
+  Pizza/Ice Cream trigger matched direct V4 results, rewards, margins, statuses,
+  and frames exactly; both Civitas seats, both Ghost seats, and both Kwa seats
+  won. The loss panel improved from V4's 24/30 to **25/30 sweeps (83.3%)**,
+  still below 27/30. The top20 remained **19/20 (95%)**, meeting its 18/20
+  threshold. Five loss fixtures remain: `live-114218866` (-53,956 both seats),
+  `live-114223292` (-33,224 both), `live-114260122` (-32,028 both),
+  `live-114270587` (-18,815 both), and `live-114274897` (-17,760/-17,099).
+  Receipt SHA-256
+  `c98768b1d7215e1a2adf9e455b103e391a9a338b3202773939ad8bf8f4beeb6f`; panel
+  SHA-256 `97f1edb85397081d9278cc8b25be1defe018d3062e35c8ce1691ea37f3b9fb48`.
+  Decision: retain for offline research, do not promote; rank the remaining five
+  losses and test the next isolated lead. Root `main.py` remains SHA-256
+  `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; no
+  Kaggle check or upload occurred. Full evidence:
+  `diagnostics/a44_ghost_kwa_piice_goalpanel_20260929/RESULTS.md`.
+
+- **2026-09-29 — Ghost + Kwa + Pizza/Ice Cream passed the paired eight-seat diagnostic.**
+  Candidate `8f939ada634f8c1ab57991a6903c731f86551a5bd1e22766987abab752db0c62`
+  appends the frozen public route `113339524` to Ghost + Kwa V4
+  (`7b354498ef2f7213e24ecb332d92d291d9515b94b2a7a845058e829572c0fca2`).
+  Both seats of Civitasmass `live-114238112` changed from V4 losses at `-8,178`
+  to wins at `+1,539` (a `+9,717` margin change per seat). All six same-key
+  public-win controls exactly matched direct V4 outcomes, rewards, margins,
+  statuses, and 720-frame completion. All eight games and activation checks
+  passed. The fresh static probe screened 208 saved seats, found only the two
+  Civitas trigger seats (zero top20 triggers), and confirmed identical parent
+  actions through step 143; the step-144 route edit was limited to
+  `PIZZA_SHOP|ICE_CREAM_SHOP`. Receipt SHA-256
+  `7d9e9ae29f420e361aec8c3d060089eb8dd969416bf2b65cb2fd23812fada14e`; panel
+  SHA-256 `ecf09fbde109bc13922f16851257939923ada9f158dc4e33c2e5e6b1a0f4b247`.
+  Decision: retain as a promising offline candidate and verify it on the full
+  saved 30-loss/top20 panel; do not promote based on fixed tapes. Root
+  `main.py` remains SHA-256
+  `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; no
+  Kaggle check or upload occurred. Full evidence:
+  `diagnostics/a44_ghost_kwa_piice_combo_20260929/RESULTS.md`.
+
+- **2026-09-29 — full Ghost + Kwa run reached 24/30 loss sweeps and missed the goal.**
+  Candidate `7b354498ef2f7213e24ecb332d92d291d9515b94b2a7a845058e829572c0fca2`
+  ran both seats across all 30 frozen loss fixtures: 60/60 clean DONE/DONE/720,
+  all telemetry passed, all four target seats won, and 56/56 controls exactly
+  matched 6d. The result is **24/30 (80%)**, up from 22/30 for exact 6d, below
+  the 27/30 goal; top20 remains **19/20 (95%)** from the same candidate’s
+  hash-bound prior receipt. Six losses remain: `live-114218866`,
+  `live-114223292`, `live-114238112`, `live-114260122`, `live-114270587`,
+  `live-114274897`; three more both-seat rescues are needed. Keep this as an
+  offline base, not a promotion. The best isolated lead is Civitasmass
+  `live-114238112`, using the fresh eight-game target/control plan at
+  `diagnostics/a44_pizza_icecream_pair_20260929/PLAN.md`; the earlier route
+  screen used a different turn-79 wheat quantity, so its win is only a
+  hypothesis. The 6d baseline’s reused rows have a provenance caveat described
+  in `diagnostics/a44_ghost_kwa_goalpanel_20260929/RESULTS.md`. Root `main.py`
+  remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`;
+  no Kaggle check, download, or upload occurred.
+
+- **2026-09-29 — Ghost + Kwa composition passed its 58-game fixed-tape panel.**
+  Candidate `7b354498ef2f7213e24ecb332d92d291d9515b94b2a7a845058e829572c0fca2`
+  passed 58/58 clean DONE/DONE/720 games, all telemetry, all four target wins,
+  and 54/54 exact 6d controls. It retained 19/20 top-team both-seat sweeps
+  (95%, the 6d baseline) and changed the six selected `loss30`-tagged rows
+  from four to six both-seat sweeps by rescuing Kwa (`live-114227779`) and
+  Ghost (`live-114288168`). The full 30-loss panel was not run; 24/30 is only
+  a projection from the 22/30 6d baseline plus these two rescues, below the
+  27/30 goal. Keep as an offline experimental composition. The full loss30
+  follow-up is recorded above; no reactive qualification or promotion follows
+  from fixed tapes. Root `main.py` remains SHA-256
+  `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`, and
+  Kaggle was not checked or changed. Full evidence and audit caveats:
+  `diagnostics/a44_ghost_kwa_combo_20260929/RESULTS.md`.
+
+- **2026-09-29 04:22 IST — Pasture guard + Brunch route candidate rejected on its frozen outcome gate.** Candidate `5b4ef52d19cb8ffb310b2bb067c725810241668667a0b5b468ac09b6b9215506` won both `live-114274897` fixed-tape seats (+5,983 and +2,235 versus 6d losses -17,760 and -17,099), but it also changed both `public-win-114193811` controls from margin +1,226 to +8,353. The derivative changed the step-1 bridge selector globally: `shared151` now required zero rival pastures, so all four jobs selected `source` while exact 6d selected `shared151`. The later Brunch leaf was inactive on ChrisTu, but its earlier branch change had already altered play; the target wins cannot be attributed to the leaf. All four games were clean DONE/DONE/720; exact controls and overall gates failed. Preserve as descriptive fixed-tape evidence, reject for promotion, and do not count as an isolated Brunch rescue. Receipt SHA-256 `0c7ecfbc89a0110c7aa18796ce2d814643262d6589c412fedf5e8016c302a1ec`; ledger SHA-256 `83598f5fea57693e9202bcf8b061f5f05e1dd44d922eddcdf81d21a846b9a468`. Full failure analysis: `diagnostics/a44_goose4_smoothie_pasture_source_20260929/RESULTS.md`.
+
+- **2026-09-29 04:08 IST — Ghost Ice wheat route passed its corrected 12-game fixed-tape panel.** Candidate `228ca9da123ef388b5430d4451020820d7e3854a8dc7ec5fd7ae54e9da1d2767` derives from exact 6d parent `6d3d1c0df1b06566417d8ba204e05e0caad9a115bb84b73513bef68575a70bf9`. On source bridge step 72, it selects route `113360743` for `ICE_CREAM_SHOP|M8+|C>S|G0` only when public WHEAT stock is at most 9,975. Both seats of `live-114288168` now win at +1,298; the 6d margins were -2,253 and +1,425. All ten non-trigger controls exactly matched 6d results, rewards, and margins; all 12 games were DONE/DONE at 720 frames with telemetry and zero candidate errors. The 208-seat static census found only the target pair activates, so the standalone Ghost derivative moves the saved 6d loss30 sweep count from 22/30 to 23/30; top20 stays 19/20 and public-win stays 53/54. The earlier 11/12 runner attempt is preserved but excluded because its telemetry checker read the panel row; the new V2 package passed synthetic positive/negative telemetry checks and all 50 frozen hashes. Receipt `diagnostics/a44_goose4_smoothie_ghost_wheat_gate_20260929/outcome_run_v2_20260929/run_receipt.json` SHA-256 `510339d20aace4317f7dfc4330b7a8f4e59d1edcc5fd458f474fdefb3c702f8`; result ledger SHA-256 `a060e1441ee0ac37e8e83c3e81203797fecc78ad0d306e27ca98a21cbcf6831c`. Decision: keep as a promising separate patch, but do not promote; this is fixed-tape evidence only. Next, compose and validate it with the separate Kwa rescue before estimating a combined panel. Root `main.py` stays at SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`; no Kaggle access occurred.
+
+- **2026-09-28 21:58 UTC — Kwa wheat-zero route splice passed its frozen
+  six-game fixed-replay diagnostic.** Candidate
+  `36f1a351c4b85b62d7c5fb07489927821d98823c57d0e7131e19eb186951a54e`,
+  derived from exact local 6d parent `6d3d1c0d…`, changed only the step-72
+  source-branch BRUNCH route when rival WHEAT plots were zero. Both seats of
+  `live-114227779` won at +4,118 margin, improving the hash-bound 6d combined
+  result by +7,976 per seat. Four wheat-positive control seats matched the
+  6d combined receipt exactly; all six games were clean and every frozen gate
+  passed. The integrated saved panel moves from 22/30 to 23/30 loss sweeps,
+  while top20 stays 19/20 and public wins stay 53/54. Decision: retain as a
+  promising narrow candidate and proceed to reactive native qualification;
+  do not promote to `main.py` because this run used fixed tapes. Full evidence,
+  run receipt, and hashes are in
+  `diagnostics/a44_kwa_wheat_zero_20260929/RESULTS.md`. Root `main.py` and
+  Kaggle status were not changed or checked.
+
+- **2026-09-28 ~21:50 UTC — Civitasmass step-72 selector rejected without a
+  game test.** Its full step-72 public state matches the winning
+  `public-win-114288078` control, so a stateless route selector cannot isolate
+  it. Routes `113332529` and `113339524` have older-parent replay rescues but
+  regress same-key winning controls. A historical WHEAT inventory of 9,984
+  isolates the two target seats in the saved corpus, but differs from controls
+  by only 1–3 units at unchanged price 30; this looks like a replay fingerprint,
+  not an economic trigger. See
+  `diagnostics/production_leaf_selector_20260928/RESULTS.md` and
+  `diagnostics/production_pair_continuations_20260928/RESULTS.md`.
+
+- **2026-09-28 18:22 UTC — exact a44c8c2c uploaded by fresh request.**
+  The user asked, "upload the current updated main.py to the kaggle please".
+  This authorization was consumed by submission **56649310**, named
+  **main.py**, at **18:22:44 UTC / 23:52:44 IST**. The listing verified
+  PENDING at 18:22:46 UTC; no score was available. Exact a44c8c2c wins
+  19/20 top-team and 17/30 public-loss saved fixtures in both seats.
+  All eight native direct/file-loader games passed, including all 719
+  actions for both players, rewards, telemetry, timing and entrypoint.
+  Operational receipt SHA:
+  `40384781e30ba377e4d1d5268a689cac9e6acc56fdfc7c1de4cc058ab4d83dc9`.
+  Its uploaded copy is
+  `diagnostics/upload_adaptive_donor_20260928_a44c8c2c/main.py`; the identical
+  root-folder backup is preserved. This explicitly requested experimental
+  upload does not establish research promotion: broader public preservation
+  and reacting qualification are incomplete. Root main remains 4ee for
+  active hash-bound studies. `upload_receipt.json` records one successful
+  attempt. Any additional upload needs a fresh explicit user request.
+  Only submission listings were read; the leaderboard/replays remain frozen.
+
+- **2026-09-28 16:19 UTC — user clarified the offline priority order.**
+  First reach at least **18/20 (90%)** of the latest downloaded top-team
+  fixtures, then **27/30 (90%)** of the frozen public-loss fixtures, counting
+  a fixture only when both seats win. After those thresholds, seek larger
+  paired cash margins for each opponent while preserving wins. Continue
+  using the local corpus; no Kaggle checks or downloads. Exact uploaded
+  367d2e76 currently has 19/20 and 13/30, so the first saved-panel threshold
+  is met and fourteen more public-loss sweeps are needed for the second.
+  The frozen 30 losses were originally recorded from 4ee; they are not a
+  newly downloaded loss cohort from submission 56633591. See the hash-bound
+  baseline ledger in `diagnostics/goal90_20260928/BASELINE.json` and its
+  readable `BASELINE.md`. Independent promotion requirements remain.
+
+- **2026-09-28 07:35 UTC — exact 367d2e76 uploaded by fresh request.**
+  The user's request to upload the new changed main.py authorized one
+  combined observed-hire recovery upload. It was consumed by submission
+  **56633591**, named **main.py**, at **07:35:56 UTC / 13:05:56 IST**.
+  Kaggle listing verified PENDING at 07:35:59 UTC; no score was available.
+  All 200 saved-panel games and eight operational file-loader games passed
+  first. Candidate 367d2e76 wins 13/30 saved public-loss fixtures and 19/20
+  saved top-team fixtures in both seats, retaining prior winning seats.
+  This is an explicitly requested experimental upload; reacting
+  qualification is incomplete. Root main remains the exact 4ee research
+  baseline, while the uploaded copy is
+  `diagnostics/upload_hire_recovery_20260928_367d2e76/main.py`.
+  Only submission listings were read. The frozen leaderboard/replay corpus
+  is unchanged. The receipt records one successful attempt; do not repeat
+  it. Any additional upload requires a fresh explicit user request.
 
 - **2026-09-28 03:54 UTC — exact 06803086 uploaded by explicit request.**
   The user's annotation “upload it to online”, followed by “to kaggle
@@ -97,6 +319,580 @@ completed experiment, with the artifact and a clear promotion/rejection decision
   1.32.7 behavior used in local parity checks.
 
 ## Current authoritative state
+
+- **2026-09-29 08:11 UTC — exact ae349d83 re-uploaded once on a fresh explicit request.** The user's annotation, "can you upload the file again please", authorized a new upload of the same tested file. Kaggle accepted **56668607**, `main.py`, at **08:11:57 UTC / 13:41:57 IST**; the listing verified PENDING with no score at 08:11:59 UTC. SHA-256 remains `ae349d83276976906626f7b59bc6bd3c41d286bc51854c26a6a8b25caf999abb`; this repeats 56666114 without strategy changes. The exact source and seven pilot/saved/reactive/loader evidence files were reverified before the one-shot upload. This fresh authorization is consumed. Decision: fulfill the requested experimental repeat; no research promotion, new test results, claimed queue fix, or score/rank improvement. Root research `main.py` remains exact `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`. Package and receipt: `diagnostics/reupload_pizza_guard_20260929_ae349d83/main.py` and `upload_receipt.json`; before/after submission listings and uploader provenance are in the same folder. Prior upload receipts remain preserved. Leaderboard and replays were not refreshed.
+
+- **2026-09-29 07:43 UTC — pending-upload diagnosis, read-only.** At the user's request to explain the hour-long spinner, the authenticated SDK confirmed submission **56666114** is still PENDING, 48.1 minutes after its 06:55:03 UTC upload. Its `error_description` and public score are empty; server `total_bytes` and the exact local uploaded file both equal 2,025,599. The episode endpoint at 07:41:43 UTC returned `No episodes found` (the CLI's empty-list message, not an agent failure). The competition's evaluation documentation says a self-play validation episode precedes entry into matchmaking and failed validation is marked Error. Current evidence supports an unfinished server validation/evaluation process; it does not expose the exact queue/worker cause, establish an outage, or prove online execution has succeeded. No resubmission or code change was made. Latest detailed receipt: `diagnostics/upload_pizza_guard_20260929_ae349d83/status_details_20260929T074312Z.json`; listing/episode response: `status_20260929T074143Z.json` in the same package. The list also now reports previous 257f submission 56662188 COMPLETE at 1259.3; do not attribute that score to ae349d83. Leaderboard was not refreshed.
+
+- **2026-09-29 06:55 UTC — latest submitted file is ae349d83; research main remains 4ee.** Submission **56666114** is PENDING with no score as last checked at 06:55:10 UTC. Exact standalone upload: `diagnostics/upload_pizza_guard_20260929_ae349d83/main.py`, matching `main_candidate_improved_20260929.py` (SHA-256 `ae349d83276976906626f7b59bc6bd3c41d286bc51854c26a6a8b25caf999abb`). Receipt and listing are in that package. Prior uploaded257 is backed up as `main_uploaded_backup_257f941d_20260929.py`; its original submission was 56662188. Root `main.py` remains SHA-256 `4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed`, backed up as `main_before_candidate_4eeac9c3_20260929.py`. The new file passed the saved regression panel and all eight native/file-loader checks. Saved loss/top20 sweeps remain **27/30 and 19/20**, with narrower Pensukesan losses. Fresh reacting comparison was **8W/14D/2L**, identical to uploaded257, so research promotion remains rejected. This explicitly requested experimental upload is complete; another upload needs another explicit user request. Leaderboard/top20 were not refreshed.
+
+- **2026-09-29 03:16 IST — do not transplant the pasture leaf from saved 6d features alone.**
+  The 208-row census finds exactly four branch changes under the pasture
+  guard: both seats of THIRD and ChrisTu move from `shared151` to `source`;
+  only THIRD's saved shared151 rows show the Brunch-goose key. Those rows do
+  not reveal the step72 state after switching to source, and the passed v6
+  prefix belongs to a different cb5/a44-based policy. The direct 6d port is
+  therefore paused before candidate creation. Next evidence is a four-seat
+  source-branch prefix from the exact 6d Goose4+Smoothie policy; only then
+  decide whether the Brunch leaf is supported. No full games or main change.
+
+- **2026-09-29 03:04 IST — pasture v6 source prefixes pass after a telemetry-harness correction.**
+  V6 preserves the failed v5 receipt and changes only the telemetry
+  bookkeeping: it removes the complete fixed set of candidate-only bridge
+  and leaf fields from the shared-core equality, checks those fields
+  separately, and records any remaining shared-value mismatch. The
+  fourteen-row receipt passes: ten hash-bound v3 donor rows and four fresh
+  exact-a44 source prefixes. Both THIRD seats match observations through72
+  and differ only in the intended step72 Brunch route; both ChrisTu seats
+  match actions through72 with the leaf inactive. All error ledgers are
+  empty. Root verified all534 manifest bindings. This is a prefix result,
+  not a terminal outcome; no full game is counted and the candidate is not
+  promoted. A separate derivative from current 6d + Smoothie is being
+  prepared for the affected fixtures before any outcome pilot. Candidate SHA
+  `cb5afda4d13cbc2c1f2a59fafca51317950bce6b02b894e20498f58c73f71683`;
+  runner SHA `18692b763631326e228f712e04fbddadaefc460522152e246b3c400d6ffd098f`;
+  result SHA `5e445fbcb87455a2ca0137f9005b978aa4fe9a251cc9fd465a77e4fa6afef3b4`.
+  Review: `diagnostics/pasture_guard_source_leaf_20260928/PREFIX_V6_RESULTS_REVIEW.md`.
+  Root main remains4ee; no Kaggle check, download, or upload.
+
+- **2026-09-29 03:04 IST — narrow Ghost Ice wheat gate remains a test proposal.**
+  Root rechecked all16 evidence input hashes and the208 feature rows. The
+  public rule `source + ICE_CREAM_SHOP|M8+|C>S|G0 + WHEAT<=9975` matches only
+  both seats of `live-114288168`, with zero top20/public triggers; ten other
+  seats share the coarse Ice key and remain inactive. Its earlier +1,298
+  route result came from a different exact367 parent, so it is not a measured
+  6d result. A successful Ghost sweep could add at most one, taking22/30 to
+  23/30. Keep as a replay-trained hypothesis; a separate exact-6d derivative
+  and no-op preflight are in progress. No games, promotion, or main.py edits.
+  Evidence: `diagnostics/residual_ice_wheat_gate_20260929/PROPOSAL.md` and
+  `evidence.json`.
+
+- **2026-09-29 02:49 IST — pasture v5 completed, but its receipt failed one harness gate.**
+  The runner completed four fresh exact-a44 source prefixes plus ten hash-
+  bound reused donor rows. The receipt is complete but `passed:false`; all
+  four fresh rows fail only `intended_bridge_and_leaf_telemetry_only_gate`.
+  Observations match through step72; actions match through step71, with only
+  the intended THIRD step72 route difference. ChrisTu remains inactive, and
+  all error ledgers are empty. Root rechecked all528 manifest bindings.
+  Static code review found the telemetry comparator leaves candidate-only
+  bridge fields in its shared-core comparison even though the direct source
+  reference does not expose them and the bridge fields are separately gated.
+  Preserve v5 as failed; do not override its receipt or launch full games.
+  A separately versioned v6 harness correction is under review. Candidate
+  SHA `cb5afda4d13cbc2c1f2a59fafca51317950bce6b02b894e20498f58c73f71683`;
+  v5 runner SHA `6f30dfd2449a5f558cbb3fa6634725d8c2ef2201b94cade81dc90213f9f81b09`;
+  receipt SHA `a670041c00631067b35ab8967984260ce5a2995444537b8651681b9a01d87cc4`.
+  Review: `diagnostics/pasture_guard_source_leaf_20260928/PREFIX_V5_RESULTS_REVIEW.md`.
+  No complete-game outcomes, main.py changes, Kaggle checks or uploads.
+
+- **2026-09-29 02:23 IST — pasture prefix v4 did not pass its frozen gate.**
+  The complete14-row receipt reuses10 previously passing donor prefixes and
+  runs four fresh exact-a44 source-branch prefixes. All four candidate/source
+  pairs match full observations0–72; actions match0–71, with only the intended
+  THIRD step72 action difference. The THIRD leaf key and route match, ChrisTu
+  stays inactive, and error ledgers are empty. V4 nevertheless records
+  `passed:false`: the direct source function produced an empty reference
+  telemetry mapping, and its ChrisTu runtime key was compared with a feature
+  row from the a44 outer `shared151` path. Preserve this as a failed receipt;
+  **do not start the full-game pilot** until a separate frozen adjudicator
+  corrects these evidence gates without relaxing state/action requirements.
+  Runner SHA `7b666235d813c37102f35abce559ff83f7212fd3f1bcfddd297cc7531fc1c407`;
+  result SHA `33b594d4042a4db4c59fd5d7eee5c9940ffcf7e35d918e48289c81ec285ae416`.
+  Review: `diagnostics/pasture_guard_source_leaf_20260928/PREFIX_V4_RESULTS_REVIEW.md`.
+  No complete-game outcome, main.py change, Kaggle check or upload.
+
+- **2026-09-29 02:17 IST — Goose4 + Smoothie repairs one further frozen
+  loss sweep.** The exact-a44-bound integration completes its 12 affected
+  seat games DONE/DONE/720 with zero policy errors and expected activation;
+  the other196 seats are reused only after the static decision-equivalence
+  proof. Across the combined frozen panel it reaches22/30 loss sweeps and
+  45/60 wins versus a44's17/30 and34/60, with five total rescues and no
+  source-winning fixture regressions. Top20 remains19/20; public-win remains
+  53/54. Compared with Goose4 alone, Smoothie adds one sweep and two wins.
+  Keep as a separate candidate; **reject promotion for now** because it is
+  fixed-tape evidence, still five sweeps short of27/30, and lacks reacting
+  validation. Candidate SHA `6d3d1c0df1b06566417d8ba204e05e0caad9a115bb84b73513bef68575a70bf9`;
+  combined result SHA `5463a0efa37aebad2c11559cbcd2c39bf2a9a63ec5b2279f409d6360c61ff40d`.
+  Detailed evidence: `diagnostics/a44_goose4_smoothie_source_20260929/RESULTS.md`.
+  Root main remains4ee; no Kaggle check, download or upload occurred.
+
+- **2026-09-29 01:40 IST — a44-bound Goose four-leaf selector gains four
+  frozen loss sweeps but misses the 90% gate.** All208 candidate games are
+  clean. On the frozen loss30 panel it reaches21/30 two-seat sweeps and
+  43/60 wins, versus a44's17/30 and34/60: four full rescues plus a one-seat
+  repair on Ghost Rule114288168. It loses no prior sweep. The public-win
+  panel remains53/54 with no result changes; top20 remains19/20 unchanged.
+  Reject for promotion because it is six loss sweeps short of27/30, and the
+  evidence uses fixed tapes only. The runner's post-game gate initially
+  stopped because 20 route IDs were integer/string mismatches; a separately
+  hashed read-only audit confirms all208 activations after scalar
+  normalization and leaves original rows untouched. Candidate SHA
+  `c76dc9078b59b400e4facbf0a70969e6da32c395dc6a1a63fd9bb78cb2b56632`;
+  audit SHA `64876242941a2e538224791e1f9dc9b6133fb10e8cc3725d8a6cf188f3fc5a3b`.
+  Full evidence: `diagnostics/a44_source_bridge_goose_4leaf_20260929/RESULTS.md`.
+  Root `main.py` remains4ee; no Kaggle status check or upload occurred.
+
+- **2026-09-29 01:43 IST — pasture prefix harness aborted before a proof job.**
+  The frozen 14-job prefix runner hit `IndexError` while forming first-shop
+  telemetry at observation1, where the fixture correctly had no unlocked
+  shop yet. The progress ledger remains empty and no 72-step prefix result
+  was written. The policy/candidate and original manifest were not changed.
+  Preserve the failed attempt and use a separately hash-bound runner version
+  that represents the pre-shop state safely; rerun static verification before
+  any prefix jobs. No full-game outcome pilot ran. Evidence and follow-up:
+  `diagnostics/pasture_guard_source_leaf_20260928/`.
+
+- **2026-09-29 01:55 IST — pasture prefix v3 exposes a wrong fallback comparator.**
+  All14 jobs completed (1,008 native transitions), with10/10 donor-vs-a44
+  controls passing and zero policy/guard errors. The four target/fallback
+  jobs fail because v3 compares the candidate's exact-a44 `source` branch
+  against different `32e` turn-0/turn-1 actions. THIRD activates the intended
+  `BRUNCH_SPOT|M8+|C>S|G+ -> 113332529` leaf; ChrisTu stays on source and
+  leaves its key inactive, but those checks were also bound to the wrong
+  reference context. **Do not treat this as candidate outcome evidence or
+  start the full-game pilot.** Freeze v4 against exact a44, allow only the
+  intended THIRD action at step72, and preserve the v3 ledger unchanged.
+  Result receipt SHA `2689b164e553660a61e08d116c2d9c955acce6e332fe088754f1e10039acdba4`;
+  analysis: `diagnostics/pasture_guard_source_leaf_20260928/PREFIX_V3_RESULTS_REVIEW.md`.
+
+- **2026-09-29 00:47 IST — observed-hire native pilot rejected under its
+  frozen early-stop gate.** The original 512-game pilot ended at499/512 with
+  all499 unique games clean. Neither recovery arm activated; only one
+  distinct seed remained possible, below the required two, so the runner
+  correctly cancelled the last13 jobs. `repair_main` (467a9dfe) scored
+  89/124 win points against4ee versus the control's90/126, with zero paired
+  margin change and no activation. `repair_integrated` (367d2e76) scored
+  87/124 versus90/126, lost two market-reference games relative to control,
+  and reduced paired margin by83,918 coins across124 matched games. Both
+  fail activation and win gates; no confirmation or promotion. Summary SHA
+  `016d7b42da754471a824c13d792e748a23e872c5081f755bc574f882f5f8c86b`,
+  game-ledger SHA
+  `1c1ea7249f0d705e4e1b0d28d52bff3b3c92f6f11cff741601ad44b56d76d450`.
+  See `diagnostics/observed_hire_recovery_20260928/RESULTS.md`.
+
+- **2026-09-29 00:14 IST — Goose production selector completes.**
+  The frozen exact367 source arm `production_goose` finishes200/200 clean
+  target games, 18/30 public-loss and19/20 top-team both-seat wins. It
+  rescues Ebi114229792, Dieter114249897, keiz114258293, kibuna114267572 and
+  THIRD114274897 while retaining the old source's target wins. It has
+  a44-specific losses on booming114232208, mhw114235177, booming114279308
+  and Yaroslav114283577, so a straight replacement yields only one net
+  sweep over a44. **Keep as a promising selector; do not promote.** It needs
+  a public-state merge against exacta44 and full public/reacting checks.
+  Full receipt SHA `c3fbc3fc8c0243701db15d0abd596b63a93109267cce16e34753e1659c3c2506`;
+  selected file SHA `5c97b54905274914a63a05d8eee5830754ea5f3bbb8e055db04ec6efa0d39ae3`.
+  The56 source public-win controls cover only affected fixtures, not the
+  whole public54 panel. Saved tapes are development evidence. See
+  `diagnostics/production_leaf_selector_20260928/RESULTS.md`.
+
+- **2026-09-29 00:14 IST — Smoothie second-shop screen completes.**
+  All132 frozen cases finish cleanly; the first-shop Smoothie/M8+/cow-heavy
+  leaf has a preserving continuation for every observed second shop and
+  retains its target rescue. Selected routes are in
+  `diagnostics/smoothie_pair_continuations_20260928/selection.json`;
+  candidate SHA `b4af93f784800d309cf64475ec91eed0c4ad5e009f3140f6d3894dec6ff6f768`,
+  screen SHA `221fcab550707148908fa8678c93b62da9b31fd28751266dff30282c687f8519`.
+  This uses exact367 source features/outcomes; it has not been integrated
+  with a44 or checked against a44's unique wins. **Advance to a44-bound
+  integration/regression work; no promotion yet.**
+
+- **2026-09-29 — pasture guard preflight found missing implementation.**
+  a44 source hash and the source-only Brunch leaf wiring check out, but the
+  pasture count helper is unused, the step1 shared151 predicate is unchanged,
+  and no a44-bound builder,208 feature rows, candidate, pool, controls or
+  preflight receipt existed. No outcome games ran. The fixed pilot is not
+  ready until those bindings/checks are built and frozen. See
+  `diagnostics/pasture_guard_source_leaf_20260928/STATIC_AUDIT.md`.
+
+- **2026-09-29 01:17 IST — live offline work.** Exact a44 remains the latest
+  uploaded artifact, 19/20+17/30 on frozen tapes; the next goal still needs
+  ten more public-loss sweeps while preserving at least18/20 top sweeps.
+  The older reacting hire-recovery pilot is terminal/rejected at499/512.
+  The a44-bound Goose candidate passed its 450-artifact static manifest
+  check and all108 a44 public controls completed cleanly at106W/0D/2L
+  (53/54 both-seat sweeps). The candidate phase is at29/208; early triggered
+  target losses remain losses so far, while the first fixture won in both
+  seats. The Luna-max pasture candidate and its 14-job native-prefix manifest
+  passed static checks; the prefix run is queued until Goose releases the
+  simulator. Smoothie132 is
+  complete. No Kaggle checks/downloads/uploads have occurred since the user's
+  no-Kaggle instruction.
+
+- **2026-09-28 18:22 UTC — current submitted artifact is a44c8c2c.**
+  Submission56649310 is PENDING; no new score or rank is known. Root main
+  remains4ee for running research. The backed-up submitted standalone file
+  and eight-game operational receipt are in
+  `diagnostics/upload_adaptive_donor_20260928_a44c8c2c/`. Experimental upload
+  authorized by the user's fresh request; no research promotion inferred.
+
+- **2026-09-28 — PET/Pizza second-shop continuation repair rejected.**
+  All264 frozen cases completed cleanly after eight exact-prefix proofs.
+  Neither early production family has a compatible continuation for every
+  affected shop pair that retains all source367 winning seats. Selected
+  families are empty, despite target rescues. Keep source behavior; no
+  candidate promotion. See `diagnostics/production_pair_continuations_20260928/selection.json`.
+  Screen SHA `37fdfe4cdd4daf99e79bce2f0c573a9cf1b99ada704a8d24b16a6ba751085f62`.
+
+- **2026-09-28 — Ice finalists rejected on all42 frozen controls.**
+  Routes113384557/113801171 achieve4/7 sweeps but lose keiz and four public
+  winning seats;113360743 achieves5/7, rescues Ghost and keiz, but loses
+  four public winning seats. All42 games clean, all six Ghost results match
+  the immutable910 screen. No selected finalist; preserve source.
+  See `diagnostics/ice_finalist_controls_20260928/RESULTS.md`, receipt
+  `b15df5fad00d825ac9bc683db120a38c7847852e40700ad0410eab2091f05b2e`.
+
+- **2026-09-28 — Third donor pair repair rejected.**
+  All three prefix-compatible alternative BRUNCH/PIZZA continuations lose
+  both seats; none rescues live114274897. Public54 prefix discovery found
+  no affected pair contexts. No selected combined candidate; preservea44.
+  See `diagnostics/adaptive_third_pair_repair_20260928/`, screen receipt
+  `7dd95c02468e14c2d1fec9e1da0f62825c35863b5bf5660c12cfc272aee34749`.
+  A separate opening audit found Third has one visible rival pasture at
+  observation1 while five successful donor151 fixtures have zero. That
+  observable distinction is a new development lead, not a proven win.
+
+- **2026-09-28 — full8ccb public preservation result: reject.**
+  All108 candidate games completed cleanly:89W/19L,44/54 sweeps versus
+  exact367's108W,54/54. Nineteen source-winning seats are lost across ten
+  fixtures; combined target100+public108 win count falls from172 to163.
+  Policy regressions, not execution errors. Preserve its backup as rejected
+  research; it was not uploaded under the current request. Receipt:
+  `diagnostics/public_90_research_20260928/public_candidate.json`, SHA
+  `8ae8e538cefeaed3253b6eb11a7c997dabdc8fc9f29bdc49011a8bd1d00c8f2e`.
+
+- **2026-09-28 — broader8ccb preservation gate fails on completed rows.**
+  All108 exact367 public controls win,54/54 sweeps; their receipt is
+  `261291b2638314629e15050041c8b354503327b087311425dc56e778d6198dae`.
+  Exact8ccb's ongoing108-case public test has already lost ChrisTu114193811
+  in both seats (+8,353 source to-1,758) and Sakura114199617 (-12,892).
+  **Reject broader-win preservation; complete/report the frozen remaining
+  cases without changing the file or gate.** Its18/30 and19/20 saved-target
+  counts and32-case framework parity remain valid but do not earn promotion.
+  Production-leaf/compatible-continuation studies are separate repairs.
+
+- **2026-09-28 — full91-route expansion finishes910 clean cases.**
+  Bakerybooming114232208 has one winning schedule,113349962(+3,006 both).
+  IceGhost114288168 has six; frozen finalists113384557/113360743/113801171
+  have worst-seat margins+1,406/+1,298/+844. Roman, PizzaPens and Smoothie
+  Fish have no rescue among91 schedules each. **Advance the finalists to
+  affected controls; reject that finite pool for the three unresolved
+  cases.** These are810 new plus100 reused development outcomes, not
+  independent games. Bakery overlaps a44c's existing rescue. No combined
+  count changes. Receipt SHA:
+  `efab80fb79d112082ade79dea84acac0c872e383aaade2de0abdaa6a211b80b7`.
+  See `diagnostics/residual_91_routes_20260928/RESULTS.md`.
+  Its two workers are released; the frozen264-case PET/Pizza continuation
+  screen is now active in session25419. The separate132-case Smoothie
+  pool passes four prefix comparisons and remains queued.
+
+- **2026-09-28 — original-framework parity confirms8ccb's five rescues.**
+  All16 changed target fixtures in both seats (32 games) match the complete
+  fast receipt exactly in own/rival rewards, result, frames, statuses and
+  full telemetry. DONE/DONE/720, zero errors and no lost source-winning
+  seat. **Pass execution parity; advance to the frozen54-public-win
+  regression, not promotion.** This is not reacting or file-loader evidence.
+  Parity SHA: `f21fe4f09427681794ea6efa40139d32a1398f607e642eab779112f27b67c600`.
+  See `diagnostics/public_90_research_20260928/native_parity.json`.
+
+- **2026-09-28 — compatible second-shop repair pools frozen.**
+  Two production leaves rescue Ghost114260122/Civitasmass but regress
+  public controls. Their rival72 aggregate portfolios coincide with some
+  controls. A new264-game pool tests10/13 exact144-prefix-compatible
+  continuations over all8/4 affected fixtures, both seats. Eight short
+  prefix pairs reproduce144 actions/145 observations exactly. **Advance
+  to its frozen member screen after the91-route screen frees workers.**
+  Pool SHA: `3002fbca7152cf84bab637e4899a13efec2f1c0fa785cac6bb362bb697827344`.
+  Prefix SHA: `a7bd8698e59c0c63354e7bef98c2238d2cbc5f0a1519dbaf81d819c83ed6bdb8`.
+  See `diagnostics/production_pair_continuations_20260928/PLAN.md`.
+  A separate132-game Smoothie pool targets the same mechanism: the
+  forever-young rescue and yfy regression share identical72 counts.
+  Both plans reject the entire early leaf if any observed shop pair lacks
+  a continuation preserving all exact source-winning seats. No promotion.
+
+- **2026-09-28 17:58 UTC — adaptive donor-pair repair full panel passes.**
+  Exacta44c8c2c finishes100 fast-transition rows (24 verified pilot reuses,
+  76 new), all clean. It wins19/20 top-team and17/30 public-loss fixtures
+  in both seats,72W/0D/28L. It preserves all66 exact32e winning seats and
+  all16 known ceed winning seats within ceed's24-seat pilot scope. Three
+  new rescues versus32e are booming114232208, mhw114235177 and
+  booming114279308. **Advance for broader controls and compatible
+  integration; not research promotion.** Among its13 remaining public
+  failures, only THIRD114274897 uses donor151 (BRUNCH_SPOT|PIZZA_SHOP), so
+  appending a source-only production leaf would not fix that fixture.
+  Receipt SHA: `ea74d2be3b852acf83885a35ce55296b391eff8b33b1bd5f556fa6242fa1d732`.
+  Backup:`main_candidate_adaptive_donor_pair_repair_20260928_a44c8c2c.py`.
+  See `diagnostics/adaptive_donor_pair_repair_20260928/FULL_RESULTS.md`.
+
+- **2026-09-28 — exact8ccb combined saved-target panel passes.**
+  All100 fast native-transition games finish cleanly:18/30 public-loss and
+  19/20 top-team both-seat wins,74W/0D/26L. Every64 exact367 winning seat
+  remains a win. New rescues are Civitasmass114238112, keiz114258293,
+  Ghost114260122, kibuna114267572 and Yaroslav114283577. Total paired margin
+  rises29,241 across100 seats. **Advance to original-framework parity and
+  the54-public-win regression panel; no research promotion yet.**
+  Root backup `main_candidate_early_public_8ccb862a.py` is unchanged.
+  Full receipt SHA: `330ab7523ed226366838283a46cb6689c19aca85d9988855390b65297de7743a`.
+  This receipt excludes original-framework/schema/timeout/file-loader
+  checks and independent reacting opponents. See
+  `diagnostics/public_90_research_20260928/combined_full.json`.
+
+- **2026-09-28 — final-day timing repairs one narrow development loss.**
+  Three frozen horizons/six games on ICE113332529 versus Ghost114288168
+  all finish cleanly. Horizon18 sells15 existing milk/strawberry units at
+  step700: own+45, rival-14, margin-21 to+38 in both seats. Horizons12/6
+  lose and are rejected. All719 physical actions/farms/bags/seeds match
+  the control. **Retain horizon18 as a lead pending affected controls;
+  no promotion or combined-count increase.** The full91-route screen may
+  provide a stronger route for the same fixture. See
+  `diagnostics/terminal_sale_timing_20260928/RESULTS.md`.
+  Screen SHA: `cab187b6453ed827d6ff588bc800528b95c96948b0e285814ad4cbcf67c243f0`.
+
+- **2026-09-28 — donor-pair repair passes its separate24-seat pilot.**
+  Exacta44c8c2c wins10/12 both-seat fixtures, retaining all32e and known
+  ceed winning seats. Compatible donor151 route2 fixes Boey at+10,714 and
+  booming114279308 at+3,298/+2,542; prior booming114232208 and mhw rescues
+  remain. **Advance to separately frozen exactfull50; no promotion.**
+  The original48-game bridge rejection remains unchanged. Receipt SHA:
+  `82953029de1373927b43ffb766dbdaf02b18990d71e534a4a78705c78af517a3`.
+  See `diagnostics/adaptive_donor_pair_repair_20260928/RESULTS.md`.
+
+- **2026-09-28 17:29 UTC — both adaptive bridge pilots rejected.**
+  The frozen48 games complete cleanly. Five-hand ceed697f improves the
+  twelve-fixture pilot from7 to8 both-seat wins, rescuing booming114232208
+  and mhw114235177 but losing Boey in both seats. The zero-hand extension
+  finishes5/12 and also loses offhand, Yaroslav and Vadim. **Reject both
+  under their unchanged prior-winning-seat gate; no full50 follows.**
+  Keep physical feasibility and competitive qualification distinct.
+  Receipt SHA: `224cae4a3f69ac480ee2979db33df1d21aaaa5ff3ba2cfa3f2c3183fbdd91605`.
+  See `diagnostics/adaptive_opening_bridge_20260928/DEVELOPMENT_RESULTS.md`.
+  A separate bounded donor151 repair now tests only the two actual shop
+  pairs implicated by Boey and unresolved booming114279308; three schedules
+  share their exact first151 actions. Preserve both the original32e wins
+  and ceed's two rescues. This new study does not revise the old rejection.
+
+- **2026-09-28 — three earlier-commitment branches pass affected controls.**
+  All100 retention games are clean. Select ICE113535489, PET113517834 and
+  PIZZA113332529 under the frozen prior-winning-seat gate; reject the other
+  first-shop families. The exact combined file is
+  **8ccb862a215da429097f9c2f895defe9b8aa90eaae019964e1d831c5d889b638**,
+  backed up as `main_candidate_early_public_8ccb862a.py`. **Advance to its
+  exact full100 development games, now running under supervisor89557.**
+  Component results imply18/30 public losses and19/20 top, but those totals
+  are not verified until the combined receipt completes. PET's Yaroslav
+  win overlaps the separate animal repair; do not add it twice.
+  Retention SHA: `329d00860ce5eb676c3cc5e84902272b1933887fa75677838397501832e1b422`.
+
+- **2026-09-28 — adaptive opening engineering prefixes pass.**
+  Both ceed697f and be5172f7 pass their16 paired24-turn prefixes across
+  eight rival opening classes, both seats:32 total prefix comparisons.
+  Turn1 procurement/spawn, donor151 end8 catch-up, donor150 permutation
+  and end23 physical/private convergence pass. The five-hand arm also has
+  zero own/rival end23 cash delta in every comparison; the zero-hand
+  extension has small explicitly reported cash differences. **Advance
+  unchanged to the separately frozen48-game development pilot34172.**
+  This is execution feasibility, not terminal strength. Its partial
+  outcomes already include a lost Boey win, so the original preservation
+  gate cannot pass; finish/report both arms without changing that gate.
+  Prefix SHA: `befb989d8e8f5c393df3d9ad2a41eddff2e04a84001d36b66f60958a12d02e31`.
+  See `diagnostics/adaptive_opening_bridge_20260928/RESULTS.md`.
+
+- **2026-09-28 17:14 UTC — both standalone donor replacements rejected.**
+  The frozen full stage finishes200 clean rows, reusing40 pilot rows:
+  shared151 has11/20 top sweeps and9/30 public-loss sweeps; shared166 has
+  9/20 and12/30. Each loses36 source-winning seats. Both fail their
+  unchanged full gates. **Reject both standalone replacements; no native
+  promotion escalation.** Keep their code as possible varied reacting
+  references, subject to separate native compatibility. Across the study
+  there are220 distinct fast outcomes (60 pilot plus160 additional full).
+  Full SHA: `97d1df983a9f4121c0563704346a9a61a26cd2acdb8033a985c3d60768073a99`.
+  See `diagnostics/donor_opening_agents_20260928/RESULTS.md`. Session70981
+  is terminal and released. A separately frozen public-production leaf
+  selector is now being prepared; no donor outcome is relabeled a pass.
+
+- **2026-09-28 — exact Ghost near-loss has no terminal stock repair.**
+  ICE/113332529 exactly reproduces81,439 versus81,460 in both seats.
+  At the final unit phase every bag empties; all93 delivered units have
+  matching scheduled sale quantities, below shed capacity100. An optimistic
+  reachability audit finds no collect/harvest-and-deliver opportunity in
+  any unit's idle suffix after its last committed command. **Reject extra
+  final liquidation or idle-suffix collection as a repair for this exact
+  trace.** No candidate was changed. The two diagnostic reproductions are
+  duplicate development cases, not independent strategy games. See
+  `diagnostics/ghost_terminal_audit_20260928/RESULTS.md`.
+  Trace audit SHA: `21735e69e1f4e84e327a6e373838ebeba9eef58416b965a9acce9fad4f0ada43`.
+
+- **2026-09-28 17:12 UTC — earlier-route screen completes; expansion starts.**
+  All 320 ten-medoid games finish cleanly. Twelve finalists across seven
+  first-shop families advance to their frozen control-retention stage.
+  Eleven residual fixtures have at least one rescue across alternatives;
+  this is an oracle count, not a combined policy result. The sequential
+  supervisor 89557 now performs matched step72 features, their audit,
+  affected controls and conditional exact integration. Target receipt SHA:
+  `a588a300e8354b59f7edebbbdf74aee937efb3e7bd3c23736f11e1ec4317a7bb`.
+  A separate predeclared library expansion in
+  `diagnostics/residual_91_routes_20260928/` addresses only the five fixtures
+  lacking any medoid rescue. It tests all91 distinct complete schedules
+  from the common72-action opening:910 fixture-seat cases, including100
+  hash-verified prior cases and810 new cached-input games. Session16891
+  uses at most two short-lived workers. No extra target or changed gate.
+
+- **2026-09-28 17:06 UTC — input-memory fix verified; pilot resumed.**
+  The new streaming input audit verifies104 fixtures/102 unique replays
+  against their full decompressed hashes without retaining their histories.
+  Its compact cache is2,056,362 bytes. A separate cached diagnostic helper
+  exactly reproduces all719 observation/action records and native terminal
+  rewards/full telemetry for32e Yaroslav in both seats. **Accept for future
+  explicitly bound experiments only; existing frozen helpers unchanged.**
+  See `diagnostics/stream_replay_io_20260928/RESULTS.md` and its receipts.
+  With5.9GB virtual memory free and PID30560 absent, archive its stale lock
+  and resume the original observed-hire pilot from199 verified jobs in
+  **session38438 with one worker**. Its hashes, seeds and gates are unchanged.
+
+- **2026-09-28 17:03 UTC — whole-opening donor pilot completes.**
+  All60 games are clean. shared151 wins2/7 donor fixtures and1/3 top
+  controls; shared166 wins5/7 and1/3. **Advance these two exact files to
+  their frozen full50 stage**, which still must reach18/20 top and14/30
+  public losses. shared150 wins4/7 but loses all three top controls:
+  **reject its standalone promotion; no full stage for that file.** The
+  alternatives lose prior source wins, so no combined improvement is
+  inferred. Full session70981 is one sequential worker,200 planned rows
+  including40 reused pilot rows. See
+  `diagnostics/donor_opening_agents_20260928/PILOT_RESULTS.md`.
+  Pilot SHA: `3cd290b6e3fb446ec707d550e65ec17ce8363bc06e1b29d30fe18a93a10357b7`.
+
+- **2026-09-28 17:01 UTC — animal-liquidity full native panel passes.**
+  Exact **32e299fe** completes all 100 saved-target games, clean
+  DONE/DONE/720, with no policy errors or source-winning-seat regressions.
+  It wins **14/30 public-loss fixtures and 19/20 top-team fixtures** in
+  both seats: **33/50 sweeps, 66W/0D/34L**. Yaroslav is the only newly won
+  fixture, +902 per seat instead of -324; all other cash pairs are
+  unchanged. **Accept this saved-panel improvement; independent reacting
+  qualification remains unlaunched, so no research promotion.** The
+  user's public-loss target still needs 13 additional both-seat wins.
+  Root backup: `main_candidate_animal_liquidity_20260928_32e299fe.py`.
+  Full receipt: `diagnostics/animal_liquidity_20260928/native_full.json`,
+  SHA `51c8eab6805bd24c5907e58d845786e8c47ea4bc12e5737eb080e344938e5f8f`.
+  Session 81725 exited successfully and released memory. Root main stays
+  4ee; latest uploaded file remains 367d2e76. No Kaggle access or upload.
+
+- **2026-09-28 16:53 UTC — host memory pressure, checkpoint preserved.**
+  Two donor-study replay loads failed with MemoryError before the affected
+  games began. With only about 0.46 GB virtual memory free, stop only the
+  root observed-hire pilot coordinator 30560 and its worker children.
+  Session 31417 is terminal from this resource interruption, not from a
+  research gate. Its checkpoint has **199 valid JSON rows, 199 unique jobs**,
+  SHA `30b57af0d50a693f92a1be425787c1a8f79a6f2c8bf7b09adb4b86ab5f04b956`.
+  Resume the same frozen inputs with **one worker** after shorter checks
+  finish; do not restart completed jobs or alter the candidate criteria.
+  Animal full session 81725 and early route session 93285 continue one
+  worker each. Donor pilot has 25 saved rows and waits for animal full to
+  release memory before resuming. No unrelated user process was stopped.
+  See the observed-hire resource-interruption receipt for exact evidence.
+
+- **2026-09-28 16:53 UTC — frozen donor provenance audit completed.**
+  All 50 selected opponent tapes are verified against their recorded
+  replay actions and manifest hashes. Comparing them with all 145 source
+  routes gives 7,250 comparisons: none has a compatible source opening
+  through turn 72 or 144, including normalized physical commands.
+  **Reject direct insertion into the existing route library.** The donors
+  contain 43 distinct physical openings. Three groups share exact openings
+  with one another through 151, 150 and 166 actions respectively, allowing
+  a separately frozen whole policy from turn zero with public second-shop
+  selection. **Advance those three architectures to development only.**
+  Their separate 60-game pilot runs one worker in session 98872; no result
+  or promotion is inferred. See
+  `diagnostics/frozen_reply_donor_audit_20260928/RESULTS.md` and
+  `diagnostics/donor_opening_agents_20260928/`.
+  Inventory SHA: `e36a7716ab1b7fcf2c42dcd4979e37f099b0ce9ffe2d8b29d8cee700c6db6155`.
+  Cross-donor SHA: `ffad1dedd4baaf03c99a08842ddaa2a43fbc34f71aa41390c29e7814e1cf6c19`.
+
+- **2026-09-28 16:33 UTC — two distinct DECEM experiments rejected.**
+  Joint queue/quantity candidate b78fc7fb finishes 12 clean development
+  games: DECEM improves by 2,204 per seat but still loses at -6,881;
+  Boey regresses from +4,935 to -8,058. Its first missing wheat seed
+  follows a three-coin shortfall at step 248, then physical and shop
+  divergence. **Reject; no native escalation.** A separate physical
+  delivery candidate 6a933a6e also finishes 12 clean games and retains all
+  ten winning control seats. It successfully delivers fertilizer earlier
+  and restores the blocked strawberry, but DECEM still loses at -8,681:
+  own cash rises 24,746 while rival cash rises 24,342, only +404 relative.
+  **Reject under its separate frozen rescue gate; no native escalation.**
+  Neither candidate is combined with the source. Evidence:
+  `diagnostics/decem_90_research_20260928/RESULTS.md` and
+  `diagnostics/decem_90_research_20260928/delivery/RESULTS.md`.
+  Screen SHAs: `27902c12174ce68bb1a04f4a11e18c3aff5b7fbda9468cad7a53c2ff52038061`
+  and `3b13171e43dd1f9dc39cf679eec5c53fb6062dc2d4dc0e49f04ef419a6d64d10`.
+
+- **2026-09-28 16:31 UTC — animal-liquidity repair advances.**
+  Exact **32e299fe047a79290d5025b4e2be455ae13d948020beae2d77cb44a7c17dc31e**
+  passes 12 development and 12 original-native parity games, clean with
+  exact rewards/full telemetry and no prior-winning-seat regressions.
+  It newly beats Yaroslav in both seats at **+902** instead of -324.
+  The one existing sheep order is funded from held nonfeed goods; it is
+  placed/fed and existing seeds/crops/shop path remain identical. Own cash
+  changes -352, rival -1,578, paired margin +1,226. **Advance unchanged to
+  full 100-game saved regression; no research promotion.** Session **81725**
+  runs one worker and reuses the 12 exact native rows. Do not assume a
+  14/30 combined total until the full receipt passes. Native parity SHA:
+  `a71c23a809fee6d19ee15aaccbb2f6c6d2dd82375fb83caeb2a301234a418962`.
+  A separate independent 298xxxx plan is prepared, with no reacting
+  outcomes yet. The original recovery pilot continues as 31417. See
+  `diagnostics/animal_liquidity_20260928/` for plans and receipts.
+
+- **2026-09-28 16:22 UTC — interrupted native pilot safely resumed.**
+  Old session 82809 is missing and its recorded coordinator PID 31648 is
+  absent; no matching Python process remains. The unchanged checkpoint has
+  61 unique games, SHA
+  `7277916aa112e869bdae1ee516f397b1fb38acf8b2046b9355050506344f75a1`.
+  Preserve the interruption audit and archived stale lock in the observed-
+  hire directory. Resume exact frozen inputs with two workers in session
+  **31417**, `native.py pilot --workers 2`; it confirms 61/512 loaded.
+  Do not duplicate or replace the run. This is unfinished qualification,
+  not a failed or completed independent result. Separate agents own new
+  early-commitment route research, DECEM market research and the already
+  frozen animal-liquidity draft; each uses one benchmark worker and separate
+  files. Root main and all existing source/hash-bound inputs are preserved.
+
+- **2026-09-28 07:36 UTC — parent 8dde independent pilot rejected.**
+  Session 82556 stopped under its frozen impossibility bound after
+  **368/384** planned games, all clean. Against reacting 4ee, main records
+  3W/56D/3L (31 points from 62 games), while 8dde records 8W/40D/14L
+  (28 points from 62). Even winning its two remaining games gives only
+  30 points, below main's already recorded 31. **Reject 8dde promotion;
+  no confirmation or final preservation stages.** Partial pooled counts
+  are unequal (main 124 games, source/new 122 each); do not report a
+  completed 384-game result. Activation passed; execution was clean.
+  Receipt SHA:
+  `370e7e26acc0e77f8eb130a74a06ee829f092f1d7c9c8180253ac863f5585efa`.
+  This parent rejection became available after the explicitly requested
+  experimental 367d2e76 upload. The exact new recovery files retain their
+  separate frozen qualification, now running in session **82809**; no
+  inherited parent pass is available. Root main remains 4ee.
+
+- **2026-09-28 07:35 UTC — recovery full panels pass; experimental upload.**
+  Full session 13956 is terminal: 200/200 original-native games are clean,
+  exact affected-case telemetry/rewards match, and no parent winning seat
+  regresses. Main-parent 467a9dfe has **1/30 + 17/20 = 18/50** sweeps;
+  integrated 367d2e76 has **13/30 + 19/20 = 32/50**, 64W/0D/36L. Both
+  newly rescue Junliang in both seats. **Advance both exact candidates to
+  their frozen independent pilot, not research promotion.** Seventeen
+  public-loss fixtures and DECEM remain unresolved in the combined file.
+  Full receipt SHA:
+  `1cd02ac25079a1df229ad528c51a94ec467181a4adcd1e6ab13248ff4fd82545`.
+  Separate operational file-loader session 47717 passes all eight games
+  on Junliang and Boey, both seats, all 719 actions for both players and
+  rewards exact, no errors/overage deficit, intended final callable.
+  Loader receipt SHA:
+  `caa82e5b35e4b6cadb5eeb8bd4694a5f5082e64f8a926ba0fa16599a7f468e33`.
+  User-requested experimental upload **56633591** is accepted/PENDING;
+  its full receipt is in
+  `diagnostics/upload_hire_recovery_20260928_367d2e76/upload_receipt.json`.
+  Root main remains 4ee. Final research preservation helpers now exist in
+  `diagnostics/native_preservation_20260928/` and retain their required
+  independent confirmation/public-win gates; these have not passed.
+  Independent recovery pilot started in session **82809**, three workers,
+  512 initial games; frozen stop/activation/win-point gates remain intact.
+  The parent 8dde pilot **82556** subsequently stopped/rejected; see above.
 
 - **2026-09-28 07:05 UTC — observed recovery native parity passes.** All
   24 games match fast rewards and full telemetry exactly, clean
@@ -4264,3 +5060,30 @@ Get-FileHash -Algorithm SHA256 -LiteralPath .\main.py
   rival benefits from changed supply. Next work: inspect these traces and
   engine crop rules, then freeze a separate experimental plan if feasible.
   `diagnostics/shunki_crop_demand_20260927/audit.json`.
+
+
+## 2026-09-29 05:49 UTC — uploaded257 Pizza production guard pilot passed
+
+Candidate `ae349d83276976906626f7b59bc6bd3c41d286bc51854c26a6a8b25caf999abb` keeps the exact uploaded257 repairs and skips the optional Goose4 Pizza route when the existing public source leaf has at least 12 rival melon plots. The prospective four-case/eight-game both-seat pilot reproduced baseline margins and improved both Pensukesan seats from -53,956 to -8,665 (+45,291 each), while Dieter exactly retained both +27,854 wins and both rewards. All games completed DONE/DONE/720 with zero policy errors; trigger/route telemetry passed. W/D/L remains two wins and two losses. Decision: retain for the frozen full saved panel and fresh reacting screen, not research promotion or an upload. Threshold is a sparse fitted hypothesis. Root research main remains exact4ee. Receipt: `diagnostics/combined_agent_257f_20260929/pizza_pilot/comparison_manifest_receipt.json`, SHA256 `1d8d4bd5a34afd6200e5f8e9ddd2cfcb1c87f52adf1fd8d70898a9571f65a820`; assessment and full case table are beside it. Kaggle was not contacted.
+
+
+## 2026-09-29 06:05 UTC — ae349d83 saved panel passed; reactive screen pending
+
+The separate root file `main_candidate_improved_20260929.py` (SHA256 `ae349d83276976906626f7b59bc6bd3c41d286bc51854c26a6a8b25caf999abb`) completed102 fresh saved games against exact uploaded257 reference rows, after four baseline pilot reproductions. Result remains94W/0D/8L including two public controls; the100 goal seats remain92W/0D/8L,27/30 loss sweeps and19/20 top20 sweeps. Only both Pensukesan margins improve, by45291 each; all other100 rows preserve rewards/results/margins, and no prior win or margin regresses. All games DONE/DONE/720, zero errors. Decision: accept the narrow saved margin repair for the predeclared fresh reacting/loader checks, not research promotion. Full per-case table and assessment: `diagnostics/combined_agent_257f_20260929/SAVED_RESULTS.md`; saved receipt SHA256 `218297125b45a782f903b2a7aaa178597b708a53f0ffac4f196b404f7b95ce2d`. The mirror-gated Brunch/Pizza route swap was rejected before any games for incompatible schedules; see `diagnostics/reactive_repair_257f_20260929/RESULTS.md`. No Kaggle contact and root main unchanged. Native diagnostic instrumentation was isolated in this experiment folder, and the shared qualify.py was restored byte-exactly to its prior frozen hash c4bae3c9.
+
+
+## 2026-09-29 06:33 UTC — ae349d83 fresh reacting screen shows no gain
+
+All 48 predeclared original-shop native games completed cleanly across seeds 2026092981–2026092984, three reacting policies and both seats. Uploaded257 and new ae349d83 each scored 8 wins / 14 draws / 2 losses in the 24 matched scenarios; every own/rival reward and margin is identical. Against root4ee: 0W/6D/2L (both losses on seed2026092983 at -10,646); against uploaded257: 0W/8D/0L; against AhmedV35: 8W/0D/0L. The new Pizza guard activated in zero candidate games. All whole-seed point deltas are zero, so the predeclared strict pooled win-rate gain gate fails. Decision: reject research promotion; keep the standalone candidate only as the measured saved-margin repair, with no online score/top10 claim. Minimum native overage and full per-case evidence are recorded in `diagnostics/combined_agent_257f_20260929/reactive/`; receipt SHA256 `53e0968303b1e26c4ec6dfc0681edb2f939d156b9635c5a1aaca5fb99233479e`. The final file-loader check initially stopped with zero games because its checker omitted the workspace import path; the error/source were archived, the checker fixed, and the candidate unchanged. Loader verification is now running. Root main remains exact4ee; no Kaggle contact.
+
+
+## 2026-09-29 06:36 UTC — tested standalone ae349d83 delivered; no research promotion
+
+Created `main_candidate_improved_20260929.py`, SHA256 `ae349d83276976906626f7b59bc6bd3c41d286bc51854c26a6a8b25caf999abb`, plus exact uploaded backup `main_uploaded_backup_257f941d_20260929.py`. All eight operational native direct/file runs passed on Pensukesan and Dieter in both seats: Kaggle selected `kaggle_a44_pet_market_gate_entrypoint`; all 719 action frames for both players, rewards and complete policy telemetry matched; DONE/DONE/720, zero native/policy errors, and minimum remaining overage 58.670028 seconds. All eight also exactly reproduced the new saved-panel rewards and telemetry. Loader receipt SHA256 `e6925bec83e3afa55c8339d02224fac1d2c0802fe9c788200c84bb96dc69915c`; corrected checker SHA256 `b6d1fc4aa0a8b117c823058cb36104d4652c6c7a5acb28f5c5436194959975d5`. Its earlier import-path preparation failure started zero games and remains archived.
+
+Across this request, 166 full game executions comprise 8 focused pilot games, 102 saved candidate games, 48 fresh native comparison games and 8 file-loader games. The new file improves both Pensukesan saved margins by 45,291, preserves all saved wins (27/30 archived-loss sweeps and 19/20 top20), and exactly ties uploaded257 in all 24 fresh scenarios (8W/14D/2L; zero new-guard activations). Final decision: retain the separate file as an experimental saved-margin repair, reject research promotion and any asserted online win-rate/score/top10 gain. Root `main.py` remains exact4ee; no Kaggle access/upload occurred. Full results for every case, including rejected ideas and the final checks: `NEW_MAIN_TEST_REPORT_20260929.md`, SHA256 `7c7a648354f4e1ffdb1786f59fcbbc978cf3002941e3985e7f7f81f943b39cb8`; machine-readable summary `diagnostics/combined_agent_257f_20260929/FINAL_SUMMARY.json`.
+
+
+## 2026-09-29 09:02 UTC — opponent-agnostic execution review: no new supported candidate
+
+Reviewed exact ae349d83 source and the existing reactive, terminal, delivery and physical-gap evidence. The source already has partial-plant, failed-hire catch-up, funded animal and physical bridge guards; absence of a general scheduler does not establish a profitable intervention. Exact ae349 reactive comparisons have zero paired outcome/margin delta; exact DECEM terminal recovery is only 44. The prior delivery repair gained 24,746 own cash but 24,342 rival cash (+404 paired), and the older physical audit is not exact-ae evidence. Decision: no-go for a new execution/resource-allocation candidate until a repeated funded-but-missed task on exact ae349 has an executable repair with its whole commitment accounted for. No policy changes, new games, route/market screens or Kaggle access occurred. Review: `diagnostics/opponent_agnostic_execution_review_ae349_20260929/REVIEW.md`, SHA-256 `2cfecae7953a73281c91b7e5df42a8a02f7fbcede5c2a26868ceee26fefb854c`; bound evidence is in `review_receipt.json`. This is a review of existing evidence, not a new outcome experiment or a claim that improvement is impossible.

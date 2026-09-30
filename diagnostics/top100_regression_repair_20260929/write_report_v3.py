@@ -95,10 +95,19 @@ def main():
     for pair in ('BRUNCH_SPOT|BRUNCH_SPOT','BRUNCH_SPOT|SMOOTHIE_SHOP','ICE_CREAM_SHOP|PET_CAFE'):
         chosen = [r for r in active if r['candidate_telemetry']['minimal_route_pair144'] == pair]
         report.append(f'| {pair.replace("|", " / ")} | {len(chosen)} | {wdl(chosen)} |')
-    report += ['', 'Complete native outcomes: [REACTIVE_CASES_V3.md](REACTIVE_CASES_V3.md).', '',
+    report += ['', 'The three nonzero fresh seed blocks show different mechanisms: '
+               '12929312 improved by two points with the planting repair active and no '
+               'new route active; 12929315 lost two points under Brunch/Brunch against '
+               'the two source-style opponents; 12929324 gained two points under '
+               'Brunch/Brunch against C95. Thus the same complete route helped one '
+               'opponent setting and harmed another. The other two new shop-pair '
+               'routes did not activate in this fresh block. See '
+               '`v3_fresh_outcome_changes.json` for every flipped outcome and telemetry.', '',
+               'Complete native outcomes: [REACTIVE_CASES_V3.md](REACTIVE_CASES_V3.md).', '',
                '## Earlier loss30 and top20 archive', '',
                'These are older saved tapes, distinct from today’s top20. They measure '
-               'retained and lost earlier fixes. They are not fresh validation.', '',
+               'retained and lost earlier fixes. They are not fresh validation. '
+               'Each fraction below counts matchups won in both seats; W/D/L counts individual games.', '',
                '| Group | Uploaded ae349 | V1 | V2 | V3 | V3 W/D/L |',
                '|---|---:|---:|---:|---:|---:|']
     previous = {v: read(f'archive_{v}_receipt.json') for v in ('v1', 'v2')}

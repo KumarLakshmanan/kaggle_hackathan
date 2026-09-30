@@ -1,0 +1,371 @@
+[
+  {
+    "ref": 56680167,
+    "fileName": "main.py",
+    "date": "2026-09-29T15:22:07.300000",
+    "description": "cb76fbc4 minimal routes + planting repair; user-requested experimental main.py; saved top100 145/200; fresh 149W90D17L; older loss archive 3/30; both-seat loader verified",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1840.6",
+    "privateScore": ""
+  },
+  {
+    "ref": 56668607,
+    "fileName": "main.py",
+    "date": "2026-09-29T08:11:57.237000",
+    "description": "ae349d83 user-requested repeat of 56666114; identical tested main.py; native loader verified; 2026-09-29",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1940.2",
+    "privateScore": ""
+  },
+  {
+    "ref": 56666114,
+    "fileName": "main.py",
+    "date": "2026-09-29T06:55:03.733000",
+    "description": "ae349d83 Pizza production guard; experimental main.py; saved loss30 27/30 top20 19/20; fresh WDL unchanged; loader verified 2026-09-29",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1825.8",
+    "privateScore": ""
+  },
+  {
+    "ref": 56662188,
+    "fileName": "main.py",
+    "date": "2026-09-29T04:09:22.800000",
+    "description": "257f941d guarded route repairs; experimental main.py; saved loss30 27/30 top20 19/20; native loader verified; 2026-09-29",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1249.9",
+    "privateScore": ""
+  },
+  {
+    "ref": 56649310,
+    "fileName": "main.py",
+    "date": "2026-09-28T18:22:44.387000",
+    "description": "a44c8c2c adaptive donor opening + pair repair + animal liquidity; user-requested experimental main.py; 2026-09-28",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1022.6",
+    "privateScore": ""
+  },
+  {
+    "ref": 56633591,
+    "fileName": "main.py",
+    "date": "2026-09-28T07:35:56.827000",
+    "description": "367d2e76 observed hire recovery + selected routes; user-requested experimental upload; 2026-09-28",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2263.9",
+    "privateScore": ""
+  },
+  {
+    "ref": 56628152,
+    "fileName": "main_candidate_partial_planting_20260928_06803086.py",
+    "date": "2026-09-28T03:54:13.487000",
+    "description": "06803086 partial planting + compatible route; user-requested experimental upload; 2026-09-28",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1965.6",
+    "privateScore": ""
+  },
+  {
+    "ref": 56625741,
+    "fileName": "main_candidate_observable_opening_20260928_fb6c5413.py",
+    "date": "2026-09-28T01:54:52.393000",
+    "description": "fb6c5413 observable opening selector; user-requested experimental upload; 2026-09-28",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1310.6",
+    "privateScore": ""
+  },
+  {
+    "ref": 56609430,
+    "fileName": "main.py",
+    "date": "2026-09-27T13:10:15.563000",
+    "description": "4eeac9c3 purchase + two-pass queue; fresh reactive and recent top100 qualified; 2026-09-27",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2577.6",
+    "privateScore": ""
+  },
+  {
+    "ref": 56602057,
+    "fileName": "main.py",
+    "date": "2026-09-27T07:25:37.983000",
+    "description": "c68fa46f disjoint observed-production schedule and guarded mirror quantities; native both-seat qualified",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2558.7",
+    "privateScore": ""
+  },
+  {
+    "ref": 56591314,
+    "fileName": "main.py",
+    "date": "2026-09-26T23:38:58.413000",
+    "description": "Observed-shop schedule repair 2026-09-27 sha3cc0f69f",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2300.6",
+    "privateScore": ""
+  },
+  {
+    "ref": 56590642,
+    "fileName": "exp_shunki_visible_repair_20260927.py",
+    "date": "2026-09-26T23:01:42.473000",
+    "description": "Shunki visible repair tested top50 sha1f221922 2026-09-27",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2605.1",
+    "privateScore": ""
+  },
+  {
+    "ref": 56572390,
+    "fileName": "main.py",
+    "date": "2026-09-26T07:01:20.303000",
+    "description": "Strawberry mirror24 2026-09-26 sha489fe8e4",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2130.7",
+    "privateScore": ""
+  },
+  {
+    "ref": 56569042,
+    "fileName": "main.py",
+    "date": "2026-09-26T04:27:35.710000",
+    "description": "Corrected mirror12 entrypoint 2026-09-26 sha08aa268a",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2223.9",
+    "privateScore": ""
+  },
+  {
+    "ref": 56568576,
+    "fileName": "main.py",
+    "date": "2026-09-26T04:00:32.657000",
+    "description": "Mirror 12 local validated 2026-09-26 sha0e2c30f4",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "156.1",
+    "privateScore": ""
+  },
+  {
+    "ref": 56547116,
+    "fileName": "main.py",
+    "date": "2026-09-25T09:32:37.873000",
+    "description": "Current tested main.py 2026-09-25",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2158.7",
+    "privateScore": ""
+  },
+  {
+    "ref": 56530281,
+    "fileName": "main.py",
+    "date": "2026-09-24T19:39:21.287000",
+    "description": "user-requested resubmit same verified main 2026-09-25",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2206.4",
+    "privateScore": ""
+  },
+  {
+    "ref": 56529771,
+    "fileName": "main.py",
+    "date": "2026-09-24T19:09:41.420000",
+    "description": "current main 2026-09-25 verified baseline",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2362.7",
+    "privateScore": ""
+  },
+  {
+    "ref": 56513716,
+    "fileName": "main.py",
+    "date": "2026-09-24T06:18:55.193000",
+    "description": "",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1538.5",
+    "privateScore": ""
+  },
+  {
+    "ref": 56513012,
+    "fileName": "main.py",
+    "date": "2026-09-24T05:45:51.917000",
+    "description": "Latest main.py (2026-09-24)",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "172.3",
+    "privateScore": ""
+  },
+  {
+    "ref": 56472039,
+    "fileName": "main.py",
+    "date": "2026-09-22T18:51:16.920000",
+    "description": "v47",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "149.0",
+    "privateScore": ""
+  },
+  {
+    "ref": 56431374,
+    "fileName": "main.py",
+    "date": "2026-09-21T13:23:33.250000",
+    "description": "",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1739.6",
+    "privateScore": ""
+  },
+  {
+    "ref": 56416534,
+    "fileName": "main.py",
+    "date": "2026-09-21T04:47:02.647000",
+    "description": "v32.0",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "760.0",
+    "privateScore": ""
+  },
+  {
+    "ref": 55956294,
+    "fileName": "main.py",
+    "date": "2026-09-02T06:32:53.430000",
+    "description": "v48 Grandmaster Tri-Strategy Agent (34/36 Benchmark Wins, 2/2 Sweep vs Tetsuya)",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "841.5",
+    "privateScore": ""
+  },
+  {
+    "ref": 55943278,
+    "fileName": "main.py",
+    "date": "2026-09-01T15:49:52.390000",
+    "description": "v47 Master Replay Router (Verified 2929 Base + Valid Config Signature)",
+    "status": "SubmissionStatus.ERROR",
+    "publicScore": "",
+    "privateScore": ""
+  },
+  {
+    "ref": 55943272,
+    "fileName": "main.py",
+    "date": "2026-09-01T15:48:56.937000",
+    "description": "v32.1 Master Portfolio Agent (2822.5 Verified Kaggle Score + Valid Config Signature)",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "766.2",
+    "privateScore": ""
+  },
+  {
+    "ref": 55943266,
+    "fileName": "main.py",
+    "date": "2026-09-01T15:48:32.910000",
+    "description": "v46 Master Shop Router (100% Valid Config Signatures + 170k Route Fallback)",
+    "status": "SubmissionStatus.ERROR",
+    "publicScore": "",
+    "privateScore": ""
+  },
+  {
+    "ref": 55943098,
+    "fileName": "main.py",
+    "date": "2026-09-01T15:35:47.013000",
+    "description": "v45 Champion Multi-Route Observable Router (100% Win vs 2929 Router)",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1024.3",
+    "privateScore": ""
+  },
+  {
+    "ref": 55369396,
+    "fileName": "main_v42_observable_state_router.py",
+    "date": "2026-08-09T05:44:57.733000",
+    "description": "v42",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1110.1",
+    "privateScore": ""
+  },
+  {
+    "ref": 55346451,
+    "fileName": "main.py",
+    "date": "2026-08-08T09:20:25.883000",
+    "description": "v36 leader-meta: 61/61 routes, 122/122 paired-seat wins",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1037.6",
+    "privateScore": ""
+  },
+  {
+    "ref": 55343979,
+    "fileName": "main.py",
+    "date": "2026-08-08T07:12:08.803000",
+    "description": "v35",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1637.1",
+    "privateScore": ""
+  },
+  {
+    "ref": 55334365,
+    "fileName": "main.py",
+    "date": "2026-08-07T21:42:49.450000",
+    "description": "v34.0 expanded observable replay portfolio",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2705.2",
+    "privateScore": ""
+  },
+  {
+    "ref": 55322339,
+    "fileName": "main.py",
+    "date": "2026-08-07T10:26:32.767000",
+    "description": "v32.0",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2822.5",
+    "privateScore": ""
+  },
+  {
+    "ref": 55320818,
+    "fileName": "main.py",
+    "date": "2026-08-07T09:09:42.313000",
+    "description": "v17.0",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2519.4",
+    "privateScore": ""
+  },
+  {
+    "ref": 55319905,
+    "fileName": "main.py",
+    "date": "2026-08-07T08:21:39.813000",
+    "description": "v16.0",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2017.4",
+    "privateScore": ""
+  },
+  {
+    "ref": 55316955,
+    "fileName": "main.py",
+    "date": "2026-08-07T06:19:55.947000",
+    "description": "v15.0 transparent search agent",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1792.3",
+    "privateScore": ""
+  },
+  {
+    "ref": 55296454,
+    "fileName": "main.py",
+    "date": "2026-08-06T10:54:30.043000",
+    "description": "",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1530.9",
+    "privateScore": ""
+  },
+  {
+    "ref": 55296430,
+    "fileName": "main.py",
+    "date": "2026-08-06T10:53:46.840000",
+    "description": "v4.0 ultra agent",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "238.8",
+    "privateScore": ""
+  },
+  {
+    "ref": 55296172,
+    "fileName": "main.py",
+    "date": "2026-08-06T10:38:12.963000",
+    "description": "v3.0 dynamic agent",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "245.4",
+    "privateScore": ""
+  },
+  {
+    "ref": 55295671,
+    "fileName": "submission.py",
+    "date": "2026-08-06T10:09:28.703000",
+    "description": "v21 tactical memory route exact artifact",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "1279.1",
+    "privateScore": ""
+  },
+  {
+    "ref": 55294461,
+    "fileName": "main.py",
+    "date": "2026-08-06T08:57:51.603000",
+    "description": "",
+    "status": "SubmissionStatus.COMPLETE",
+    "publicScore": "2557.1",
+    "privateScore": ""
+  }
+]

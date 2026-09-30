@@ -65,4 +65,59 @@ The first isolated V57 sheep-capacity wrapper was an invalid test: it checked fo
 - Representative V53 trace used to identify the livestock/cash pattern: `analysis_artifacts/trace_v53_leonid_kozinkin_seed726125330.json.gz`
 - Turn-72/180/360/540/718 captures: `benchmark_v53_capture72_loss_sample24_ranks101-200_2026-09-22.json`, `benchmark_v53_capture180_loss_sample24_ranks101-200_2026-09-22.json`, `benchmark_v53_capture360_loss_sample24_ranks101-200_2026-09-22.json`, `benchmark_v53_capture540_loss_sample24_ranks101-200_2026-09-22.json`, `benchmark_v53_capture718_loss_sample24_ranks101-200_2026-09-22.json`
 
-`main.py` was not changed in this round (SHA-256 remains `D9F13143522AAFB9453C803CF6093D5D12BAD70E91636E9F0482A9A26E5F8A79`). No Kaggle submission command was run.
+The earlier round above did not change `main.py`; its hash statement is historical. No Kaggle submission command was run in that round.
+
+## Follow-up: ranks 201–300 and code pages 4–5
+
+This follow-up used a fresh score-sorted leaderboard snapshot containing 400 teams. The added ranks 201–300 span scores **2,720.2–2,675.2** (mean **2,697.73**). The replay downloader found **185 distinct public 719-action tapes** from all 100 teams: 85 teams supplied two tapes and 15 supplied one. Every tape passed the action-count and SHA-256 validation checks.
+
+The next two public code pages added 200 listing entries with no overlap between the pages. Static extraction found:
+
+- Page 4: 93 notebooks with code, 26 agent-like sources, 11 complete agents, and 9 embedded payloads.
+- Page 5: 88 notebooks with code, 25 agent-like sources, 11 complete agents, and 13 embedded payloads.
+- Across both pages: 44 extracted file instances and 39 unique source hashes after deduplication.
+
+Notebook cells were never executed. Native-library candidates, suspicious oversized dynamic sources, and non-portable artifacts were excluded. The selected local source policies were AST-scanned before controlled execution.
+
+### Candidate policy screen
+
+Nineteen distinct policies were screened on 12 evenly spaced new routes, both seats (456 seat-games). The best source was the page-5 rank-94 embedded policy at **3/12 paired wins**, while the current agent won **4/12** on the same routes. Rank 100 reached 2/12 and rank 90 reached 2/12. Public-state/router claims in notebook titles were not accepted as evidence; their controlled results did not justify replacing the production policy.
+
+The page-5 rank-12 economics policy initially exposed an import-harness issue (`dataclass` could not resolve its defining module). The benchmark loader was fixed to register imported modules in `sys.modules`; after the fix it completed 24 games with zero errors and **0/12 paired wins** (mean paired margin about **−121,982**). This is a harness-corrected negative result, not a policy failure caused by the original import bug.
+
+### Isolated opening ablation
+
+The current policy and a transparent direct-wheat opening variant were run on all 185 new routes in both seats:
+
+| Policy | Paired wins/losses | Individual wins/losses | Mean margin | Mean call time |
+|---|---:|---:|---:|---:|
+| Current V52/V53-disabled base | 62 / 123 | 117 / 253 | +451 | 9.477 ms |
+| Direct five-wheat opening | **66 / 119** | **126 / 244** | **+1,075** | 9.497 ms |
+
+The opening change flipped four paired losses to wins and no wins to losses; 151 of 185 route margins were identical. It buys five wheat directly at step 0 instead of buying 20 and immediately selling 15, preserving the net wheat quantity. A smaller top-100 screen had one regression, so this is an evidence-backed improvement—not a claim of universal dominance.
+
+The rule has now been promoted transparently into `main.py` as a guarded step-0 rewrite. A post-promotion 12-route check matched the standalone V58 wrapper exactly: **5/12 paired wins**, **7/12 losses**, zero errors. Compilation passed for `main.py`, `paired_benchmark.py`, `candidate_policy_pool_benchmark.py`, and `route_panel_benchmark.py`.
+
+## Current artifacts and submission safety
+
+- Expanded leaderboard: `kaggle_leaderboard_live_2026-09-22_top400.json`
+- New replay panel: `live_leaderboard_routes_2026-09-22_ranks201-300_2ep/`
+- Page-4/page-5 listings and downloaded notebooks: `kaggle_code_examples_live_2026-09-22_page4_top100/`, `kaggle_code_examples_live_2026-09-22_page5_top100/`
+- Static reports: `KAGGLE_CODE_STATIC_COMPARISON_2026-09-22_page4.md`, `KAGGLE_CODE_STATIC_COMPARISON_2026-09-22_page5.md`
+- Full baseline/ablation results: `benchmark_main_v52_ranks201-300_2ep_2026-09-22.json`, `benchmark_v58_ranks201-300_full_2026-09-22.json`
+- Candidate screen: `benchmark_code_page4-5_ranks201-300_screen12_2026-09-22.json`
+- Fixed rank-12 rerun: `benchmark_code_rank12_ecobot_ranks201-300_screen12_fixed_loader_2026-09-22.json`
+- Post-promotion check: `benchmark_main_promoted_v58_ranks201-300_screen12_fixed_2026-09-22.json`
+
+Current `main.py` SHA-256: `4FD95DD8C2C998B0368804F0C4A4088F66541DE74F4436CCBFE866BB58147C03`. No Kaggle submission was made, and no future submission should be run without explicit user authorization.
+
+## V54 shop-route validation (2026-09-22)
+
+The fresh live top-100 replay panel contained five `YARN_STORE -> ICE_CREAM_SHOP` cases where the existing route-9 policy lost every paired replay. A transparent route sweep over routes 0–12 found route 10 to be the only positive aggregate on the three additional seeds. The validated static route-table change was applied to the outer engine and its V49/V51/V52 embedded namespaces.
+
+| Policy | Games | Paired wins/losses | Mean margin | Mean wall time |
+|---|---:|---:|---:|---:|
+| Previous `main.py` | 340 | 86 / 84 | +11,003.75 | 9.29 s |
+| V54 route-10 table fix | 340 | **89 / 81** | **+11,188.77** | **9.24 s** |
+
+The 12-route screen also improved from 6/12 paired wins and +5,496.79 to 8/12 and +7,034.79. No Kaggle submission was made.

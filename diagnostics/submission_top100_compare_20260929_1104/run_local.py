@@ -1,0 +1,120 @@
+"""Run three downloaded own submissions against one frozen public tape/team."""
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from datetime import datetime, timezone
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+sys.path.insert(0, str(ROOT))
+from paired_benchmark import run_game, engine_version
+from diagnostics.local_target_20260928.run_lock import exclusive_run
+
+SOURCES = {
+    'ae349d83': (HERE / 'downloaded/main_ae349d83.py',
+                 'ae349d83276976906626f7b59bc6bd3c41d286bc51854c26a6a8b25caf999abb'),
+    '257f941d': (HERE / 'downloaded/main_257f941d.py',
+                 '257f941d06fcd6dd9185ca58bc98d1af83dc4c3fafc24e275a1bf057b61bad55'),
+    '4eeac9c3': (HERE / 'downloaded/main_4eeac9c3.py',
+                 '4eeac9c3ded6682d42213ad22242ebe3dbe294faecbee7a33a6543a1f1f783ed'),
+}
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def play(job):
+    label, entry, seat = job
+    path, digest = SOURCES[label]
+    assert sha(path) == digest
+    route = json.loads(gzip.decompress(Path(entry['path']).read_bytes()))
+    actual_actions = hashlib.sha256(json.dumps(
+        route['actions'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    assert actual_actions == entry['action_sha256']
+    try:
+        game = run_game(str(path), 'rawroute:' + entry['path'],
+                        int(entry['seed']), seat, False, None, {})
+        return {key: game.get(key) for key in (
+            'result', 'margin', 'candidate_reward', 'opponent_reward',
+            'candidate_status', 'opponent_status', 'frames', 'wall_seconds',
+            'candidate_timing', 'candidate_telemetry')}
+    except Exception as error:
+        return {'error_type': type(error).__name__, 'error': str(error)[:400]}
+
+
+def main():
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    lock = ROOT / 'diagnostics/.shared_game_run.lock'
+    with exclusive_run(lock):
+        manifest = json.loads((HERE / 'manifest.json').read_text(encoding='utf-8'))
+        entries = json.loads((HERE / 'routes/summary.json').read_text(encoding='utf-8'))
+        assert manifest['complete'] and manifest['eligible'] == len(entries) == 100
+        assert len({int(e['team_id']) for e in entries}) == 100
+        assert sha(ROOT / 'main.py') == SOURCES['4eeac9c3'][1]
+        for path, digest in SOURCES.values():
+            assert sha(path) == digest
+        assert not (HERE / 'local_results.jsonl').exists()
+        assert not (HERE / 'local_run_receipt.json').exists()
+        manifest_digest = sha(HERE / 'manifest.json')
+        source_digest = sha(HERE / 'downloaded/download_receipt.json')
+        jobs = [(label, entry, seat) for entry in entries
+                for seat in (0, 1) for label in SOURCES]
+        receipt = {
+            'started_at_utc': now(), 'complete': False,
+            'selection': 'frozen 100 teams; same opponent tape and seed for three downloaded files in both seats',
+            'leaderboard_snapshot_utc': manifest['leaderboard_snapshot_utc'],
+            'manifest_sha256': manifest_digest,
+            'download_receipt_sha256': source_digest,
+            'source_sha256': {label: digest for label, (path, digest) in SOURCES.items()},
+            'engine_version': engine_version, 'planned_games': len(jobs),
+            'completed_games': 0, 'candidate_submission_ids': {
+                'ae349d83': [56668607, 56666114],
+                '257f941d': [56662188], '4eeac9c3': [56609430],
+            },
+        }
+        receipt_path = HERE / 'local_run_receipt.json'
+        receipt_path.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+        with (HERE / 'local_results.jsonl').open('x', encoding='utf-8') as stream:
+            with ProcessPoolExecutor(max_workers=4) as pool:
+                futures = {pool.submit(play, job): job for job in jobs}
+                for future in as_completed(futures):
+                    label, entry, seat = futures[future]
+                    try:
+                        result = future.result()
+                    except Exception as error:
+                        result = {'error_type': type(error).__name__, 'error': str(error)[:400]}
+                    row = {
+                        'label': label, 'rank': int(entry['rank']),
+                        'team_id': int(entry['team_id']), 'team': entry['team'],
+                        'episode_id': int(entry['episode_id']),
+                        'submission_id': int(entry['submission_id']),
+                        'seed': int(entry['seed']), 'candidate_seat': seat,
+                        'opponent_action_sha256': entry['action_sha256'],
+                        **result,
+                    }
+                    stream.write(json.dumps(row, ensure_ascii=False) + '\n')
+                    stream.flush()
+                    receipt['completed_games'] += 1
+                    if receipt['completed_games'] % 20 == 0:
+                        receipt_path.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+                        print(f"{receipt['completed_games']}/{len(jobs)} ",
+                              f"{label} rank={entry['rank']} seat={seat} ",
+                              row.get('result', row.get('error_type')), flush=True)
+        receipt.update(complete=True, completed_at_utc=now(),
+                       results_sha256=sha(HERE / 'local_results.jsonl'))
+        receipt_path.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+        print('COMPLETE ' + json.dumps({
+            'games': receipt['completed_games'],
+            'results_sha256': receipt['results_sha256']}), flush=True)
+
+
+if __name__ == '__main__':
+    main()

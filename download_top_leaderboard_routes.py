@@ -16,7 +16,9 @@ import io
 import json
 import re
 import subprocess
+import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
@@ -153,7 +155,54 @@ def _write_route(
     }
 
 
+def _download_replay(kaggle: str, episode_id: int) -> dict[str, Any]:
+    """Fetch one replay, retrying transient empty/partial CLI output."""
+    last_error: Exception | None = None
+    for attempt in range(1, 4):
+        try:
+            with tempfile.TemporaryDirectory(
+                prefix="kaggriculture-top-replay-"
+            ) as temporary:
+                subprocess.run(
+                    [
+                        kaggle,
+                        "competitions",
+                        "replay",
+                        str(episode_id),
+                        "-p",
+                        temporary,
+                        "-q",
+                    ],
+                    check=True,
+                )
+                replay_paths = list(Path(temporary).glob("*.json"))
+                if len(replay_paths) != 1:
+                    raise ValueError(
+                        f"Expected one replay for {episode_id}, found {replay_paths}"
+                    )
+                replay = json.loads(
+                    replay_paths[0].read_text(encoding="utf-8-sig")
+                )
+                if not isinstance(replay, dict) or not replay.get("steps"):
+                    raise ValueError(f"Replay {episode_id} is empty or malformed")
+                return replay
+        except (OSError, EOFError, json.JSONDecodeError, ValueError, subprocess.SubprocessError) as error:
+            last_error = error
+            if attempt < 3:
+                print(
+                    f"  replay fetch retry {attempt}/3 for episode={episode_id}: {error}",
+                    flush=True,
+                )
+                time.sleep(2 * attempt)
+    assert last_error is not None
+    raise RuntimeError(
+        f"Could not fetch valid replay for episode {episode_id} after 3 attempts"
+    ) from last_error
+
+
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     parser = argparse.ArgumentParser()
     parser.add_argument("--kaggle", required=True)
     parser.add_argument("--competition", default="kaggriculture")
@@ -193,25 +242,49 @@ def main() -> None:
             flush=True,
         )
         for episode in chosen:
-            with tempfile.TemporaryDirectory(prefix="kaggriculture-top-replay-") as temporary:
-                subprocess.run(
-                    [
-                        args.kaggle,
-                        "competitions",
-                        "replay",
-                        str(int(episode["id"])),
-                        "-p",
-                        temporary,
-                        "-q",
-                    ],
-                    check=True,
+            episode_id = int(episode["id"])
+            pattern = (
+                f"{_safe(leader['team'])}-submission-{leader['submission_id']}-"
+                f"episode-{episode_id}-seat*.json.gz"
+            )
+            existing = list(args.output.glob(pattern))
+            if len(existing) > 1:
+                raise RuntimeError(
+                    f"Multiple saved routes match submission {leader['submission_id']} "
+                    f"episode {episode_id}: {existing}"
                 )
-                replay_paths = list(Path(temporary).glob("*.json"))
-                if len(replay_paths) != 1:
-                    raise RuntimeError(
-                        f"Expected one replay for {episode['id']}, found {replay_paths}"
+            if existing:
+                try:
+                    with gzip.open(existing[0], "rt", encoding="utf-8") as handle:
+                        saved = json.load(handle)
+                    actions = saved.get("actions", [])
+                    metadata = saved.get("metadata", {})
+                    if len(actions) != 719 or not metadata.get("action_sha256"):
+                        raise ValueError("saved route has invalid action payload")
+                    row = {
+                        key: metadata[key]
+                        for key in (
+                            "episode_id", "team", "source_seat", "seed", "submission_id",
+                            "team_id", "leaderboard_score", "public_score", "action_sha256",
+                        )
+                    }
+                    row["path"] = str(existing[0].resolve())
+                    row["num_actions"] = len(actions)
+                    rows.append(row)
+                    print(
+                        f"  reused episode={row['episode_id']} seed={row['seed']} "
+                        f"seat={row['source_seat']} hash={row['action_sha256'][:12]}",
+                        flush=True,
                     )
-                replay = json.loads(replay_paths[0].read_text(encoding="utf-8"))
+                    continue
+                except (OSError, EOFError, json.JSONDecodeError, ValueError, KeyError) as error:
+                    print(f"  replacing invalid saved route {existing[0].name}: {error}", flush=True)
+                    existing[0].unlink()
+            try:
+                replay = _download_replay(args.kaggle, int(episode["id"]))
+            except RuntimeError as error:
+                print(f"skip episode={episode['id']}: {error}", flush=True)
+                continue
             try:
                 row = _write_route(args.output, replay, leader, episode)
             except ValueError as error:

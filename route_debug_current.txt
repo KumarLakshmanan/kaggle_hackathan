@@ -1,0 +1,4 @@
+AGENT_DEBUG step=0 router=forced_router route_state={}
+AGENT_DEBUG step=144 router=forced_router route_state={0: {'last_step': 143, 'route': 0, 'router_state': {}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}
+AGENT_DEBUG step=0 router=forced_router route_state={}
+AGENT_DEBUG step=144 router=forced_router route_state={1: {'last_step': 143, 'route': 0, 'router_state': {}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}

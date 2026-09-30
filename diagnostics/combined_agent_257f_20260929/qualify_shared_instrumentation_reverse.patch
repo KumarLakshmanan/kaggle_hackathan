@@ -1,0 +1,44 @@
+diff --git b/diagnostics/opening_probe_v2_20260928/qualify.py a/diagnostics/opening_probe_v2_20260928/qualify.py
+index 51c1d1d..cc82889 100644
+--- b/diagnostics/opening_probe_v2_20260928/qualify.py
++++ a/diagnostics/opening_probe_v2_20260928/qualify.py
+@@ -87,39 +87,11 @@ def play(job):
+         own, rival = float(final[seat].reward or 0), float(final[1-seat].reward or 0)
+         margin = own - rival
+         telemetry = dict(getattr(candidate.agent, 'telemetry', {}) or {})
+-        opponent_telemetry = (dict(getattr(opponent_module.agent, 'telemetry', {}) or {})
+-                              if opponent_module is not None else {})
+-        native_status_errors = [
+-            {'step': step, 'player': player, 'status': state.status}
+-            for step, frame in enumerate(env.steps)
+-            for player, state in enumerate(frame)
+-            if state.status in {'ERROR', 'INVALID', 'TIMEOUT'}
+-        ]
+-        native_stderr_events = [
+-            {'step': step, 'player': player, 'stderr': str(log.get('stderr', ''))}
+-            for step, frame_logs in enumerate(env.logs)
+-            for player, log in enumerate(frame_logs)
+-            if str(log.get('stderr', '')).strip()
+-        ]
+-        remaining_overage = []
+-        for frame in env.steps:
+-            observation = frame[seat].observation
+-            value = (observation.get('remainingOverageTime')
+-                     if hasattr(observation, 'get')
+-                     else getattr(observation, 'remainingOverageTime', None))
+-            if value is not None:
+-                remaining_overage.append(float(value))
+         row = dict(job, candidate_reward=own, opponent_reward=rival, margin=margin,
+                    result='win' if margin > 0 else 'loss' if margin < 0 else 'draw',
+                    frames=len(env.steps), candidate_status=final[seat].status, opponent_status=final[1-seat].status,
+                    wall_seconds=time.perf_counter()-started, candidate_timing=_timing_dict(timed),
+-                   opponent_timing=_timing_dict(opponent) if isinstance(opponent, TimedAgent) else None,
+                    candidate_capture=timed.capture, candidate_telemetry=telemetry,
+-                   opponent_telemetry=opponent_telemetry,
+-                   native_status_errors=native_status_errors,
+-                   native_stderr_events=native_stderr_events,
+-                   minimum_remaining_overage_seconds=(min(remaining_overage)
+-                                                       if remaining_overage else None),
+                    candidate_errors=errors(candidate), opponent_errors=errors(opponent_module) if opponent_module else {},
+                    configuration_seed_visible=None)
+         if reference_fallback_errors:

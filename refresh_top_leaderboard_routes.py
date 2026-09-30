@@ -131,7 +131,6 @@ def main() -> None:
     teams = leaderboard[start : start + max(1, int(args.top_teams))]
     args.output.mkdir(parents=True, exist_ok=True)
     rows: list[dict[str, Any]] = []
-    seen_episodes: set[int] = set()
     for rank, team in enumerate(teams, start=max(1, int(args.start_rank))):
         team_id = int(team["teamId"])
         team_name = str(team["teamName"])
@@ -152,9 +151,6 @@ def main() -> None:
         )
         for episode in chosen:
             episode_id = int(episode["id"])
-            if episode_id in seen_episodes:
-                continue
-            seen_episodes.add(episode_id)
             with tempfile.TemporaryDirectory(prefix="kaggriculture-top-replay-") as temporary:
                 subprocess.run(
                     [args.kaggle, "competitions", "replay", str(episode_id), "-p", temporary, "-q"],

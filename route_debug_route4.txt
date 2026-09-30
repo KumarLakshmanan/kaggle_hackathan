@@ -1,0 +1,12 @@
+AGENT_DEBUG step=0 router=forced_router shops=[] route_state={}
+ACT_DEBUG step=0 before={}
+ACT_DEBUG step=0 after={0: {'last_step': 0, 'route': 0, 'router_state': {}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}
+AGENT_DEBUG step=144 router=forced_router shops=['YARN_STORE', 'ICE_CREAM_SHOP'] route_state={0: {'last_step': 143, 'route': 0, 'router_state': {}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}
+ACT_DEBUG step=144 before={0: {'last_step': 143, 'route': 0, 'router_state': {}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}
+ACT_DEBUG step=144 after={0: {'last_step': 144, 'route': 4, 'router_state': {'expert': 'V39', 'route': 4, 'day6': True}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}
+AGENT_DEBUG step=0 router=forced_router shops=[] route_state={}
+ACT_DEBUG step=0 before={}
+ACT_DEBUG step=0 after={1: {'last_step': 0, 'route': 0, 'router_state': {}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}
+AGENT_DEBUG step=144 router=forced_router shops=['YARN_STORE', 'ICE_CREAM_SHOP'] route_state={1: {'last_step': 143, 'route': 0, 'router_state': {}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}
+ACT_DEBUG step=144 before={1: {'last_step': 143, 'route': 0, 'router_state': {}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}
+ACT_DEBUG step=144 after={1: {'last_step': 144, 'route': 4, 'router_state': {'expert': 'V39', 'route': 4, 'day6': True}, 'pending': {}, 'sell_state': {'due_step': -1, 'suppress': {}, 'r36_debts': {}}}}

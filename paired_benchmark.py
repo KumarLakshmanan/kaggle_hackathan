@@ -7,6 +7,7 @@ game so stateful agents cannot leak state between episodes.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 import gzip
 import hashlib
 import importlib.util
@@ -28,14 +29,21 @@ class Timing:
     calls: int = 0
     seconds: float = 0.0
     max_seconds: float = 0.0
+    max_step: int = -1
 
 
 class TimedAgent:
-    def __init__(self, function: Callable[..., Any], capture_step: int | None = None):
+    def __init__(
+        self,
+        function: Callable[..., Any],
+        capture_step: int | None = None,
+        module_name: str | None = None,
+    ):
         self.function = function
         self.timing = Timing()
         self.capture_step = capture_step
         self.capture: dict[str, Any] | None = None
+        self.module_name = module_name
         try:
             signature = inspect.signature(function)
             positional = [
@@ -49,10 +57,11 @@ class TimedAgent:
             self.accepts_configuration = False
 
     def __call__(self, observation: Any, configuration: Any = None) -> Any:
+        observed_step = _value(observation, "step", -1)
         if (
             self.capture_step is not None
             and self.capture is None
-            and int(_value(observation, "step", -1) or -1) == self.capture_step
+            and int(observed_step if observed_step is not None else -1) == self.capture_step
         ):
             self.capture = _capture_public(observation)
         started = time.perf_counter()
@@ -64,7 +73,9 @@ class TimedAgent:
             elapsed = time.perf_counter() - started
             self.timing.calls += 1
             self.timing.seconds += elapsed
-            self.timing.max_seconds = max(self.timing.max_seconds, elapsed)
+            if elapsed > self.timing.max_seconds:
+                self.timing.max_seconds = elapsed
+                self.timing.max_step = int(observed_step if observed_step is not None else -1)
 
 
 def _value(obj: Any, key: str, default: Any = None) -> Any:
@@ -125,6 +136,7 @@ def _farm_signature(farm: Any) -> dict[str, Any]:
 def _capture_public(observation: Any) -> dict[str, Any]:
     market = _value(observation, "market", {}) or {}
     town = _value(observation, "town", {}) or {}
+    private = _value(observation, "private", {}) or {}
     farms = list(_value(observation, "farms", []) or [])
     return {
         "step": int(_value(observation, "step", -1) or -1),
@@ -132,6 +144,7 @@ def _capture_public(observation: Any) -> dict[str, Any]:
         "shops": list(_value(town, "unlocked_shops", []) or []),
         "prices": dict(_value(market, "prices", {}) or {}),
         "inventory": dict(_value(market, "inventory", {}) or {}),
+        "private_shed": dict(_value(private, "shed", {}) or {}),
         "farms": [_farm_signature(farm) for farm in farms],
     }
 
@@ -170,11 +183,15 @@ def _load_file_agent(
     overrides: dict[str, Any] | None = None,
 ) -> TimedAgent:
     module = _load_module(path, tag)
-    _apply_overrides(module, overrides or {})
-    function = getattr(module, "agent", None)
-    if not callable(function):
-        raise RuntimeError(f"No callable agent(obs) in {resolved}")
-    return TimedAgent(function, capture_step)
+    try:
+        _apply_overrides(module, overrides or {})
+        function = getattr(module, "agent", None)
+        if not callable(function):
+            raise RuntimeError(f"No callable agent(obs) in {path.resolve()}")
+        return TimedAgent(function, capture_step, module.__name__)
+    except Exception:
+        sys.modules.pop(module.__name__, None)
+        raise
 
 
 def _load_agent(
@@ -212,36 +229,40 @@ def _load_agent(
         else:
             base_path = Path(__file__).resolve().parent / "v13r3_notebook_output" / "main.py"
         module = _load_module(base_path, f"route_proxy_{tag}")
-        if raw_route:
-            module.ACTIONS = actions
-        elif delayed_switch:
-            original_activate = module._activate_action_book
+        try:
+            if raw_route:
+                module.ACTIONS = actions
+            elif delayed_switch:
+                original_activate = module._activate_action_book
 
-            def activate_delayed(obs: Any, step: int) -> str:
-                mode = original_activate(obs, step)
-                if mode == "alternate" and step >= 144:
-                    module._ACTIONS = actions
-                return mode
+                def activate_delayed(obs: Any, step: int) -> str:
+                    mode = original_activate(obs, step)
+                    if mode == "alternate" and step >= 144:
+                        module._ACTIONS = actions
+                    return mode
 
-            module._activate_action_book = activate_delayed
-        else:
-            module._ACTIONS = actions
-        if readable_route:
-            module._PRIMARY_ACTIONS = actions
-            module._ALTERNATE_ACTIONS = actions
-            module._counter_order = lambda action, step: action
-
-            def activate_route(_obs: Any, _step: int) -> str:
+                module._activate_action_book = activate_delayed
+            else:
                 module._ACTIONS = actions
-                return "primary"
+            if readable_route:
+                module._PRIMARY_ACTIONS = actions
+                module._ALTERNATE_ACTIONS = actions
+                module._counter_order = lambda action, step: action
 
-            module._activate_action_book = activate_route
-        else:
-            module._PREEMPT_ENABLED = route_preempt
-        _apply_overrides(module, overrides or {})
-        function = getattr(module, "agent")
-        timed = TimedAgent(function, capture_step)
-        return timed, timed
+                def activate_route(_obs: Any, _step: int) -> str:
+                    module._ACTIONS = actions
+                    return "primary"
+
+                module._activate_action_book = activate_route
+            else:
+                module._PREEMPT_ENABLED = route_preempt
+            _apply_overrides(module, overrides or {})
+            function = getattr(module, "agent")
+            timed = TimedAgent(function, capture_step, module.__name__)
+            return timed, timed
+        except Exception:
+            sys.modules.pop(module.__name__, None)
+            raise
     path = Path(specification)
     if path.is_file():
         timed = _load_file_agent(path, tag, capture_step, overrides)
@@ -268,6 +289,20 @@ def _timing_dict(timed: TimedAgent | None) -> dict[str, float | int] | None:
         "seconds": timing.seconds,
         "mean_us": mean * 1_000_000,
         "max_ms": timing.max_seconds * 1_000,
+        "max_step": timing.max_step,
+    }
+
+
+def _telemetry_dict(timed: TimedAgent | None) -> dict[str, Any] | None:
+    if timed is None:
+        return None
+    telemetry = getattr(timed.function, "telemetry", None)
+    if not isinstance(telemetry, Mapping):
+        return None
+    return {
+        str(key): value
+        for key, value in telemetry.items()
+        if value is None or isinstance(value, (str, int, float, bool))
     }
 
 
@@ -280,50 +315,58 @@ def run_game(
     capture_step: int | None,
     candidate_overrides: dict[str, Any],
 ) -> dict[str, Any]:
-    candidate_agent, candidate_timing = _load_agent(
-        candidate,
-        f"candidate_s{seed}_p{candidate_seat}",
-        capture_step,
-        candidate_overrides,
-    )
-    opponent_agent, opponent_timing = _load_agent(
-        opponent, f"opponent_s{seed}_p{1 - candidate_seat}"
-    )
-    agents = (
-        [candidate_agent, opponent_agent]
-        if candidate_seat == 0
-        else [opponent_agent, candidate_agent]
-    )
+    candidate_timing = None
+    opponent_timing = None
+    try:
+        candidate_agent, candidate_timing = _load_agent(
+            candidate,
+            f"candidate_s{seed}_p{candidate_seat}",
+            capture_step,
+            candidate_overrides,
+        )
+        opponent_agent, opponent_timing = _load_agent(
+            opponent, f"opponent_s{seed}_p{1 - candidate_seat}"
+        )
+        agents = (
+            [candidate_agent, opponent_agent]
+            if candidate_seat == 0
+            else [opponent_agent, candidate_agent]
+        )
 
-    env = make(
-        "kaggriculture",
-        configuration={"episodeSteps": 720, "seed": int(seed)},
-        debug=debug,
-    )
-    started = time.perf_counter()
-    env.run(agents)
-    wall_seconds = time.perf_counter() - started
+        env = make(
+            "kaggriculture",
+            configuration={"episodeSteps": 720, "seed": int(seed)},
+            debug=debug,
+        )
+        started = time.perf_counter()
+        env.run(agents)
+        wall_seconds = time.perf_counter() - started
 
-    final = env.steps[-1]
-    opponent_seat = 1 - candidate_seat
-    candidate_reward = _reward(final[candidate_seat])
-    opponent_reward = _reward(final[opponent_seat])
-    margin = candidate_reward - opponent_reward
-    return {
-        "seed": seed,
-        "candidate_seat": candidate_seat,
-        "candidate_reward": candidate_reward,
-        "opponent_reward": opponent_reward,
-        "margin": margin,
-        "result": "win" if margin > 0 else "loss" if margin < 0 else "draw",
-        "candidate_status": _status(final[candidate_seat]),
-        "opponent_status": _status(final[opponent_seat]),
-        "frames": len(env.steps),
-        "wall_seconds": wall_seconds,
-        "candidate_timing": _timing_dict(candidate_timing),
-        "candidate_capture": candidate_timing.capture if candidate_timing else None,
-        "opponent_timing": _timing_dict(opponent_timing),
-    }
+        final = env.steps[-1]
+        opponent_seat = 1 - candidate_seat
+        candidate_reward = _reward(final[candidate_seat])
+        opponent_reward = _reward(final[opponent_seat])
+        margin = candidate_reward - opponent_reward
+        return {
+            "seed": seed,
+            "candidate_seat": candidate_seat,
+            "candidate_reward": candidate_reward,
+            "opponent_reward": opponent_reward,
+            "margin": margin,
+            "result": "win" if margin > 0 else "loss" if margin < 0 else "draw",
+            "candidate_status": _status(final[candidate_seat]),
+            "opponent_status": _status(final[opponent_seat]),
+            "frames": len(env.steps),
+            "wall_seconds": wall_seconds,
+            "candidate_timing": _timing_dict(candidate_timing),
+            "candidate_telemetry": _telemetry_dict(candidate_timing),
+            "candidate_capture": candidate_timing.capture if candidate_timing else None,
+            "opponent_timing": _timing_dict(opponent_timing),
+        }
+    finally:
+        for timed in (candidate_timing, opponent_timing):
+            if timed is not None and timed.module_name:
+                sys.modules.pop(timed.module_name, None)
 
 
 def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:

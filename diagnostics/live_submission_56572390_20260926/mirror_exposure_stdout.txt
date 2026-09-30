@@ -1,0 +1,1032 @@
+[
+  {
+    "episode_id": 113604384,
+    "teams": [
+      "BalaVignesh",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -119616.0
+  },
+  {
+    "episode_id": 113605594,
+    "teams": [
+      "Julio Cesar Filho",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -102011.0
+  },
+  {
+    "episode_id": 113606728,
+    "teams": [
+      "Lakshmanan R",
+      "Clement Ling"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 36710.0
+  },
+  {
+    "episode_id": 113607898,
+    "teams": [
+      "Lakshmanan R",
+      "Eric Fan"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 41000.0
+  },
+  {
+    "episode_id": 113609043,
+    "teams": [
+      "Chaitanya Sonaje",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -35265.0
+  },
+  {
+    "episode_id": 113610203,
+    "teams": [
+      "Lakshmanan R",
+      "Jonathan Roy"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 12922.0
+  },
+  {
+    "episode_id": 113611363,
+    "teams": [
+      "Lakshmanan R",
+      "Lior Toledano"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 1,
+    "margin_first_minus_second": 10219.0
+  },
+  {
+    "episode_id": 113612532,
+    "teams": [
+      "george-nigmatulin",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -15428.0
+  },
+  {
+    "episode_id": 113613700,
+    "teams": [
+      "Lakshmanan R",
+      "kaguramena"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 9,
+    "margin_first_minus_second": 26723.0
+  },
+  {
+    "episode_id": 113613920,
+    "teams": [
+      "rin2401",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -39045.0
+  },
+  {
+    "episode_id": 113614857,
+    "teams": [
+      "Lakshmanan R",
+      "refluxor"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 10,
+    "margin_first_minus_second": 11866.0
+  },
+  {
+    "episode_id": 113616021,
+    "teams": [
+      "Tavuk Master",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 10,
+    "margin_first_minus_second": 2926.0
+  },
+  {
+    "episode_id": 113617223,
+    "teams": [
+      "Lakshmanan R",
+      "StephaneB7899"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 1,
+    "margin_first_minus_second": 6814.0
+  },
+  {
+    "episode_id": 113618518,
+    "teams": [
+      "york1to",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 1,
+    "margin_first_minus_second": -7174.0
+  },
+  {
+    "episode_id": 113619609,
+    "teams": [
+      "Adrian Phillips",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -13955.0
+  },
+  {
+    "episode_id": 113620777,
+    "teams": [
+      "Vitalie Cervinschi",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 200,
+    "margin_first_minus_second": -998.0
+  },
+  {
+    "episode_id": 113622318,
+    "teams": [
+      "Lakshmanan R",
+      "AcidicBlaster"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 353,
+    "margin_first_minus_second": 573.0
+  },
+  {
+    "episode_id": 113623534,
+    "teams": [
+      "Amir Ghazi",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -19673.0
+  },
+  {
+    "episode_id": 113624330,
+    "teams": [
+      "Aleix L\u00f3pez",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 274,
+    "margin_first_minus_second": 155.0
+  },
+  {
+    "episode_id": 113624710,
+    "teams": [
+      "Kaileh57",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -18691.0
+  },
+  {
+    "episode_id": 113624825,
+    "teams": [
+      "Lakshmanan R",
+      "linchuhan"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 434,
+    "margin_first_minus_second": 114.0
+  },
+  {
+    "episode_id": 113625457,
+    "teams": [
+      "Lakshmanan R",
+      "BobChuckyJoe"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 21719.0
+  },
+  {
+    "episode_id": 113625911,
+    "teams": [
+      "Lakshmanan R",
+      "ROGER REN"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 27971.0
+  },
+  {
+    "episode_id": 113627100,
+    "teams": [
+      "Lakshmanan R",
+      "junseok lee"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 21490.0
+  },
+  {
+    "episode_id": 113628289,
+    "teams": [
+      "Lakshmanan R",
+      "JinchengZhang1"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 423,
+    "margin_first_minus_second": -208.0
+  },
+  {
+    "episode_id": 113629493,
+    "teams": [
+      "Lakshmanan R",
+      "tera358"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 15615.0
+  },
+  {
+    "episode_id": 113630663,
+    "teams": [
+      "Lakshmanan R",
+      "\u6d1b\u5e0c\u8fb9\u9645"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 13816.0
+  },
+  {
+    "episode_id": 113631562,
+    "teams": [
+      "Lakshmanan R",
+      "F.A.Nina"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 459,
+    "margin_first_minus_second": 1219.0
+  },
+  {
+    "episode_id": 113631845,
+    "teams": [
+      "Lakshmanan R",
+      "Farmerjay"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 312,
+    "margin_first_minus_second": -337.0
+  },
+  {
+    "episode_id": 113633023,
+    "teams": [
+      "apple farmer",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 233,
+    "margin_first_minus_second": -64.0
+  },
+  {
+    "episode_id": 113633036,
+    "teams": [
+      "\u5b97\u5b97\u6ca1\u6709\u82f1\u6587\u540d",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": -1107.0
+  },
+  {
+    "episode_id": 113634238,
+    "teams": [
+      "Lakshmanan R",
+      "Yukino487"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 317,
+    "margin_first_minus_second": -1130.0
+  },
+  {
+    "episode_id": 113635293,
+    "teams": [
+      "Satuker",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 552,
+    "margin_first_minus_second": -402.0
+  },
+  {
+    "episode_id": 113636573,
+    "teams": [
+      "massi0411",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -18652.0
+  },
+  {
+    "episode_id": 113637758,
+    "teams": [
+      "Logus",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 344,
+    "margin_first_minus_second": 79.0
+  },
+  {
+    "episode_id": 113638952,
+    "teams": [
+      "Lakshmanan R",
+      "No Free Lunch, Only Melons"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 13999.0
+  },
+  {
+    "episode_id": 113640158,
+    "teams": [
+      "sunil kumar",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 312,
+    "margin_first_minus_second": -480.0
+  },
+  {
+    "episode_id": 113641314,
+    "teams": [
+      "sottnik",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 545,
+    "margin_first_minus_second": -3034.0
+  },
+  {
+    "episode_id": 113642505,
+    "teams": [
+      "Lakshmanan R",
+      "\u0438\u0442\u043c\u043e\u043d\u044f\u044f\u044f"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 283,
+    "margin_first_minus_second": -900.0
+  },
+  {
+    "episode_id": 113642843,
+    "teams": [
+      "HayatoFujihara",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 384,
+    "margin_first_minus_second": 699.0
+  },
+  {
+    "episode_id": 113643874,
+    "teams": [
+      "Lakshmanan R",
+      "nir afek"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 7504.0
+  },
+  {
+    "episode_id": 113644882,
+    "teams": [
+      "Lakshmanan R",
+      "saberzky"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 10213.0
+  },
+  {
+    "episode_id": 113646148,
+    "teams": [
+      "Lakshmanan R",
+      "Kamilek"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 359,
+    "margin_first_minus_second": -350.0
+  },
+  {
+    "episode_id": 113646384,
+    "teams": [
+      "Djamila Benchikh",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -15863.0
+  },
+  {
+    "episode_id": 113647258,
+    "teams": [
+      "Lakshmanan R",
+      "MKGA"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 5349.0
+  },
+  {
+    "episode_id": 113648444,
+    "teams": [
+      "Anaconda",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 531,
+    "margin_first_minus_second": 845.0
+  },
+  {
+    "episode_id": 113649893,
+    "teams": [
+      "Szymon Mi\u0142osz",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 288,
+    "margin_first_minus_second": -332.0
+  },
+  {
+    "episode_id": 113650810,
+    "teams": [
+      "Yuxiao Wang",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 513,
+    "margin_first_minus_second": -626.0
+  },
+  {
+    "episode_id": 113652164,
+    "teams": [
+      "JerryChen",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 315,
+    "margin_first_minus_second": 368.0
+  },
+  {
+    "episode_id": 113653395,
+    "teams": [
+      "Whyme Labs",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -16722.0
+  },
+  {
+    "episode_id": 113654289,
+    "teams": [
+      "mamematcha",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 384,
+    "margin_first_minus_second": 398.0
+  },
+  {
+    "episode_id": 113655510,
+    "teams": [
+      "Lakshmanan R",
+      "tkm7510"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 483,
+    "margin_first_minus_second": 524.0
+  },
+  {
+    "episode_id": 113656594,
+    "teams": [
+      "\u5b97\u5b97\u6ca1\u6709\u82f1\u6587\u540d",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": -336.0
+  },
+  {
+    "episode_id": 113656710,
+    "teams": [
+      "Lakshmanan R",
+      "animal crossing"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 15280.0
+  },
+  {
+    "episode_id": 113657891,
+    "teams": [
+      "kouhei mori",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -12431.0
+  },
+  {
+    "episode_id": 113658303,
+    "teams": [
+      "Lakshmanan R",
+      "Zhu Liang"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 21909.0
+  },
+  {
+    "episode_id": 113659090,
+    "teams": [
+      "Lakshmanan R",
+      "ALLAI"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 505,
+    "margin_first_minus_second": 642.0
+  },
+  {
+    "episode_id": 113660249,
+    "teams": [
+      "Lakshmanan R",
+      "Nader"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 14731.0
+  },
+  {
+    "episode_id": 113661431,
+    "teams": [
+      "SANNNNN",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -7330.0
+  },
+  {
+    "episode_id": 113662383,
+    "teams": [
+      "Roy Lo TW",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 250,
+    "margin_first_minus_second": 791.0
+  },
+  {
+    "episode_id": 113662620,
+    "teams": [
+      "Lakshmanan R",
+      "Thomas Deng"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 416,
+    "margin_first_minus_second": -1485.0
+  },
+  {
+    "episode_id": 113663447,
+    "teams": [
+      "maoxin123",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": -847.0
+  },
+  {
+    "episode_id": 113663793,
+    "teams": [
+      "Gigrise",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 552,
+    "margin_first_minus_second": -287.0
+  },
+  {
+    "episode_id": 113664954,
+    "teams": [
+      "Lakshmanan R",
+      "hugghngkai"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 433,
+    "margin_first_minus_second": -460.0
+  },
+  {
+    "episode_id": 113666137,
+    "teams": [
+      "Lakshmanan R",
+      "JustinLee"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 336,
+    "margin_first_minus_second": -241.0
+  },
+  {
+    "episode_id": 113666558,
+    "teams": [
+      "awarse",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -18681.0
+  },
+  {
+    "episode_id": 113667319,
+    "teams": [
+      "qiuqiu",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 328,
+    "margin_first_minus_second": 499.0
+  },
+  {
+    "episode_id": 113668633,
+    "teams": [
+      "Lakshmanan R",
+      "waticson"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 292,
+    "margin_first_minus_second": 100.0
+  },
+  {
+    "episode_id": 113669717,
+    "teams": [
+      "Lakshmanan R",
+      "\u65ad\u7f6a\u306e\u5b64\u9ad8\u306e\u795e\u30fb\u5927\u5b87\u5b99\u8349\u8393\u8987\u7687"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": 1107.0
+  },
+  {
+    "episode_id": 113670887,
+    "teams": [
+      "Lakshmanan R",
+      "Haalandspring"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": 433.0
+  },
+  {
+    "episode_id": 113672058,
+    "teams": [
+      "Lakshmanan R",
+      "Jet"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 11050.0
+  },
+  {
+    "episode_id": 113673257,
+    "teams": [
+      "Lakshmanan R",
+      "Adam"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 17753.0
+  },
+  {
+    "episode_id": 113674440,
+    "teams": [
+      "Randy",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 528,
+    "margin_first_minus_second": 468.0
+  },
+  {
+    "episode_id": 113675613,
+    "teams": [
+      "Lakshmanan R",
+      "Ethereal49"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 305,
+    "margin_first_minus_second": 1177.0
+  },
+  {
+    "episode_id": 113676339,
+    "teams": [
+      "Lakshmanan R",
+      "herens"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 289,
+    "margin_first_minus_second": -781.0
+  },
+  {
+    "episode_id": 113676495,
+    "teams": [
+      "Lakshmanan R",
+      "maoxin123"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 515,
+    "margin_first_minus_second": 1089.0
+  },
+  {
+    "episode_id": 113676608,
+    "teams": [
+      "F.A.Nina",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 283,
+    "margin_first_minus_second": 2522.0
+  },
+  {
+    "episode_id": 113676782,
+    "teams": [
+      "Lakshmanan R",
+      "xthixsl_ml"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 526,
+    "margin_first_minus_second": 187.0
+  },
+  {
+    "episode_id": 113679523,
+    "teams": [
+      "Lakshmanan R",
+      "koucha"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 263,
+    "margin_first_minus_second": -295.0
+  },
+  {
+    "episode_id": 113683512,
+    "teams": [
+      "Lakshmanan R",
+      "Ethereal49"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 531,
+    "margin_first_minus_second": 755.0
+  },
+  {
+    "episode_id": 113688671,
+    "teams": [
+      "Mason Cao",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": -18219.0
+  },
+  {
+    "episode_id": 113693169,
+    "teams": [
+      "Lakshmanan R",
+      "Tagir Analyzes"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 122,
+    "margin_first_minus_second": -326.0
+  },
+  {
+    "episode_id": 113693363,
+    "teams": [
+      "Lakshmanan R",
+      "Hello San Francisco"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 22489.0
+  },
+  {
+    "episode_id": 113701553,
+    "teams": [
+      "Lakshmanan R",
+      "Adnan Zaman"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 144,
+    "margin_first_minus_second": -4462.0
+  },
+  {
+    "episode_id": 113705997,
+    "teams": [
+      "GUAM",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 432,
+    "margin_first_minus_second": -42.0
+  },
+  {
+    "episode_id": 113707599,
+    "teams": [
+      "Lakshmanan R",
+      "Paulo Martins"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 324,
+    "margin_first_minus_second": 2426.0
+  },
+  {
+    "episode_id": 113709804,
+    "teams": [
+      "Revanth Tambisetty",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": 89.0
+  },
+  {
+    "episode_id": 113717972,
+    "teams": [
+      "Lakshmanan R",
+      "Ryan Shan"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": 2055.0
+  },
+  {
+    "episode_id": 113720971,
+    "teams": [
+      "Pramit Das",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 292,
+    "margin_first_minus_second": 1289.0
+  },
+  {
+    "episode_id": 113721092,
+    "teams": [
+      "mitomeat823",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 505,
+    "margin_first_minus_second": 146.0
+  },
+  {
+    "episode_id": 113728578,
+    "teams": [
+      "edchax",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 526,
+    "margin_first_minus_second": 330.0
+  },
+  {
+    "episode_id": 113731796,
+    "teams": [
+      "Lakshmanan R",
+      "auouer"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 140,
+    "margin_first_minus_second": 318.0
+  },
+  {
+    "episode_id": 113732347,
+    "teams": [
+      "lucaskna",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": 520.0
+  },
+  {
+    "episode_id": 113735453,
+    "teams": [
+      "Lakshmanan R",
+      "Yunioshi"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 11810.0
+  },
+  {
+    "episode_id": 113740222,
+    "teams": [
+      "Lakshmanan R",
+      "Yunioshi"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 16509.0
+  },
+  {
+    "episode_id": 113742234,
+    "teams": [
+      "Lakshmanan R",
+      "dasfds"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 0,
+    "margin_first_minus_second": 11568.0
+  },
+  {
+    "episode_id": 113742416,
+    "teams": [
+      "Lakshmanan R",
+      "mitomeat823"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 312,
+    "margin_first_minus_second": 224.0
+  },
+  {
+    "episode_id": 113751012,
+    "teams": [
+      "Grigor Sargsyan",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 293,
+    "margin_first_minus_second": -27.0
+  },
+  {
+    "episode_id": 113752240,
+    "teams": [
+      " Master Bob111",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 463,
+    "margin_first_minus_second": -829.0
+  },
+  {
+    "episode_id": 113755481,
+    "teams": [
+      "tq1d",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 483,
+    "margin_first_minus_second": -835.0
+  },
+  {
+    "episode_id": 113762131,
+    "teams": [
+      "Lakshmanan R",
+      "\ud835\udd6f\ud835\udd8a\ud835\udd94\ud835\udd89\ud835\udd8e\ud835\udd92\ud835\udd98 & \ud835\udd6e\ud835\udd94"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 574,
+    "margin_first_minus_second": -374.0
+  },
+  {
+    "episode_id": 113769973,
+    "teams": [
+      "Tien N.",
+      "Lakshmanan R"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 507,
+    "margin_first_minus_second": -1162.0
+  },
+  {
+    "episode_id": 113772923,
+    "teams": [
+      "Lakshmanan R",
+      "FinalSunFlower"
+    ],
+    "eligible_turns": 574,
+    "physical_mirror_turns": 548,
+    "margin_first_minus_second": 163.0
+  }
+]

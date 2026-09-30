@@ -1,0 +1,147 @@
+
+
+# Isolated late-wool carrier-delivery experiment. Source is concatenated to
+# the exact submitted main.py by build_candidate.py; keep final callable last.
+_WDI_PARENT = agent
+_WDI_STATES = {0: {}, 1: {}}
+_WDI_REPORT = dict(triggered=0, command_changes=0, harvests=0,
+                   placements=0, sold_units=0, room_skips=0,
+                   market_skips=0, errors=0)
+
+
+def _wdi_move_to_shed(pos):
+    x, y = int(pos[0]), int(pos[1])
+    if x > 5:
+        return ['WEST']
+    if x < 5:
+        return ['EAST']
+    if y > 5:
+        return ['NORTH']
+    if y < 5:
+        return ['SOUTH']
+    return None
+
+
+def _wdi_apply(observation, parent_action):
+    step = int(observation['step'])
+    player = int(observation['player'])
+    state = _WDI_STATES[player]
+    farm = observation['farms'][player]
+    private = observation['private']
+    hands = [list(cmd) for cmd in (parent_action.get('hands') or [])]
+    positions = farm['hands']
+    inventories = private['inventories']
+    if len(hands) != len(positions) or len(inventories) < len(hands) + 1:
+        return parent_action
+    market = [list(cmd) for cmd in (parent_action.get('market') or [])]
+    shed = private['shed']
+    shed_room = max(0, 100 - sum(max(0, int(n)) for n in shed.values()))
+    pending_place = 0
+    pending_sale = 0
+    changed = False
+
+    for index, parent_cmd in enumerate(hands):
+        hand_state = state.get(index)
+        pos = positions[index]
+        inv = inventories[index + 1]
+        wool = max(0, int(inv.get('WOOL', 0)))
+
+        if hand_state is not None:
+            if (step > hand_state['start'] and parent_cmd
+                    and parent_cmd[:2] == ['PLACE', 'WOOL']):
+                state.pop(index, None)
+                continue
+            if step >= hand_state['expiry']:
+                state.pop(index, None)
+                continue
+            if hand_state['phase'] == 'hold':
+                command = ['PASS']
+            elif wool < 1:
+                state.pop(index, None)
+                continue
+            else:
+                move = _wdi_move_to_shed(pos)
+                if move is not None:
+                    command = move
+                else:
+                    quantity = min(wool, shed_room - pending_place)
+                    if quantity < 1:
+                        _WDI_REPORT['room_skips'] += 1
+                        state.pop(index, None)
+                        continue
+                    command = ['PLACE', 'WOOL', quantity]
+                    pending_place += quantity
+                    pending_sale += quantity
+                    hand_state['phase'] = 'hold'
+                    _WDI_REPORT['placements'] += 1
+            if command != parent_cmd:
+                hands[index] = command
+                changed = True
+                _WDI_REPORT['command_changes'] += 1
+            continue
+
+        if not (480 <= step < 696 and 10 <= step % 24 <= 18):
+            continue
+        if int(observation['market']['prices'].get('WOOL', 0)) < 120:
+            continue
+        if wool < 8 or shed_room - pending_place < 24:
+            continue
+        x, y = int(pos[0]), int(pos[1])
+        tile = farm['tiles'][y][x]
+        if not (isinstance(tile, dict) and tile.get('animal') == 'SHEEP'
+                and int(tile.get('yield_units', 0)) >= 4):
+            continue
+        state[index] = {'phase': 'deliver', 'start': step,
+                        'expiry': (step // 24 + 1) * 24 - 1}
+        command = ['HARVEST']
+        if command != parent_cmd:
+            hands[index] = command
+            changed = True
+            _WDI_REPORT['command_changes'] += 1
+        _WDI_REPORT['triggered'] += 1
+        _WDI_REPORT['harvests'] += 1
+
+    if pending_sale:
+        existing = next((order for order in market
+                         if len(order) >= 3 and order[:2] == ['SELL', 'WOOL']), None)
+        if existing is not None:
+            existing[2] = int(existing[2]) + pending_sale
+            changed = True
+            _WDI_REPORT['sold_units'] += pending_sale
+        elif len(market) < 10:
+            market.insert(0, ['SELL', 'WOOL', pending_sale])
+            changed = True
+            _WDI_REPORT['sold_units'] += pending_sale
+        else:
+            _WDI_REPORT['market_skips'] += 1
+    if not changed:
+        return parent_action
+    revised = dict(parent_action)
+    revised['hands'] = hands
+    revised['market'] = market
+    return revised
+
+
+def agent(observation, configuration=None):
+    step = int(observation['step'])
+    player = int(observation['player'])
+    if step == 0:
+        _WDI_STATES[player] = {}
+        _WDI_REPORT.update(triggered=0, command_changes=0, harvests=0,
+                           placements=0, sold_units=0, room_skips=0,
+                           market_skips=0, errors=0)
+    action = _WDI_PARENT(observation, configuration)
+    try:
+        action = _wdi_apply(observation, action)
+    except Exception:
+        _WDI_REPORT['errors'] += 1
+    _WDI_REPORT.update(getattr(_WDI_PARENT, 'telemetry', {}))
+    return action
+
+
+agent.telemetry = _WDI_REPORT
+kaggle_submission_agent = agent
+
+
+def kaggle_wool_delivery_entrypoint(observation, configuration=None):
+    return agent(observation, configuration)

@@ -9,3 +9,6 @@ best_replay/routes/*.gz
 *.json
 *.log
 *.json.gz
+kaggle__*/*
+*.zip
+*.jsonl.gz

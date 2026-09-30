@@ -1,0 +1,9 @@
+Parent SHA-256: 6d3d1c0df1b06566417d8ba204e05e0caad9a115bb84b73513bef68575a70bf9
+Parent bytes: 2008991
+Exact selector replacement (one occurrence):
+        branch = 'shared151' if hands>=5 else ('shared150' if _BRIDGE_VARIANT=='five_or_zero' and hands==0 else 'source')
+=>
+        rival_pastures = _pasture_rival_pastures(observation)
+        branch = 'shared151' if hands>=5 and rival_pastures == 0 else 'source'
+Appended layer: layer.py sha256=dcf43e4cf40405fadca2141a0939d6fa9331c3d00afc33255b95dd524370fd0b
+Reversing the selector replacement and removing the appended layer reproduces the parent bytes exactly.

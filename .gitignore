@@ -1,4 +1,7 @@
 __pycache__/
+.bench_deps/
+analysis_artifacts/dhana_strength/
+dhana/candidate.py
 live_routes/*
 benchmark_results/*
 failed_replay/routes/*.gz

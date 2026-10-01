@@ -1,0 +1,101 @@
+﻿rank,team,episode_id,baseline_seat0,baseline_seat1,candidate_seat0,candidate_seat1,baseline_mean_margin,candidate_mean_margin,paired_mean_margin_gain,wins_gained,wins_lost
+1,DECEM,115321748,win,win,win,win,58697.0,58697.0,0.0,0,0
+2,DSM,115323250,win,win,win,win,104356.0,104357.0,1.0,0,0
+3,Boey,115323250,win,win,win,win,8565.0,8565.0,0.0,0,0
+4,Vadim Vasilenko,115323543,win,win,win,win,28001.0,28001.0,0.0,0,0
+5,Yizhou,115321748,win,win,win,win,63427.0,63427.0,0.0,0,0
+6,Unknown Mother-Goose,115320871,win,win,win,win,40033.0,40032.0,-1.0,0,0
+7,tetsuya & yuanzhe & guoqin,115319406,win,win,win,win,27185.0,27185.0,0.0,0,0
+8,Anton Tikhonov,115320871,loss,loss,loss,loss,-580.0,-577.0,3.0,0,0
+9,akmr,115320793,loss,loss,loss,loss,-9696.0,-9695.0,1.0,0,0
+10,Majkel1337,115317514,loss,loss,loss,loss,-10760.0,-10754.0,6.0,0,0
+11,monsaraida,115318890,win,win,win,win,13479.0,13479.0,0.0,0,0
+12,Zenith,115319406,win,win,win,win,87556.0,87556.0,0.0,0,0
+13,Gordeev Max,115323543,win,win,win,win,54455.0,54455.0,0.0,0,0
+14,feles99,115322222,win,win,win,win,30749.0,30761.0,12.0,0,0
+15,Fourth Quadrant,115317937,win,win,win,win,68242.0,68251.5,9.5,0,0
+16,TKNP,115319133,win,win,win,win,5734.0,5734.0,0.0,0,0
+17,Smackaveli,115318066,win,win,win,win,98879.0,98879.0,0.0,0,0
+18,yuto083,115319331,win,win,win,win,65827.0,65827.0,0.0,0,0
+19,吃白饭的大肥鱼,115322168,loss,loss,loss,loss,-8346.0,-8345.0,1.0,0,0
+20,Luca,115318067,win,win,win,win,129616.0,129616.0,0.0,0,0
+21,Artem The Farmer 🍅,115320892,loss,loss,loss,loss,-52875.0,-52875.0,0.0,0,0
+22,Farmcore,115321607,win,win,win,win,37955.5,37957.5,2.0,0,0
+23,KawattaTaido,115322063,win,win,win,win,42357.0,42357.0,0.0,0,0
+24,Azat Akhtyamov,115318741,win,win,win,win,97716.0,97717.0,1.0,0,0
+25,abozten,115318678,win,win,win,win,21292.0,21292.0,0.0,0,0
+26,E. Honda,115319297,win,win,win,win,115690.0,115690.0,0.0,0,0
+27,Happy Farm,115320815,loss,loss,loss,loss,-10783.0,-10783.0,0.0,0,0
+28,mtmr_s1,115323169,loss,loss,loss,loss,-3646.0,-3646.0,0.0,0,0
+29,Arda Ceylan,115319468,win,win,win,win,115349.0,115349.0,0.0,0,0
+30,kigasudayooo,115321656,loss,loss,loss,loss,-4169.0,-4169.0,0.0,0,0
+31,🐚seek inspiration🐚,115320193,win,win,win,win,143946.0,143946.0,0.0,0,0
+32,Legend Brothers,115320024,loss,loss,loss,loss,-10272.0,-10272.0,0.0,0,0
+33,Ueddy,115318846,loss,loss,loss,loss,-6437.0,-6431.0,6.0,0,0
+34,keiz,115322134,win,win,win,win,28762.0,28762.0,0.0,0,0
+35,unreal,115321733,win,win,win,win,63902.0,63902.0,0.0,0,0
+36,IsaiahP,115323637,loss,loss,loss,loss,-17580.0,-17580.0,0.0,0,0
+37,Christoffer Thimsen,115326098,win,win,win,win,30764.0,19558.0,-11206.0,0,0
+38,We wanna be tomatos,115320815,loss,loss,loss,loss,-15711.0,-15711.0,0.0,0,0
+39,Densike,115320607,win,win,win,win,65960.0,65960.0,0.0,0,0
+40,M & M & P & Q,115325624,loss,loss,loss,loss,-26294.0,-26291.0,3.0,0,0
+41,kwa,115325620,win,win,win,win,3384.0,3384.0,0.0,0,0
+42,Kaggledew Valley 🏆,115326448,win,win,win,win,92.0,80.0,-12.0,0,0
+43,Paul Bryan Elefante,115323643,loss,loss,loss,loss,-943.0,-943.0,0.0,0,0
+44,Orbital Terraformer,115324522,win,win,win,win,12269.0,12269.0,0.0,0,0
+45,vvs,115325006,loss,loss,loss,loss,-99007.0,-99007.0,0.0,0,0
+46,MAC,115321656,loss,loss,loss,loss,-36637.0,-36637.0,0.0,0,0
+47,dodsters,115325783,win,win,win,win,55284.0,55284.0,0.0,0,0
+48,THIRD FARM CLUB,115323637,win,win,win,win,10570.0,10570.0,0.0,0,0
+49,SpaTaro,115323112,win,win,win,win,5854.0,5835.0,-19.0,0,0
+50,Attention Is All You Seed,115321605,loss,loss,loss,loss,-6298.0,-6284.0,14.0,0,0
+51,Aaweg,115325006,win,win,win,win,109382.0,109382.0,0.0,0,0
+52,Ryo Hasegawa,115323672,loss,loss,loss,loss,-11832.0,-11844.0,-12.0,0,0
+53,Otter Vibe,115322678,loss,loss,loss,loss,-14960.5,-14888.5,72.0,0,0
+54,Syed Asad Ali,115324613,win,win,win,win,215786.0,215786.0,0.0,0,0
+55,marwar22,115326343,loss,loss,loss,loss,-3881.0,-3879.0,2.0,0,0
+56,HayatoFujihara,115324436,win,win,win,win,9810.0,9822.0,12.0,0,0
+57,ShunkiKyoya,115324126,loss,loss,loss,loss,-42456.5,-42473.5,-17.0,0,0
+58,atsushi11o7,115324436,win,win,win,win,30838.0,30838.0,0.0,0,0
+59,Planned Economy,115326356,win,win,win,win,2637.0,2638.0,1.0,0,0
+60,TheEggman,115325564,win,win,win,win,31455.0,31455.0,0.0,0,0
+61,アナコンダ,115323582,win,win,win,win,59212.0,59216.0,4.0,0,0
+62,xiy lin,115325479,loss,loss,loss,loss,-24437.0,-24437.0,0.0,0,0
+63,flg,115325624,win,win,win,win,97944.0,97944.0,0.0,0,0
+64,Lucien de Rubempre,115322988,loss,loss,loss,loss,-71197.0,-71197.0,0.0,0,0
+65,hugghngkai,115325658,loss,loss,loss,loss,-8757.0,-8757.0,0.0,0,0
+66,WarRusher,115321471,win,win,win,win,94743.0,94743.0,0.0,0,0
+67,Dipam Chakraborty,115326245,win,win,win,win,19292.0,19292.0,0.0,0,0
+68,3정훈,115321858,win,win,win,win,1551.0,1551.0,0.0,0,0
+69,by,115324677,win,win,win,win,16599.0,16603.0,4.0,0,0
+70,Pico,115322273,win,win,win,win,1930.0,1930.0,0.0,0,0
+71,Xiangyu Liu,115326077,win,win,win,win,213262.0,213262.0,0.0,0,0
+72,forever young,115320828,win,win,win,win,11096.0,11124.0,28.0,0,0
+73,azamat1ch,115322923,win,win,win,win,25875.0,25875.0,0.0,0,0
+74,❄️ Cole Palmer ❄️,115326448,loss,loss,loss,loss,-53686.0,-53686.0,0.0,0,0
+75,pensukesan,115326371,win,win,win,win,21551.0,21555.0,4.0,0,0
+76,arutyunoff,115325912,win,win,win,win,1097.0,1097.0,0.0,0,0
+77,Arjun Vinod,115320702,loss,loss,loss,loss,-8071.0,-8090.0,-19.0,0,0
+78,Yannik Schiffner,115326090,win,win,win,win,625.0,632.0,7.0,0,0
+79,Kucing Garong,115323685,win,win,win,win,19303.0,19359.0,56.0,0,0
+80,ymg_aq,115326048,win,win,win,win,19028.0,18973.0,-55.0,0,0
+81,madmax0404,115325993,win,win,win,win,34622.0,34618.0,-4.0,0,0
+82,Crop Dustas,115323686,win,win,win,win,17569.0,17569.0,0.0,0,0
+83,叫啥,115322139,win,win,win,win,16225.0,16226.0,1.0,0,0
+84,kibuna,115326356,loss,loss,loss,loss,-378.0,-378.0,0.0,0,0
+85,len8487,115327032,win,win,win,win,5577.0,5577.0,0.0,0,0
+86,Lebxgue.,115320459,win,win,win,win,6548.0,6538.0,-10.0,0,0
+87,Yaroslav,115324709,win,win,win,win,13356.0,13356.0,0.0,0,0
+88,daulettoibazar,115326031,win,win,win,win,1716.0,1720.0,4.0,0,0
+89,elmo,115326343,loss,loss,loss,loss,-9392.0,-9392.0,0.0,0,0
+90,Nakano,115320743,win,win,win,win,96984.0,96986.0,2.0,0,0
+91,Alan C52,115324274,win,win,win,win,74449.0,74453.0,4.0,0,0
+92,cununn,115325993,win,win,win,win,189448.0,189448.0,0.0,0,0
+93,Black Mamba Farm,115322230,win,win,win,win,181090.0,181090.0,0.0,0,0
+94,RS Turley,115325060,win,win,win,win,34691.0,34699.0,8.0,0,0
+95,Excluding,115324175,loss,loss,loss,loss,-14380.0,-14712.0,-332.0,0,0
+96,ready or not here i come,115326882,loss,loss,loss,loss,-4002.0,-3944.0,58.0,0,0
+97,feel the agi,115323685,loss,loss,loss,loss,-16344.0,-16350.0,-6.0,0,0
+98,high frequency farming,115324999,win,win,win,win,69299.0,69299.0,0.0,0,0
+99,sekai013,115325821,win,win,win,win,172362.0,172362.0,0.0,0,0
+100,Aguacates,115325688,loss,loss,loss,loss,-8174.0,-8174.0,0.0,0,0
